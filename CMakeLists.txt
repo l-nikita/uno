@@ -23,19 +23,48 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # ------------------ packages ------------------
 find_package(SDL3 REQUIRED CONFIG)
 find_package(SDL3_image REQUIRED CONFIG)
+find_package(SDL3_ttf REQUIRED CONFIG)
+
+# ----------------------------------------------
+function(auto_source_group_by_folder FILES IS_HEADER)
+    foreach(file ${${FILES}})
+        get_filename_component(dir "${file}" PATH)
+        file(RELATIVE_PATH rel_path "${CMAKE_CURRENT_SOURCE_DIR}" "${dir}")
+
+        string(REPLACE "/" ";" parts "${rel_path}")
+        set(group_parts "")
+		
+        foreach(part ${parts})
+            list(APPEND group_parts "${part}")
+        endforeach()
+
+        if(IS_HEADER)
+            list(APPEND group_parts "headers")
+        endif()
+
+        string(REPLACE ";" "\\" group "${group_parts}")
+
+        source_group("${group}" FILES "${file}")
+    endforeach()
+endfunction()
 
 # ----------------------------------------------
 add_executable(uno)
 
-target_sources(uno PRIVATE
-    main.cpp
-    game.cpp
-    game.hpp
-)
+# ----------------------------------------------
+file(GLOB_RECURSE headers ${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp)
+file(GLOB_RECURSE sources ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 
+target_sources(uno PRIVATE ${sources} ${headers})
+
+auto_source_group_by_folder(headers TRUE)
+auto_source_group_by_folder(sources FALSE)
+
+# ----------------------------------------------
 target_link_libraries(uno PRIVATE 	
 	SDL3::SDL3
-	SDL3_image::SDL3_image-shared
+	SDL3_ttf::SDL3_ttf
+	SDL3_image::SDL3_image
 )
 
 # ----------------------------------------------
