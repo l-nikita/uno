@@ -2,10 +2,11 @@
 
 #include <SDL3/SDL.h>
 #include "textengine.hpp"
-#include "gamemodes/igamemode.hpp"
+#include "gamemanager.hpp"
 
-using Players = std::vector<Player*>;
-
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 class Game final
 {
 public:
@@ -19,18 +20,20 @@ public:
 
 	void Render();
 
+	void GetWindowSize(int* w, int* h);
+
+	SDL_Window* GetWindow() const { return m_window; }
+	SDL_Renderer* GetRenderer() const { return m_renderer; }
 	TextEngine* GetTextEngine() const { return m_textEngine; }
 
-	gm::IGameMode* GetGameMode() const { return m_gameMode; }
-	Players GetPlayers() const { return m_players; }
-
 private:
-	bool m_running = true;
+	bool m_running = false;
 
 	SDL_Window* m_window = nullptr;
 	SDL_Renderer* m_renderer = nullptr;
 	TextEngine* m_textEngine = nullptr;
 
-	gm::IGameMode* m_gameMode = nullptr;
-	Players m_players;
+	GameManager* m_gameManager = nullptr;
 };
+
+extern Game* g_Game;
