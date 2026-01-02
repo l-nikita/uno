@@ -67,8 +67,9 @@ void GameManager::Render()
 	{
 		float y = (float)wH - 300;
 		SDL_FRect rect = { x, y, 150, 250 };
+		SDL_Color cColor = CARD_COLORS.at(card->Color);
 
-		SDL_SetRenderDrawColor(renderer, card->Color.r, card->Color.g, card->Color.b, card->Color.a);
+		SDL_SetRenderDrawColor(renderer, cColor.r, cColor.g, cColor.b, cColor.a);
 		SDL_RenderFillRect(renderer, &rect);
 
 		SDL_Color color = { 255, 255, 255, 255 };
@@ -91,4 +92,16 @@ void GameManager::Render()
 
 		x += 200;
 	}
+
+	float y = 25;
+	x = (float)wW - 200;
+
+	SDL_FRect rect = { x, y, 150, 250 };
+	SDL_Color dColor = { 255, 255, 255, 255 };
+
+	SDL_SetRenderDrawColor(renderer, dColor.r, dColor.g, dColor.b, dColor.a);
+	SDL_RenderFillRect(renderer, &rect);
+
+	SDL_Color color = { 0, 0, 0, 255 };
+	te->DrawText(std::to_string(GetGameMode()->GetDeckCardsNum()), "Arial_35", x + 15, y + 15, color);
 }

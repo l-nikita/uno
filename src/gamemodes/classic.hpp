@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include "igamemode.hpp"
 
 namespace gm
@@ -16,6 +17,13 @@ namespace gm
 
 		void Update();
 
-		void GiveCards();
+		void GenerateDeckCards();
+		void DealCards();
+
+		size_t GetPlayersCardsNum() { return 7; }
+		size_t GetDeckCardsNum() { return m_deck.size(); }
+
+	private:
+		std::vector<Card*> m_deck;
 	};
 }

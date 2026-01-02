@@ -1,13 +1,25 @@
 #pragma once
 
+#include <map>
 #include <SDL3/SDL.h>
 
 //-----------------------------------------------------------------------------
-constexpr auto RED_COLOR_CARD = SDL_Color{ 255, 0, 0, 255 };
-constexpr auto GREEN_COLOR_CARD = SDL_Color{ 0, 255, 0, 255 };
-constexpr auto BLUE_COLOR_CARD = SDL_Color{ 0, 0, 255, 255 };
-constexpr auto YELLOW_COLOR_CARD = SDL_Color{ 255, 255, 0, 255 };
-constexpr auto WILD_COLOR_CARD = SDL_Color{ 0, 0, 0, 255 };
+enum class CardColor
+{
+	RED,
+	GREEN,
+	BLUE,
+	YELLOW,
+	WILD,
+};
+
+static const std::map<CardColor, SDL_Color> CARD_COLORS = {
+	{CardColor::RED,	SDL_Color{ 255, 0, 0, 255 }},
+	{CardColor::GREEN,	SDL_Color{ 0, 255, 0, 255 }},
+	{CardColor::BLUE,	SDL_Color{ 0, 0, 255, 255 }},
+	{CardColor::YELLOW, SDL_Color{ 255, 255, 0, 255 }},
+	{CardColor::WILD,	SDL_Color{ 0, 0, 0, 255 }},
+};
 
 //-----------------------------------------------------------------------------
 enum class CardType
@@ -23,6 +35,6 @@ enum class CardType
 struct Card
 {
 	CardType Type;
-	SDL_Color Color;
+	CardColor Color;
 	int Value;
 };

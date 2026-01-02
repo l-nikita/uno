@@ -16,6 +16,7 @@ public:
 	Player(std::string name);
 
 	void GiveCard(Card* card);
+	void SortCards();
 
 	std::string GetName() { return m_name; }
 	Cars GetCards() { return m_cards; }

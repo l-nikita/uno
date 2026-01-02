@@ -1,4 +1,7 @@
 #include <random>
+#include <algorithm>
+#include <ranges>
+#include <iostream>
 #include "classic.hpp"
 #include "../gamemanager.hpp"
 
@@ -14,7 +17,8 @@ namespace gm
 
 	void Classic::Start()
 	{
-		GiveCards();
+		GenerateDeckCards();
+		DealCards();
 	}
 
 	void Classic::Stop()
@@ -29,55 +33,98 @@ namespace gm
 	}
 
 	//-----------------------------------------------------------------------------
-	void Classic::GiveCards()
+	void Classic::GenerateDeckCards()
+	{
+		// color
+		for (size_t c = 0; c < 4; c++)
+		{
+			CardColor color = static_cast<CardColor>(c);
+
+			// duplication 
+			for (size_t d = 0; d < 2; d++)
+			{
+				// number
+				for (size_t n = 0; n < 10; n++)
+				{
+					if (n == 0 && d == 1) // 0 not duplicated
+						continue;
+
+					auto num = new Card();
+					num->Type = CardType::NUMBER;
+					num->Value = n;
+					num->Color = color;
+
+					m_deck.push_back(num);
+				}
+
+				// skip
+				auto skip = new Card();
+				skip->Type = CardType::SKIP;
+				skip->Value = 10;
+				skip->Color = color;
+
+				m_deck.push_back(skip);
+
+				// reverse
+				auto reverse = new Card();
+				reverse->Type = CardType::REVERSE;
+				reverse->Value = 10;
+				reverse->Color = color;
+
+				m_deck.push_back(reverse);
+
+				// draw 2
+				auto draw2 = new Card();
+				draw2->Type = CardType::DRAW_2;
+				draw2->Value = 10;
+				draw2->Color = color;
+
+				m_deck.push_back(draw2);
+			}
+		}
+
+		// wild
+		for (size_t i = 0; i < 4; i++)
+		{
+			auto wild = new Card();
+			wild->Type = CardType::WILD;
+			wild->Value = 20;
+			wild->Color = CardColor::WILD;
+
+			m_deck.push_back(wild);
+		}
+
+		// wild +4
+		for (size_t i = 0; i < 4; i++)
+		{
+			auto wild4 = new Card();
+			wild4->Type = CardType::WILD_DRAW_4;
+			wild4->Value = 20;
+			wild4->Color = CardColor::WILD;
+
+			m_deck.push_back(wild4);
+		}
+
+		std::cout << m_deck.size() << std::endl;
+	}
+
+	void Classic::DealCards()
 	{
 		std::random_device rd;
 		std::mt19937 gen(rd());
 
+		std::ranges::shuffle(m_deck, gen);
+
 		for (auto& player : g_GameManager->GetPlayers())
 		{
-			for (size_t i = 0; i < 7; i++)
+			for (size_t i = 0; i < GetPlayersCardsNum(); i++)
 			{
-				auto card = new Card();
-
-				std::uniform_int_distribution<> dist(0, 5);
-				auto type = static_cast<CardType>(dist(gen));
-				card->Type = type;
-
-				if (type == CardType::NUMBER)
-				{
-					std::uniform_int_distribution<> vDist(1, 9);
-					card->Value = vDist(gen);
-				}
-				else if (type == CardType::SKIP
-					|| type == CardType::REVERSE
-					|| type == CardType::DRAW_2)
-				{
-					card->Value = 10;
-				}
-				else if (type == CardType::WILD || type == CardType::WILD_DRAW_4)
-				{
-					card->Value = 20;
-				}
-
-				if (type != CardType::WILD && type != CardType::WILD_DRAW_4)
-				{
-					std::uniform_int_distribution<> cDist(1, 4);
-					int color = cDist(gen);
-					if (color == 1)
-						card->Color = RED_COLOR_CARD;
-					else if (color == 2)
-						card->Color = GREEN_COLOR_CARD;
-					else if (color == 3)
-						card->Color = BLUE_COLOR_CARD;
-					else if (color == 4)
-						card->Color = YELLOW_COLOR_CARD;
-				}
-				else
-					card->Color = WILD_COLOR_CARD;
-
-				player->GiveCard(card);
+				auto last = m_deck.back();
+				player->GiveCard(last);
+				m_deck.pop_back();
 			}
+
+			player->SortCards();
 		}
 	}
 }

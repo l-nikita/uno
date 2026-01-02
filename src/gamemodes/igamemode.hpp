@@ -18,5 +18,7 @@ namespace gm
 		virtual void Stop() = 0;
 
 		virtual void Update() = 0;
+
+		virtual size_t GetDeckCardsNum() = 0;
 	};
 }
