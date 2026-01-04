@@ -12,8 +12,9 @@ GameManager::GameManager()
 {
 	g_GameManager = this;
 
-	g_Game->GetTextEngine()->CreateFont("Arial_50", GetAssetsPath() + "/fonts/arial.ttf", 50.0f);
-	g_Game->GetTextEngine()->CreateFont("Arial_35", GetAssetsPath() + "/fonts/arial.ttf", 35.0f);
+	auto te = g_Game->GetTextEngine();
+	te->CreateFont("Arial_50", GetAssetsPath() + "/fonts/arial.ttf", 50.0f);
+	te->CreateFont("Arial_35", GetAssetsPath() + "/fonts/arial.ttf", 35.0f);
 
 	m_players.push_back(new Player("Nikita"));
 	m_players.push_back(new Player("Genrih"));
