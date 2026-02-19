@@ -1,3 +1,4 @@
+cmakepresets.json
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
@@ -52,3 +53,7 @@ x64/
 *.exp
 *.sln
 *.slnx
+
+.vscode/
+.cmake/
+bin/

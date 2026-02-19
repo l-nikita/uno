@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.5...4.0)
 
-set(CMAKE_TOOLCHAIN_FILE "C:/FILES/Programs/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
 project(Uno VERSION 1.0)
 
 # Common
