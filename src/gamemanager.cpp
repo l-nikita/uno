@@ -12,9 +12,8 @@ GameManager::GameManager()
 {
 	g_GameManager = this;
 
-	auto te = g_Game->GetTextEngine();
-	te->CreateFont("Arial_50", GetAssetsPath() + "/fonts/arial.ttf", 50.0f);
-	te->CreateFont("Arial_35", GetAssetsPath() + "/fonts/arial.ttf", 35.0f);
+	g_TextEngine->CreateFont("Arial_50", GetAssetsPath() + "/fonts/arial.ttf", 50.0f);
+	g_TextEngine->CreateFont("Arial_35", GetAssetsPath() + "/fonts/arial.ttf", 35.0f);
 
 	m_players.push_back(new Player("Nikita"));
 	m_players.push_back(new Player("Genrih"));
@@ -40,7 +39,6 @@ void GameManager::Update()
 void GameManager::Render()
 {
 	auto renderer = g_Game->GetRenderer();
-	auto te = g_Game->GetTextEngine();
 
 	float x = 50;
 	for (auto& player : m_players)
@@ -51,7 +49,7 @@ void GameManager::Render()
 		SDL_RenderFillRect(renderer, &rect);
 
 		SDL_Color color = { 255, 255, 255, 255 };
-		te->DrawText(player->GetName(), "Arial_50", x + 25, 25, color);
+		g_TextEngine->DrawText(player->GetName(), "Arial_50", x + 25, 25, color);
 
 		x += 600;
 	}
@@ -89,7 +87,7 @@ void GameManager::Render()
 		else if (card->Type == CardType::WILD_DRAW_4)
 			text = "+4";
 
-		te->DrawText(text, "Arial_35", x + 15, y + 15, color);
+		g_TextEngine->DrawText(text, "Arial_35", x + 15, y + 15, color);
 
 		x += 200;
 	}
@@ -104,5 +102,5 @@ void GameManager::Render()
 	SDL_RenderFillRect(renderer, &rect);
 
 	SDL_Color color = { 0, 0, 0, 255 };
-	te->DrawText(std::to_string(GetGameMode()->GetDeckCardsNum()), "Arial_35", x + 15, y + 15, color);
+	g_TextEngine->DrawText(std::to_string(GetGameMode()->GetDeckCardsNum()), "Arial_35", x + 15, y + 15, color);
 }

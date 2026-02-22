@@ -98,3 +98,5 @@ private:
 	std::unordered_map<std::string, TTF_Font*> m_fonts;
 	std::unordered_map<std::string, TTF_Text*> m_texts;
 };
+
+extern TextEngine* g_TextEngine;

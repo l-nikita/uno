@@ -12,43 +12,51 @@
 class Panel
 {
 public:
-	Panel(const SDL_FRect& rect) 
-		: m_rect(rect) 
-	{ }
+	Panel(float w, float h);
 
-	virtual void Update()
-	{ 
-		SDL_FPoint mousePoint = g_Input->GetMousePoint();
-		m_isHovered = SDL_PointInRectFloat(&mousePoint, &m_rect);
+	virtual void Update();
+	virtual void Render();
 
-		if(m_OnUpdate)
-			m_OnUpdate();
-
-		for (auto& child : GetChildren())
-			child->Update();
-	}
-
-	virtual void Render()
-	{
-		if (m_OnRender)
-			m_OnRender();
-
-		for (auto& child : GetChildren())
-			child->Render();
-	}
-
+	void SetHovered(bool hovered) { m_isHovered = hovered; }
 	bool IsHovered() const { return m_isHovered; }
 
-	std::vector<Panel*> GetChildren() const { return m_children; }
+	void SetParent(Panel* panel) { m_parent = panel; }
+	Panel* GetParent() { return m_parent; }
 
+	void AddChild(Panel* child);
+	const std::vector<Panel*>& GetChildren() const { return m_children; }
+
+	void Remove();
+
+	void SetPos(float x, float y);
+	const SDL_FRect& GetRect() { return m_rect; }
+
+	void OnMouseDown(Uint8 button) const;
+	void OnMousePressed(Uint8 button) const;
+	void OnMouseReleased(Uint8 button) const;
+
+	void OnWindowResize();
+	void UpdateActualCoords();
+
+public:
+	friend class Gui;
+
+public:
 	std::function<void()> m_OnUpdate;
 	std::function<void()> m_OnRender;
 
-	const SDL_FRect& GetRect() { return m_rect; }
+	std::function<void()> m_OnMouseDown;
+	std::function<void()> m_OnMousePressed;
+	std::function<void()> m_OnMouseReleased;
 
-protected:
+	int m_zIndex = 0;
+
+private:
+	SDL_FRect m_baseRect;
 	SDL_FRect m_rect;
 	bool m_isHovered = false;
 
+	bool m_shouldRemove = false;
+	Panel* m_parent = nullptr;
 	std::vector<Panel*> m_children;
 };

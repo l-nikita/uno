@@ -1,16 +1,19 @@
 #include <iostream>
 #include "game.hpp"
 #include "input.hpp"
-#include "gui/panel.hpp"
-#include "gui/button.hpp"
+#include "gui/gui.hpp"
 #include "gui/mainmenu.hpp"
 #include <RmlUi/Core.h>
+
+Gui* g_Gui = nullptr;
+TextEngine* g_TextEngine = nullptr;
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
 void Game::Init()
 {
+<<<<<<< Updated upstream
 	if (!SDL_Init(SDL_INIT_VIDEO))
 	{
 		SDL_Log("Couldn't initialize SDL: %s\n", SDL_GetError());
@@ -28,14 +31,19 @@ void Game::Init()
 	
 	const char* rendererName = SDL_GetRendererName(m_renderer);
 	SDL_Log("Renderer name: %s\n", rendererName);
+=======
+	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
+	SDL_CreateWindowAndRenderer("Uno", 1920, 1080, SDL_WINDOW_RESIZABLE, &m_window, &m_renderer);
+>>>>>>> Stashed changes
 
-	m_textEngine = new TextEngine(m_renderer);
+	g_TextEngine = new TextEngine(m_renderer);
 	g_Input = new Input();
 	g_GameManager = new GameManager();
+	g_Gui = new Gui();
 
 	int wW, wH;
 	g_Game->GetWindowSize(&wW, &wH);
-	m_panels.push_back(new MainMenu(SDL_FRect{ 0, 0, (float)wW, (float)wH }));
+	g_Gui->AddPanel(new MainMenu((float)wW, (float)wH));
 
 	m_isRunning = true;
 }
@@ -60,7 +68,10 @@ void Game::Run()
 
 void Game::Stop()
 {
-	delete m_textEngine;
+	delete g_Gui;
+	delete g_GameManager;
+	delete g_Input;
+	delete g_TextEngine;
 
 	SDL_DestroyRenderer(m_renderer);
 	SDL_DestroyWindow(m_window);
@@ -75,12 +86,8 @@ void Game::Update()
 	while (SDL_PollEvent(&event))
 		OnEvent(event);
 
-	for (auto& panel : GetPanels())
-	{
-		panel->Update();
-	}
-
 	g_GameManager->Update();
+	g_Gui->Update();
 
 	g_Input->Reset();
 }
@@ -91,11 +98,7 @@ void Game::Render()
 	SDL_RenderClear(m_renderer);
 
 	//g_GameManager->Render();
-
-	for (auto& panel : GetPanels())
-	{
-		panel->Render();
-	}
+	g_Gui->Render();
 
 	SDL_RenderPresent(m_renderer);
 }
@@ -127,6 +130,9 @@ void Game::OnEvent(const SDL_Event& event)
 	case SDL_EVENT_MOUSE_WHEEL:
 		g_Input->OnMouseWheel(event.wheel);
 		break;
+	case SDL_EVENT_WINDOW_RESIZED:
+		OnWindowResize();
+		break;
 	}
 }
 
@@ -134,3 +140,11 @@ void Game::GetWindowSize(int* w, int* h)
 {
 	SDL_GetWindowSize(m_window, w, h);
 }
+<<<<<<< Updated upstream
+=======
+
+void Game::OnWindowResize()
+{
+	g_Gui->OnWindowResize();
+}
+>>>>>>> Stashed changes
