@@ -12,9 +12,6 @@ GameManager::GameManager()
 {
 	g_GameManager = this;
 
-	g_TextEngine->CreateFont("Arial_50", GetAssetsPath() + "/fonts/arial.ttf", 50.0f);
-	g_TextEngine->CreateFont("Arial_35", GetAssetsPath() + "/fonts/arial.ttf", 35.0f);
-
 	m_players.push_back(new Player("Nikita"));
 	m_players.push_back(new Player("Genrih"));
 
@@ -33,74 +30,8 @@ GameManager::~GameManager()
 //-----------------------------------------------------------------------------
 void GameManager::Update()
 {
-
 }
 
 void GameManager::Render()
 {
-	auto renderer = g_Game->GetRenderer();
-
-	float x = 50;
-	for (auto& player : m_players)
-	{
-		SDL_FRect rect = { x, 0, 500, 100 };
-
-		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-		SDL_RenderFillRect(renderer, &rect);
-
-		SDL_Color color = { 255, 255, 255, 255 };
-		g_TextEngine->DrawText(player->GetName(), "Arial_50", x + 25, 25, color);
-
-		x += 600;
-	}
-
-	auto localPlayer = GetLocalPlayer();
-	auto cards = localPlayer->GetCards();
-
-	x = 25;
-
-	int wW, wH;
-	g_Game->GetWindowSize(&wW, &wH);
-
-	for (auto& card : cards)
-	{
-		float y = (float)wH - 300;
-		SDL_FRect rect = { x, y, 150, 250 };
-		SDL_Color cColor = CARD_COLORS.at(card->Color);
-
-		SDL_SetRenderDrawColor(renderer, cColor.r, cColor.g, cColor.b, cColor.a);
-		SDL_RenderFillRect(renderer, &rect);
-
-		SDL_Color color = { 255, 255, 255, 255 };
-		std::string text = "";
-
-		if (card->Type == CardType::NUMBER)
-			text = std::to_string(card->Value);
-		else if (card->Type == CardType::SKIP)
-			text = "Skip";
-		else if (card->Type == CardType::REVERSE)
-			text = "Reverse";
-		else if (card->Type == CardType::DRAW_2)
-			text = "+2";
-		else if (card->Type == CardType::WILD)
-			text = "Wild";
-		else if (card->Type == CardType::WILD_DRAW_4)
-			text = "+4";
-
-		g_TextEngine->DrawText(text, "Arial_35", x + 15, y + 15, color);
-
-		x += 200;
-	}
-
-	float y = 25;
-	x = (float)wW - 200;
-
-	SDL_FRect rect = { x, y, 150, 250 };
-	SDL_Color dColor = { 255, 255, 255, 255 };
-
-	SDL_SetRenderDrawColor(renderer, dColor.r, dColor.g, dColor.b, dColor.a);
-	SDL_RenderFillRect(renderer, &rect);
-
-	SDL_Color color = { 0, 0, 0, 255 };
-	g_TextEngine->DrawText(std::to_string(GetGameMode()->GetDeckCardsNum()), "Arial_35", x + 15, y + 15, color);
 }

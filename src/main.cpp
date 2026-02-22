@@ -4,11 +4,12 @@ Game* g_Game = nullptr;
 
 int main()
 {
-    g_Game = new Game();
-    g_Game->Init();
-    g_Game->Run();
+    Game game;
+    g_Game = &game;
 
-    delete g_Game;
+    game.Init();
+    game.Run();
+    game.Shutdown();
 
 	return 0;
 }

@@ -2,9 +2,11 @@
 
 #include <chrono>
 #include <SDL3/SDL.h>
-#include "textengine.hpp"
 #include "gamemanager.hpp"
-#include "gui/gui.hpp"
+#include "rmlui/rmlui_renderer_gl3_sdl.hpp"
+#include "rmlui/rmlui_file_interface.hpp"
+
+using KeyDownCallback = bool (*)(Rml::Context* context, Rml::Input::KeyIdentifier key, int key_modifier, float native_dp_ratio, bool priority);
 
 //-----------------------------------------------------------------------------
 //
@@ -17,18 +19,14 @@ public:
 	void Init();
 
 	void Run();
-	void Stop();
-
-	void Update();
-	void OnEvent(const SDL_Event& event);
-
-	void Render();
+	void RequestExit();
+	void Shutdown();
 
 	void GetWindowSize(int* w, int* h);
-	void OnWindowResize();
 
 	SDL_Window* GetWindow() const { return m_window; }
-	SDL_Renderer* GetRenderer() const { return m_renderer; }
+	Rml::SystemInterface* GetSystemInterface() const { return m_systemInterface; }
+	Rml::RenderInterface* GetRenderInterface() const { return m_renderInterface; }
 
 	// Delta time (ms)
 	float DeltaTime() { return m_deltaTime.count(); }
@@ -37,13 +35,34 @@ public:
 	float ElapsedTime() { return m_elapsedTime.count(); }
 
 private:
+	bool InitSDL(std::string windowName, uint32_t width, uint32_t height, bool allowResize);
+	bool InitRmlUi();
+
+	void Update();
+
+	void Render();
+	void BeginFrame();
+	void PresentFrame();
+
+	void ProcessEvents(Rml::Context* context, KeyDownCallback key_down_callback, bool power_save);
+	static bool ProcessKeyDownShortcuts(Rml::Context* context, Rml::Input::KeyIdentifier key, int key_modifier, float native_dp_ratio, bool priority);
+
+	void OnWindowResize();
+
+private:
 	bool m_isRunning = false;
 
 	std::chrono::duration<float> m_deltaTime;
 	std::chrono::duration<float> m_elapsedTime;
 
 	SDL_Window* m_window = nullptr;
-	SDL_Renderer* m_renderer = nullptr;
+	SDL_GLContext m_glContext = nullptr;
+
+	SystemInterface_SDL* m_systemInterface = nullptr;
+	RenderInterface_GL3_SDL* m_renderInterface = nullptr;
+	FileInterface* m_fileInterface = nullptr;
+
+	Rml::Context* m_rmlContext = nullptr;
 };
 
 extern Game* g_Game;

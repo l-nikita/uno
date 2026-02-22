@@ -3,7 +3,15 @@
 #include <filesystem>
 #include <string>
 
-static std::string GetAssetsPath()
+namespace fs 
 {
-	return (std::filesystem::current_path().parent_path().parent_path() / "assets").string();
+	static std::filesystem::path GetRootPath()
+	{
+		return (std::filesystem::current_path().parent_path()).string();
+	}
+
+	static std::filesystem::path GetAssetsPath()
+	{
+		return (GetRootPath() / "assets\\");
+	}
 }

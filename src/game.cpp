@@ -1,53 +1,162 @@
-#include <iostream>
+﻿#include <iostream>
+#include <RmlUi/Core.h>
+#ifdef _DEBUG
+	#include <RmlUi/Debugger.h>
+#endif
+
 #include "game.hpp"
 #include "input.hpp"
-#include "gui/gui.hpp"
-#include "gui/mainmenu.hpp"
-#include <RmlUi/Core.h>
+#include "filesystem.hpp"
+#include "rmlui/rmlui_renderer_gl3.hpp"
 
-Gui* g_Gui = nullptr;
-TextEngine* g_TextEngine = nullptr;
+struct ApplicationData {
+	bool show_text = true;
+	Rml::String animal = "dog";
+} my_data;
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
 void Game::Init()
 {
-<<<<<<< Updated upstream
-	if (!SDL_Init(SDL_INIT_VIDEO))
-	{
-		SDL_Log("Couldn't initialize SDL: %s\n", SDL_GetError());
-		throw std::runtime_error("Couldn't initialize SDL");
-	}
+	if (!InitSDL("Uno", 1920, 1080, true))
+		throw std::runtime_error("Couldn't initialize SDL!");
 
-	if (!SDL_CreateWindowAndRenderer("Uno", 1280, 720, 0, &m_window, &m_renderer)) 
-	{
-		SDL_Log("Couldn't create window and renderer: %s\n", SDL_GetError());
-		throw std::runtime_error("Couldn't create window and renderer");
-	}
-
-	const char* videoName = SDL_GetCurrentVideoDriver();
-	SDL_Log("Video driver: %s\n", videoName);	
+	if (!InitRmlUi())
+		throw std::runtime_error("Couldn't initialize RmlUi!");
 	
-	const char* rendererName = SDL_GetRendererName(m_renderer);
-	SDL_Log("Renderer name: %s\n", rendererName);
-=======
-	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
-	SDL_CreateWindowAndRenderer("Uno", 1920, 1080, SDL_WINDOW_RESIZABLE, &m_window, &m_renderer);
->>>>>>> Stashed changes
-
-	g_TextEngine = new TextEngine(m_renderer);
-	g_Input = new Input();
 	g_GameManager = new GameManager();
-	g_Gui = new Gui();
-
-	int wW, wH;
-	g_Game->GetWindowSize(&wW, &wH);
-	g_Gui->AddPanel(new MainMenu((float)wW, (float)wH));
-
 	m_isRunning = true;
+
+	Rml::LoadFontFace("ui\\fonts\\Arial.ttf");
+	Rml::LoadFontFace("ui\\fonts\\NotoEmoji-Regular.ttf", true);
+
+	if (Rml::DataModelConstructor constructor = m_rmlContext->CreateDataModel("animals"))
+	{
+		constructor.Bind("show_text", &my_data.show_text);
+		constructor.Bind("animal", &my_data.animal);
+	}
+
+	if (Rml::ElementDocument* document = m_rmlContext->LoadDocument("ui\\hello_world.rml"))
+	{
+		document->Show();
+
+		if(Rml::Element* element = document->GetElementById("world"))
+		{
+			element->SetInnerRML(reinterpret_cast<const char*>(u8"🌍"));
+			element->SetProperty("font-size", "1.5em");
+		}
+	}
 }
 
+bool Game::InitSDL(std::string windowName, uint32_t width, uint32_t height, bool allowResize)
+{
+	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS))
+	{
+		Rml::Log::Message(Rml::Log::LT_ERROR, "Couldn't initialize SDL: %s", SDL_GetError());
+		return false;
+	}
+
+	// Submit click events when focusing the window.
+	SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1");
+
+	// Touch events are handled natively, no need to generate synthetic mouse events for touch devices.
+	SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0");
+
+#ifdef RMLUI_BACKEND_SIMULATE_TOUCH
+	// Simulate touch events from mouse events for testing touch behavior on a desktop machine.
+	SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, "1");
+#endif
+
+#ifdef __ANDROID__
+	// GLES 3.2 on Android
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+#else
+	// GL 3.3 Core
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+#endif
+
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+
+	const float window_size_scale = SDL_GetDisplayContentScale(SDL_GetPrimaryDisplay());
+	SDL_PropertiesID props = SDL_CreateProperties();
+	SDL_SetStringProperty(props, SDL_PROP_WINDOW_CREATE_TITLE_STRING, windowName.c_str());
+	SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_X_NUMBER, SDL_WINDOWPOS_CENTERED);
+	SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_Y_NUMBER, SDL_WINDOWPOS_CENTERED);
+	SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, int(width * window_size_scale));
+	SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, int(height * window_size_scale));
+	SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_OPENGL_BOOLEAN, true);
+	SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_RESIZABLE_BOOLEAN, allowResize);
+	SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_HIGH_PIXEL_DENSITY_BOOLEAN, true);
+
+	m_window = SDL_CreateWindowWithProperties(props);
+	SDL_DestroyProperties(props);
+
+	if (!m_window)
+	{
+		Rml::Log::Message(Rml::Log::LT_ERROR, "SDL error on create window: %s", SDL_GetError());
+		return false;
+	}
+
+	m_glContext = SDL_GL_CreateContext(m_window);
+	SDL_GL_MakeCurrent(m_window, m_glContext);
+
+	SDL_GL_SetSwapInterval(1);
+
+	if (!RmlGL3::Initialize())
+	{
+		Rml::Log::Message(Rml::Log::LT_ERROR, "Failed to initialize OpenGL renderer");
+		return false;
+	}
+
+	m_systemInterface = new SystemInterface_SDL();
+	m_systemInterface->SetWindow(m_window);
+
+	m_renderInterface = new RenderInterface_GL3_SDL();
+	m_renderInterface->SetViewport(width, height);
+
+	const char* videoName = SDL_GetCurrentVideoDriver();
+	SDL_Log("Video driver: %s\n", videoName);
+
+	return true;
+}
+
+bool Game::InitRmlUi()
+{
+	Rml::SetSystemInterface(GetSystemInterface());
+	Rml::SetRenderInterface(GetRenderInterface());
+
+	Rml::Initialise();
+
+	int wW, wH;
+	GetWindowSize(&wW, &wH);
+
+	m_rmlContext = Rml::CreateContext("main", Rml::Vector2i(wW, wH));
+	if (!m_rmlContext)
+	{
+		Rml::Log::Message(Rml::Log::LT_ERROR, "Failed to create RmlUi context");
+		return false;
+	}
+
+#ifdef _DEBUG
+	Rml::Debugger::Initialise(m_rmlContext);
+#endif
+
+	m_fileInterface = new FileInterface(fs::GetAssetsPath().string());
+	Rml::SetFileInterface(m_fileInterface);
+
+	return true;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void Game::Run()
 {
 	using namespace std::chrono;
@@ -62,77 +171,199 @@ void Game::Run()
 		Update();
 		Render();
 	}
-
-	Stop();
 }
 
-void Game::Stop()
+void Game::Shutdown()
 {
-	delete g_Gui;
-	delete g_GameManager;
-	delete g_Input;
-	delete g_TextEngine;
+	Rml::Shutdown();
 
-	SDL_DestroyRenderer(m_renderer);
+	delete g_GameManager;
+	delete m_systemInterface;
+	delete m_renderInterface;
+	delete m_fileInterface;
+
+	RmlGL3::Shutdown();
+
+	SDL_GL_DestroyContext(m_glContext);
 	SDL_DestroyWindow(m_window);
 	SDL_Quit();
+}
+
+void Game::RequestExit()
+{
+	m_isRunning = false;
 }
 
 //-----------------------------------------------------------------------------
 void Game::Update()
 {
-	SDL_Event event;
-
-	while (SDL_PollEvent(&event))
-		OnEvent(event);
+	ProcessEvents(m_rmlContext, &ProcessKeyDownShortcuts, true);
 
 	g_GameManager->Update();
-	g_Gui->Update();
-
-	g_Input->Reset();
+	m_rmlContext->Update();
 }
 
 void Game::Render()
 {
-	SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 0);
-	SDL_RenderClear(m_renderer);
+	BeginFrame();
+	m_rmlContext->Render();
+	PresentFrame();
+}
 
-	//g_GameManager->Render();
-	g_Gui->Render();
+void Game::BeginFrame()
+{
+	m_renderInterface->Clear();
+	m_renderInterface->BeginFrame();
+}
 
-	SDL_RenderPresent(m_renderer);
+void Game::PresentFrame()
+{
+	m_renderInterface->EndFrame();
+	SDL_GL_SwapWindow(m_window);
+
+	// Optional, used to mark frames during performance profiling.
+	RMLUI_FrameMark;
 }
 
 //-----------------------------------------------------------------------------
-void Game::OnEvent(const SDL_Event& event)
+bool Game::ProcessKeyDownShortcuts(Rml::Context* context, Rml::Input::KeyIdentifier key, int key_modifier, float native_dp_ratio, bool priority)
 {
-	auto type = event.type;
-	switch (type)
+	if (!context)
+		return true;
+
+	// Result should return true to allow the event to propagate to the next handler.
+	bool result = false;
+
+	// This function is intended to be called twice by the backend, before and after submitting the key event to the context. This way we can
+	// intercept shortcuts that should take priority over the context, and then handle any shortcuts of lower priority if the context did not
+	// intercept it.
+	if (priority)
 	{
-	case SDL_EVENT_QUIT:
-		m_isRunning = false;
-		break;
-	case SDL_EVENT_KEY_DOWN:
-		g_Input->OnKey(event.key);
-		break;
-	case SDL_EVENT_KEY_UP:
-		g_Input->OnKey(event.key);
-		break;
-	case SDL_EVENT_MOUSE_MOTION:
-		g_Input->OnMouseMotion(event.motion);
-		break;
-	case SDL_EVENT_MOUSE_BUTTON_DOWN:
-		g_Input->OnMouseButton(event.button);
-		break;
-	case SDL_EVENT_MOUSE_BUTTON_UP:
-		g_Input->OnMouseButton(event.button);
-		break;
-	case SDL_EVENT_MOUSE_WHEEL:
-		g_Input->OnMouseWheel(event.wheel);
-		break;
-	case SDL_EVENT_WINDOW_RESIZED:
-		OnWindowResize();
-		break;
+		// Priority shortcuts are handled before submitting the key to the context.
+
+		// Toggle debugger and set dp-ratio using Ctrl +/-/0 keys.
+		if (key == Rml::Input::KI_F8)
+		{
+			Rml::Debugger::SetVisible(!Rml::Debugger::IsVisible());
+		}
+		else if (key == Rml::Input::KI_0 && key_modifier & Rml::Input::KM_CTRL)
+		{
+			context->SetDensityIndependentPixelRatio(native_dp_ratio);
+		}
+		else if (key == Rml::Input::KI_1 && key_modifier & Rml::Input::KM_CTRL)
+		{
+			context->SetDensityIndependentPixelRatio(1.f);
+		}
+		else if ((key == Rml::Input::KI_OEM_MINUS || key == Rml::Input::KI_SUBTRACT) && key_modifier & Rml::Input::KM_CTRL)
+		{
+			const float new_dp_ratio = Rml::Math::Max(context->GetDensityIndependentPixelRatio() / 1.2f, 0.5f);
+			context->SetDensityIndependentPixelRatio(new_dp_ratio);
+		}
+		else if ((key == Rml::Input::KI_OEM_PLUS || key == Rml::Input::KI_ADD) && key_modifier & Rml::Input::KM_CTRL)
+		{
+			const float new_dp_ratio = Rml::Math::Min(context->GetDensityIndependentPixelRatio() * 1.2f, 2.5f);
+			context->SetDensityIndependentPixelRatio(new_dp_ratio);
+		}
+		else
+		{
+			// Propagate the key down event to the context.
+			result = true;
+		}
+	}
+	else
+	{
+		// We arrive here when no priority keys are detected and the key was not consumed by the context. Check for shortcuts of lower priority.
+		if (key == Rml::Input::KI_R && key_modifier & Rml::Input::KM_CTRL)
+		{
+			for (int i = 0; i < context->GetNumDocuments(); i++)
+			{
+				Rml::ElementDocument* document = context->GetDocument(i);
+				const Rml::String& src = document->GetSourceURL();
+				if (src.size() > 4 && src.substr(src.size() - 4) == ".rml")
+				{
+					document->ReloadStyleSheet();
+				}
+			}
+		}
+		else
+		{
+			result = true;
+		}
+	}
+
+	return result;
+}
+
+void Game::ProcessEvents(Rml::Context* context, KeyDownCallback key_down_callback, bool power_save)
+{
+	#define RMLSDL_WINDOW_EVENTS_BEGIN
+	#define RMLSDL_WINDOW_EVENTS_END
+
+	auto GetKey = [](const SDL_Event& event) { return event.key.key; };
+	auto GetDisplayScale = []() { return SDL_GetWindowDisplayScale(g_Game->m_window); };
+	constexpr auto event_quit = SDL_EVENT_QUIT;
+	constexpr auto event_key_down = SDL_EVENT_KEY_DOWN;
+	constexpr auto event_window_size_changed = SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED;
+	bool has_event = false;
+
+	SDL_Event ev;
+	if (power_save)
+		has_event = SDL_WaitEventTimeout(&ev, static_cast<int>(Rml::Math::Min(context->GetNextUpdateDelay(), 10.0) * 1000));
+	else
+		has_event = SDL_PollEvent(&ev);
+
+	while (has_event)
+	{
+		bool propagate_event = true;
+		switch (ev.type)
+		{
+			case event_quit:
+			{
+				propagate_event = false;
+				RequestExit();
+			}
+			break;
+
+			case event_key_down:
+			{
+				propagate_event = false;
+				const Rml::Input::KeyIdentifier key = RmlSDL::ConvertKey(GetKey(ev));
+				const int key_modifier = RmlSDL::GetKeyModifierState();
+				const float native_dp_ratio = GetDisplayScale();
+
+				// See if we have any global shortcuts that take priority over the context.
+				if (key_down_callback && !key_down_callback(context, key, key_modifier, native_dp_ratio, true))
+					break;
+
+				// Otherwise, hand the event over to the context by calling the input handler as normal.
+				if (!RmlSDL::InputEventHandler(context, m_window, ev))
+					break;
+
+				// The key was not consumed by the context either, try keyboard shortcuts of lower priority.
+				if (key_down_callback && !key_down_callback(context, key, key_modifier, native_dp_ratio, false))
+					break;
+			}
+			break;
+
+			RMLSDL_WINDOW_EVENTS_BEGIN
+
+			case event_window_size_changed:
+			{
+				Rml::Vector2i dimensions = { ev.window.data1, ev.window.data2 };
+				m_renderInterface->SetViewport(dimensions.x, dimensions.y);
+			}
+			break;
+
+			RMLSDL_WINDOW_EVENTS_END
+
+			default: 
+				break;
+		}
+
+		if (propagate_event)
+			RmlSDL::InputEventHandler(context, m_window, ev);
+
+		has_event = SDL_PollEvent(&ev);
 	}
 }
 
@@ -140,11 +371,7 @@ void Game::GetWindowSize(int* w, int* h)
 {
 	SDL_GetWindowSize(m_window, w, h);
 }
-<<<<<<< Updated upstream
-=======
 
 void Game::OnWindowResize()
 {
-	g_Gui->OnWindowResize();
 }
->>>>>>> Stashed changes
