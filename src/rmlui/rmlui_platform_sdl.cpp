@@ -1,4 +1,4 @@
-#include "rmlUi_platform_sdl.hpp"
+#include "rmlui_platform_sdl.hpp"
 #include <RmlUi/Core/Context.h>
 #include <RmlUi/Core/Input.h>
 #include <RmlUi/Core/StringUtilities.h>
