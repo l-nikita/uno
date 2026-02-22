@@ -1,4 +1,4 @@
-#include "RmlUi_Renderer_GL3.hpp"
+#include "rmlui_renderer_gl3.hpp"
 #include <RmlUi/Core/Core.h>
 #include <RmlUi/Core/DecorationTypes.h>
 #include <RmlUi/Core/FileInterface.h>
@@ -29,7 +29,7 @@
 #else
 	#define RMLUI_SHADER_HEADER_VERSION "#version 330\n"
 	#define GLAD_GL_IMPLEMENTATION
-	#include "RmlUi_Include_GL3.hpp"
+	#include "rmlui_include_gl3.hpp"
 #endif
 
 // Determines the anti-aliasing quality when creating layers. Enables better-looking visuals, especially when transforms are applied.
