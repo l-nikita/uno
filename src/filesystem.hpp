@@ -12,6 +12,6 @@ namespace fs
 
 	static std::filesystem::path GetAssetsPath()
 	{
-		return (GetRootPath() / "assets\\");
+		return (GetRootPath() / "assets");
 	}
 }
