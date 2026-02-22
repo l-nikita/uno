@@ -244,7 +244,9 @@ bool Game::ProcessKeyDownShortcuts(Rml::Context* context, Rml::Input::KeyIdentif
 		// Toggle debugger and set dp-ratio using Ctrl +/-/0 keys.
 		if (key == Rml::Input::KI_F8)
 		{
+#ifdef _DEBUG
 			Rml::Debugger::SetVisible(!Rml::Debugger::IsVisible());
+#endif
 		}
 		else if (key == Rml::Input::KI_0 && key_modifier & Rml::Input::KM_CTRL)
 		{
