@@ -28,8 +28,8 @@ void Game::Init()
 	g_GameManager = new GameManager();
 	m_isRunning = true;
 
-	Rml::LoadFontFace("ui\\fonts\\Arial.ttf");
-	Rml::LoadFontFace("ui\\fonts\\NotoEmoji-Regular.ttf", true);
+	Rml::LoadFontFace("ui/fonts/Arial.ttf");
+	Rml::LoadFontFace("ui/fonts/NotoEmoji-Regular.ttf", true);
 
 	if (Rml::DataModelConstructor constructor = m_rmlContext->CreateDataModel("animals"))
 	{
@@ -37,7 +37,7 @@ void Game::Init()
 		constructor.Bind("animal", &my_data.animal);
 	}
 
-	if (Rml::ElementDocument* document = m_rmlContext->LoadDocument("ui\\hello_world.rml"))
+	if (Rml::ElementDocument* document = m_rmlContext->LoadDocument("ui/hello_world.rml"))
 	{
 		document->Show();
 
@@ -148,7 +148,8 @@ bool Game::InitRmlUi()
 	Rml::Debugger::Initialise(m_rmlContext);
 #endif
 
-	m_fileInterface = new FileInterface(fs::GetAssetsPath().string());
+	std::cout << fs::GetAssetsPath().string() << std::endl;
+	m_fileInterface = new FileInterface(fs::GetAssetsPath().string() + "/");
 	Rml::SetFileInterface(m_fileInterface);
 
 	return true;
