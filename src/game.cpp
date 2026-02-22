@@ -4,14 +4,30 @@
 #include "gui/panel.hpp"
 #include "gui/button.hpp"
 #include "gui/mainmenu.hpp"
+#include <RmlUi/Core.h>
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
 void Game::Init()
 {
-	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
-	SDL_CreateWindowAndRenderer("Uno", 1920, 1080, NULL, &m_window, &m_renderer);
+	if (!SDL_Init(SDL_INIT_VIDEO))
+	{
+		SDL_Log("Couldn't initialize SDL: %s\n", SDL_GetError());
+		throw std::runtime_error("Couldn't initialize SDL");
+	}
+
+	if (!SDL_CreateWindowAndRenderer("Uno", 1280, 720, 0, &m_window, &m_renderer)) 
+	{
+		SDL_Log("Couldn't create window and renderer: %s\n", SDL_GetError());
+		throw std::runtime_error("Couldn't create window and renderer");
+	}
+
+	const char* videoName = SDL_GetCurrentVideoDriver();
+	SDL_Log("Video driver: %s\n", videoName);	
+	
+	const char* rendererName = SDL_GetRendererName(m_renderer);
+	SDL_Log("Renderer name: %s\n", rendererName);
 
 	m_textEngine = new TextEngine(m_renderer);
 	g_Input = new Input();

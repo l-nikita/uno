@@ -57,3 +57,7 @@ x64/
 .vscode/
 .cmake/
 bin/
+
+.ninja_deps
+.ninja_log
+build.ninja
