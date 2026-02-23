@@ -36,7 +36,7 @@ public:
 
 private:
 	bool InitSDL(std::string windowName, uint32_t width, uint32_t height, bool allowResize);
-	bool InitRmlUi();
+	bool InitRml();
 
 	void Update();
 

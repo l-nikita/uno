@@ -1,6 +1,6 @@
 ﻿#include <iostream>
 #include <RmlUi/Core.h>
-#ifdef _DEBUG
+#ifdef DEBUG
 	#include <RmlUi/Debugger.h>
 #endif
 
@@ -9,20 +9,29 @@
 #include "filesystem.hpp"
 #include "rmlui/rmlui_renderer_gl3.hpp"
 
-struct ApplicationData {
-	bool show_text = true;
-	Rml::String animal = "dog";
-} my_data;
+// struct ApplicationData {
+// 	bool show_text = true;
+// 	Rml::String animal = "dog";
+// } my_data;
+
+class MyListener : public Rml::EventListener {
+public:
+	void ProcessEvent(Rml::Event& event) {
+		SDL_Log("Processing event %s", event.GetType().c_str());
+	}
+};
+
+static auto my_listener = std::make_unique<MyListener>();
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
 void Game::Init()
 {
-	if (!InitSDL("Uno", 1920, 1080, true))
+	if (!InitSDL("Uno", 1280, 720, true))
 		throw std::runtime_error("Couldn't initialize SDL!");
 
-	if (!InitRmlUi())
+	if (!InitRml())
 		throw std::runtime_error("Couldn't initialize RmlUi!");
 	
 	g_GameManager = new GameManager();
@@ -31,22 +40,27 @@ void Game::Init()
 	Rml::LoadFontFace("ui/fonts/Arial.ttf");
 	Rml::LoadFontFace("ui/fonts/NotoEmoji-Regular.ttf", true);
 
-	if (Rml::DataModelConstructor constructor = m_rmlContext->CreateDataModel("animals"))
+	// if (Rml::DataModelConstructor constructor = m_rmlContext->CreateDataModel("animals"))
+	// {
+	// 	constructor.Bind("show_text", &my_data.show_text);
+	// 	constructor.Bind("animal", &my_data.animal);
+	// }
+
+	Rml::ElementDocument* document = m_rmlContext->LoadDocument("ui/main_menu.rml");
+	document->Show();
+
+	Rml::ElementList elements;
+	document->GetElementsByTagName(elements, "button");
+	for (auto element : elements)
 	{
-		constructor.Bind("show_text", &my_data.show_text);
-		constructor.Bind("animal", &my_data.animal);
+		element->AddEventListener(Rml::EventId::Click, my_listener.get(), false);
 	}
 
-	if (Rml::ElementDocument* document = m_rmlContext->LoadDocument("ui/hello_world.rml"))
-	{
-		document->Show();
-
-		if(Rml::Element* element = document->GetElementById("world"))
-		{
-			element->SetInnerRML(reinterpret_cast<const char*>(u8"🌍"));
-			element->SetProperty("font-size", "1.5em");
-		}
-	}
+	// if(Rml::Element* element = document->GetElementById("world"))
+	// {
+	// 	element->SetInnerRML(reinterpret_cast<const char*>(u8"🌍"));
+	// 	element->SetProperty("font-size", "1.5em");
+	// }
 }
 
 bool Game::InitSDL(std::string windowName, uint32_t width, uint32_t height, bool allowResize)
@@ -127,7 +141,7 @@ bool Game::InitSDL(std::string windowName, uint32_t width, uint32_t height, bool
 	return true;
 }
 
-bool Game::InitRmlUi()
+bool Game::InitRml()
 {
 	Rml::SetSystemInterface(GetSystemInterface());
 	Rml::SetRenderInterface(GetRenderInterface());
@@ -144,7 +158,7 @@ bool Game::InitRmlUi()
 		return false;
 	}
 
-#ifdef _DEBUG
+#ifdef DEBUG
 	Rml::Debugger::Initialise(m_rmlContext);
 #endif
 
@@ -228,8 +242,7 @@ void Game::PresentFrame()
 //-----------------------------------------------------------------------------
 bool Game::ProcessKeyDownShortcuts(Rml::Context* context, Rml::Input::KeyIdentifier key, int key_modifier, float native_dp_ratio, bool priority)
 {
-	if (!context)
-		return true;
+	SDL_assert(context);
 
 	// Result should return true to allow the event to propagate to the next handler.
 	bool result = false;
@@ -244,7 +257,7 @@ bool Game::ProcessKeyDownShortcuts(Rml::Context* context, Rml::Input::KeyIdentif
 		// Toggle debugger and set dp-ratio using Ctrl +/-/0 keys.
 		if (key == Rml::Input::KI_F8)
 		{
-#ifdef _DEBUG
+#ifdef DEBUG
 			Rml::Debugger::SetVisible(!Rml::Debugger::IsVisible());
 #endif
 		}
@@ -265,11 +278,6 @@ bool Game::ProcessKeyDownShortcuts(Rml::Context* context, Rml::Input::KeyIdentif
 		{
 			const float new_dp_ratio = Rml::Math::Min(context->GetDensityIndependentPixelRatio() * 1.2f, 2.5f);
 			context->SetDensityIndependentPixelRatio(new_dp_ratio);
-		}
-		else
-		{
-			// Propagate the key down event to the context.
-			result = true;
 		}
 	}
 	else

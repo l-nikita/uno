@@ -66,6 +66,10 @@ target_link_libraries(uno PRIVATE
     RmlUi::RmlUi
 )
 
+target_compile_definitions(uno PRIVATE 
+    $<$<CONFIG:Debug>:DEBUG>
+)
+
 # ----------------------------------------------
 set_target_properties(uno PROPERTIES
     VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"

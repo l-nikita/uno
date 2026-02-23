@@ -1,8 +1,8 @@
 <rml>
 <head>
     <title>Hello world</title>
-    <link type="text/rcss" href="rml.rcss"/>
-    <link type="text/rcss" href="window.rcss"/>
+    <link type="text/rcss" href="styles/rml.rcss"/>
+    <link type="text/rcss" href="styles/hello_world.rcss"/>
 </head>
 <body>
 	<div class="test" data-model="animals">
