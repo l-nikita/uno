@@ -148,7 +148,6 @@ bool Game::InitRmlUi()
 	Rml::Debugger::Initialise(m_rmlContext);
 #endif
 
-	std::cout << fs::GetAssetsPath().string() << std::endl;
 	m_fileInterface = new FileInterface(fs::GetAssetsPath().string() + "/");
 	Rml::SetFileInterface(m_fileInterface);
 
