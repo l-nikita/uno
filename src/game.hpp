@@ -11,7 +11,7 @@ using KeyDownCallback = bool (*)(Rml::Context* context, Rml::Input::KeyIdentifie
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-class Panel;
+class MainMenu;
 
 class Game final
 {
@@ -63,6 +63,8 @@ private:
 	FileInterface* m_fileInterface = nullptr;
 
 	Rml::Context* m_rmlContext = nullptr;
+
+	MainMenu* m_mainMenu = nullptr;
 };
 
 extern Game* g_Game;

@@ -1,5 +1,6 @@
 ﻿#include <iostream>
 #include <RmlUi/Core.h>
+#include <Rmlui/Core/Colour.h>
 #ifdef DEBUG
 	#include <RmlUi/Debugger.h>
 #endif
@@ -8,20 +9,7 @@
 #include "input.hpp"
 #include "filesystem.hpp"
 #include "rmlui/rmlui_renderer_gl3.hpp"
-
-// struct ApplicationData {
-// 	bool show_text = true;
-// 	Rml::String animal = "dog";
-// } my_data;
-
-class MyListener : public Rml::EventListener {
-public:
-	void ProcessEvent(Rml::Event& event) {
-		SDL_Log("Processing event %s", event.GetType().c_str());
-	}
-};
-
-static auto my_listener = std::make_unique<MyListener>();
+#include "rmlui/main_menu.hpp"
 
 //-----------------------------------------------------------------------------
 //
@@ -40,27 +28,7 @@ void Game::Init()
 	Rml::LoadFontFace("ui/fonts/Arial.ttf");
 	Rml::LoadFontFace("ui/fonts/NotoEmoji-Regular.ttf", true);
 
-	// if (Rml::DataModelConstructor constructor = m_rmlContext->CreateDataModel("animals"))
-	// {
-	// 	constructor.Bind("show_text", &my_data.show_text);
-	// 	constructor.Bind("animal", &my_data.animal);
-	// }
-
-	Rml::ElementDocument* document = m_rmlContext->LoadDocument("ui/main_menu.rml");
-	document->Show();
-
-	Rml::ElementList elements;
-	document->GetElementsByTagName(elements, "button");
-	for (auto element : elements)
-	{
-		element->AddEventListener(Rml::EventId::Click, my_listener.get(), false);
-	}
-
-	// if(Rml::Element* element = document->GetElementById("world"))
-	// {
-	// 	element->SetInnerRML(reinterpret_cast<const char*>(u8"🌍"));
-	// 	element->SetProperty("font-size", "1.5em");
-	// }
+	m_mainMenu = new MainMenu(m_rmlContext);
 }
 
 bool Game::InitSDL(std::string windowName, uint32_t width, uint32_t height, bool allowResize)
@@ -255,11 +223,15 @@ bool Game::ProcessKeyDownShortcuts(Rml::Context* context, Rml::Input::KeyIdentif
 		// Priority shortcuts are handled before submitting the key to the context.
 
 		// Toggle debugger and set dp-ratio using Ctrl +/-/0 keys.
-		if (key == Rml::Input::KI_F8)
+		if (key == Rml::Input::KI_OEM_3)
 		{
 #ifdef DEBUG
 			Rml::Debugger::SetVisible(!Rml::Debugger::IsVisible());
 #endif
+		}
+		else if (key == Rml::Input::KI_ESCAPE)
+		{
+			g_Game->RequestExit();
 		}
 		else if (key == Rml::Input::KI_0 && key_modifier & Rml::Input::KM_CTRL)
 		{

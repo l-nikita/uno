@@ -7,9 +7,32 @@
 <body>
     <h1>Uno</h1>
     <div id="container_buttons">
-        <button onclick="game.Start()">Start Game</button>
-        <button onclick="game.Options()">Options</button>
-        <button onclick="game.Quit()" id="test">Quit</button>
+        <button id="start">
+            <span>Start Game</span>
+        </button>
+
+        <button id="options">
+            <span>Options</span>
+        </button>
+
+        <button id="quit">
+            <span>Quit</span>
+        </button>
+    </div>
+
+    <div id="quit_dlg">
+        <div id="quit_dlg_window">
+            <h2>Are you sure you want to leave?</h2>
+            <div id="quit_dlg_container_buttons">
+                <button id="yes">
+                    <span>Yes</span>
+                </button>
+
+                <button id="no">
+                    <span>No</span>
+                </button>
+            </div>
+        </div>
     </div>
 </body>
 </rml>

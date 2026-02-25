@@ -1,30 +1,43 @@
 body {
-    font-size: 30px;
-    font-family: Arial;
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
     height: 100%;
+    font-size: 3.5vh;
+    font-family: Arial;
     background-color: #282c34;
 }
 
 h1 {
+    margin: 40px;
     font-size: 3em;
     color: #ffffff;
     text-align: center;
-    margin: 40px;
 }
 
 button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 5vh;
+    padding: 15px 32px;
+    cursor: pointer;
     background-color: #4CAF50;
     color: #ffffff;
-    padding: 15px 32px;
     text-align: center;
     text-decoration: none;
-    margin: 4px 2px;
-    cursor: pointer;
-    width: 100%;
+    transition: all 1.0s elastic-out 0.0;
+    border-radius: 1vh;
+}
+
+button:hover {
+    transform: scale(1.1);
+}
+
+button span {
+    pointer-events: none;
 }
 
 #container_buttons {
@@ -34,4 +47,54 @@ button {
     justify-content: center;
     height: 100%;
     width: 20%;
+    gap: 15px;
+}
+
+#quit_dlg {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(5px);
+}
+
+#quit_dlg_window {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2vh;
+    padding: 15px;
+    background-color: #1c1f24;
+    border-radius: 1.5vh;
+    border: 0.25vh #444b56;
+    width: 40%;
+    height: 30%;
+}
+
+#quit_dlg button {
+    width: 25%;
+    height: 20%;
+}
+
+#yes {
+    background-color: #444b56;
+}
+
+#quit_dlg h2 {
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+#quit_dlg_container_buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 15vh;
+    gap: 2vw;
 }
