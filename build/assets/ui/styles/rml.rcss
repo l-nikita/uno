@@ -1,62 +1,99 @@
 /*
-* Default styles for all the basic elements.
+* Default styles for basic RML elements.
 */
 
-div
-{
-	display: block;
+body {
+    font-family: Arial;
+    color: white;
+    margin: 0; 
+	padding: 0;
 }
 
-p
-{
-	display: block;
+div { 
+	display: block; 
 }
 
-h1
-{
-	display: block;
-	font-weight: bold;
+p { 
+	display: block; 
+	margin: 0 0 0.5em 0; 
 }
 
-em
-{
-	font-style: italic;
+h1 { 
+	display: block; 
+	font-weight: bold; 
+	margin: 0 0 0.5em 0; 
 }
 
-strong
-{
-	font-weight: bold;
+em { 
+	font-style: italic; 
 }
 
-select
-{
-	text-align: left;
+strong { 
+	font-weight: bold; 
 }
 
-tabset tabs
-{
-	display: block;
+select { 
+	text-align: left; 
 }
 
-table {
-	box-sizing: border-box;
+tabset tabs { 
+	display: block; 
+}
+
+table { 
+	box-sizing: border-box; 
 	display: table;
 }
-tr {
-	box-sizing: border-box;
-	display: table-row;
+
+tr { 
+	box-sizing: border-box; 
+	display: table-row; 
 }
-td {
-	box-sizing: border-box;
-	display: table-cell;
+
+td, th { 
+	box-sizing: border-box; 
+	display: table-cell; 
 }
-col {
-	box-sizing: border-box;
-	display: table-column;
+
+col { 
+	box-sizing: border-box; 
+	display: table-column; 
 }
-colgroup {
-	display: table-column-group;
+
+colgroup { 
+	display: table-column-group; 
 }
-thead, tbody, tfoot {
-	display: table-row-group;
+
+thead, tbody, tfoot { 
+	display: table-row-group; 
+}
+
+img, svg { 
+	max-width: 100%; 
+	height: auto; 
+	display: inline-block; 
+}
+
+button { 
+	cursor: pointer; 
+}
+
+.hidden { 
+	display: none; 
+}
+
+.u-center { 
+	display: flex; 
+	align-items: center; 
+	justify-content: center; 
+}
+
+.container { 
+	box-sizing: border-box; 
+	width: 100%; 
+}
+
+a { 
+	text-decoration: underline; 
+	cursor: pointer; 
 }

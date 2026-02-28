@@ -1,21 +1,21 @@
 <rml>
 <head>
     <title>Uno - Main Menu</title>
-    <link type="text/rcss" href="styles/rml.rcss"/>
-    <link type="text/rcss" href="styles/main_menu.rcss"/>
+    <link type="text/rcss" href="../styles/rml.rcss"/>
+    <link type="text/rcss" href="../styles/pages/main-menu.rcss"/>
 </head>
 <body>
     <h1>Uno</h1>
-    <div id="container_buttons">
-        <button id="start">
+    <div id="container_buttons" class="container u-center">
+        <button id="start" class="u-center">
             <span>Start Game</span>
         </button>
 
-        <button id="options">
+        <button id="options" class="u-center">
             <span>Options</span>
         </button>
 
-        <button id="quit">
+        <button id="quit" class="u-center">
             <span>Quit</span>
         </button>
     </div>
@@ -24,11 +24,11 @@
         <div id="quit_dlg_window">
             <h2>Are you sure you want to leave?</h2>
             <div id="quit_dlg_container_buttons">
-                <button id="yes">
+                <button id="yes" class="u-center">
                     <span>Yes</span>
                 </button>
 
-                <button id="no">
+                <button id="no" class="u-center">
                     <span>No</span>
                 </button>
             </div>

@@ -7,7 +7,7 @@
 MainMenu::MainMenu(Rml::Context* context)
 	: m_context(context)
 {
-	m_document = m_context->LoadDocument("ui/main_menu.rml");
+	m_document = m_context->LoadDocument("ui/rml/main_menu.rml");
 	m_document->Show();
 
 	Rml::ElementList elements;
