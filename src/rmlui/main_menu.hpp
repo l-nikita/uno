@@ -1,6 +1,6 @@
 #pragma once
 
-#include <RmlUi/Core/EventListener.h>
+#include <RmlUi/Core.h>
 
 class MainMenu final : public Rml::EventListener
 {
@@ -9,6 +9,10 @@ public:
 
 	void Close();
 	void ProcessEvent(Rml::Event& event) override;
+
+private:
+	void OpenMenu();
+	void OpenSettings();
 
 private:
 	Rml::Context* m_context = nullptr;

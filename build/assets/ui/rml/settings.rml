@@ -1,0 +1,30 @@
+<rml>
+<head>
+    <title>Settings</title>
+    <link type="text/rcss" href="../styles/rml.rcss"/>
+    <link type="text/rcss" href="../styles/pages/main-menu.rcss"/>
+    <link type="text/rcss" href="../styles/pages/settings.rcss"/>
+</head>
+<body>
+    <div class="title-container u-center">
+        <p>Settings</p>
+    </div>
+
+    <div id="settings" data-model="game_settings">
+        <div style="padding: 2vw;">
+            <label>
+                <span>Full Screen</span>
+                <input type="checkbox" data-value="is_fullscreen"/>
+            </label>
+        </div>
+    </div>
+
+    <div id="back_container">
+        <div style="width: 10vw;">
+            <button id="back_to_menu" class="u-center">
+                <span>Back</span>
+            </button>
+        </div>
+    </div>
+</body>
+</rml>

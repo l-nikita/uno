@@ -1,18 +1,20 @@
 <rml>
 <head>
-    <title>Uno - Main Menu</title>
+    <title>Main Menu</title>
     <link type="text/rcss" href="../styles/rml.rcss"/>
     <link type="text/rcss" href="../styles/pages/main-menu.rcss"/>
 </head>
 <body>
-    <h1>Uno</h1>
+    <div class="title-container u-center">
+        <p>Uno</p>
+    </div>
     <div id="container_buttons" class="container u-center">
         <button id="start" class="u-center">
             <span>Start Game</span>
         </button>
 
-        <button id="options" class="u-center">
-            <span>Options</span>
+        <button id="settings" class="u-center">
+            <span>Settings</span>
         </button>
 
         <button id="quit" class="u-center">

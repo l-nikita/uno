@@ -1,6 +1,4 @@
 ﻿#include <iostream>
-#include <RmlUi/Core.h>
-#include <Rmlui/Core/Colour.h>
 #ifdef DEBUG
 	#include <RmlUi/Debugger.h>
 #endif
@@ -16,7 +14,7 @@
 //-----------------------------------------------------------------------------
 void Game::Init()
 {
-	if (!InitSDL("Uno", 1280, 720, true))
+	if (!InitSDL("Uno", 1920, 1080, true))
 		throw std::runtime_error("Couldn't initialize SDL!");
 
 	if (!InitRml())
@@ -347,6 +345,11 @@ void Game::ProcessEvents(Rml::Context* context, KeyDownCallback key_down_callbac
 
 		has_event = SDL_PollEvent(&ev);
 	}
+}
+
+void Game::SetFullscreen(bool fullscreen)
+{
+	SDL_SetWindowFullscreen(m_window, fullscreen);
 }
 
 void Game::GetWindowSize(int* w, int* h)
