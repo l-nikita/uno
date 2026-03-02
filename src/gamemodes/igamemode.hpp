@@ -5,6 +5,12 @@
 
 namespace gm
 {
+	enum class GameModeID
+	{
+		UNKNOWN,
+		CLASSIC,
+	};
+
 	//-----------------------------------------------------------------------------
 	//
 	//-----------------------------------------------------------------------------
@@ -20,5 +26,7 @@ namespace gm
 		virtual void Update() = 0;
 
 		virtual size_t GetDeckCardsNum() = 0;
+
+		virtual GameModeID GetID() const = 0;
 	};
 }

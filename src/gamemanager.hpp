@@ -16,6 +16,8 @@ public:
 	GameManager();
 	~GameManager();
 
+	void Start(gm::GameModeID gmId);
+
 	void Update();
 	void Render();
 

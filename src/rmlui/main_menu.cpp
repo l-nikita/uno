@@ -1,6 +1,7 @@
 #include <SDL3/SDL.h>
 #include "main_menu.hpp"
 #include "../game.hpp"
+#include "../gamemodes/classic.hpp"
 
 MainMenu::MainMenu(Rml::Context* context)
 	: m_context(context)
@@ -72,9 +73,7 @@ void MainMenu::ProcessEvent(Rml::Event& event)
 	auto& id = event.GetTargetElement()->GetId();
 
 	if (id == "start")
-	{
-
-	}
+		g_GameManager->Start(gm::GameModeID::CLASSIC);
 	else if (id == "settings")
 		OpenSettings();
 	else if (id == "back_to_menu")

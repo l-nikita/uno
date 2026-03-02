@@ -11,17 +11,19 @@ namespace gm
 	class Classic : public IGameMode
 	{
 	public:
-		void Init();
-		void Start();
-		void Stop();
+		void Init() override;
+		void Start() override;
+		void Stop() override;
 
-		void Update();
+		void Update() override;
 
 		void GenerateDeckCards();
 		void DealCards();
 
 		size_t GetPlayersCardsNum() { return 7; }
-		size_t GetDeckCardsNum() { return m_deck.size(); }
+		size_t GetDeckCardsNum() override { return m_deck.size(); }
+
+		GameModeID GetID() const override { return GameModeID::CLASSIC; }
 
 	private:
 		std::vector<Card*> m_deck;

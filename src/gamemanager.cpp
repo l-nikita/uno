@@ -11,12 +11,6 @@ GameManager* g_GameManager = nullptr;
 GameManager::GameManager()
 {
 	g_GameManager = this;
-
-	m_players.push_back(new Player("Nikita"));
-	m_players.push_back(new Player("Genrih"));
-
-	m_gameMode = new gm::Classic();
-	m_gameMode->Start();
 }
 
 GameManager::~GameManager()
@@ -28,6 +22,26 @@ GameManager::~GameManager()
 }
 
 //-----------------------------------------------------------------------------
+void GameManager::Start(gm::GameModeID gmId)
+{
+	if (m_gameMode)
+	{
+		Rml::Log::Message(Rml::Log::LT_WARNING, "The game has already started");
+		return;
+	}
+
+	m_players.push_back(new Player("Nikita"));
+	m_players.push_back(new Player("Genrih"));
+
+	if (gmId == gm::GameModeID::CLASSIC)
+		m_gameMode = new gm::Classic();
+	else
+		Rml::Log::Message(Rml::Log::LT_ERROR, "Unknown game mode");
+
+	if (m_gameMode)
+		m_gameMode->Start();
+}
+
 void GameManager::Update()
 {
 }
