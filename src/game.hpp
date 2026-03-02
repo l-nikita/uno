@@ -16,7 +16,7 @@ class MainMenu;
 
 struct GameSettings
 {
-	bool IsFullScreen;
+	bool IsFullScreen = false;
 
 	void Update(Rml::DataModelHandle model, Rml::Event& event, const Rml::VariantList& args)
 	{

@@ -8,7 +8,7 @@ MainMenu::MainMenu(Rml::Context* context)
 	if (Rml::DataModelConstructor constructor = m_context->CreateDataModel("game_settings"))
 	{
 		constructor.BindFunc("is_fullscreen", [](Rml::Variant& variant) { 
-			variant = &g_Game->m_GameSettings.IsFullScreen; 
+			variant = g_Game->m_GameSettings.IsFullScreen;
 		}, 
 		[](const Rml::Variant& variant) {
 			g_Game->m_GameSettings.IsFullScreen = variant.Get<bool>();
@@ -22,34 +22,48 @@ MainMenu::MainMenu(Rml::Context* context)
 void MainMenu::OpenMenu()
 {
 	Close();
+	if (m_settings)
+	{
+		m_mainMenu->Show();
+		return;
+	}
 
-	m_document = m_context->LoadDocument("ui/rml/main_menu.rml");
-	m_document->Show();
+	m_currentPage = MainMenuPage::MAIN_MENU;
+
+	m_mainMenu = m_context->LoadDocument("ui/rml/main_menu.rml");
+	m_mainMenu->Show();
 
 	Rml::ElementList elements;
-	m_document->GetElementsByTagName(elements, "button");
+	m_mainMenu->GetElementsByTagName(elements, "button");
 
 	for (auto element : elements)
 		element->AddEventListener(Rml::EventId::Click, this);
 
-	m_quitDlg = m_document->GetElementById("quit_dlg");
+	m_quitDlg = m_mainMenu->GetElementById("quit_dlg");
 	m_quitDlg->SetProperty("display", "none");
 
 	Rml::ElementList elements2;
 	m_quitDlg->GetElementsByTagName(elements2, "button");
 
-	for (auto element : elements)
+	for (auto element : elements2)
 		element->AddEventListener(Rml::EventId::Click, this);
 }
 
 void MainMenu::OpenSettings()
 {
 	Close();
+	if (m_settings)
+	{
+		m_settings->Show();
+		return;
+	}
 
-	m_document = m_context->LoadDocument("ui/rml/settings.rml");
-	m_document->Show();
+	m_currentPage = MainMenuPage::SETTINGS;
 
-	Rml::Element* back = m_document->GetElementById("back_to_menu");
+	m_settings = m_context->LoadDocument("ui/rml/settings.rml");
+	m_settings->Show();
+
+	Rml::Element* back = m_settings->GetElementById("back_to_menu");
 	back->AddEventListener(Rml::EventId::Click, this);
 }
 
@@ -75,6 +89,14 @@ void MainMenu::ProcessEvent(Rml::Event& event)
 
 void MainMenu::Close()
 {
-	if (m_document)
-		m_document->Close();
+	if (m_currentPage == MainMenuPage::MAIN_MENU)
+	{
+		if (m_settings)
+			m_settings->Hide();
+	}
+	else if (m_currentPage == MainMenuPage::SETTINGS)
+	{
+		if (m_mainMenu)
+			m_mainMenu->Hide();
+	}
 }
