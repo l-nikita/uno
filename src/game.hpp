@@ -39,8 +39,8 @@ public:
 	// Delta time (ms)
 	float DeltaTime() { return m_deltaTime.count(); }
 
-	// Elapsed time since engine loop ran (ms)
-	float ElapsedTime() { return m_elapsedTime.count(); }
+	// Elapsed time since sdl init (ms)
+	uint64_t ElapsedTime() { return SDL_GetTicks(); }
 
 	void SetScene(SceneID id);
 

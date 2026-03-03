@@ -200,7 +200,7 @@ void Game::CreateNewScene(SceneID id)
 //-----------------------------------------------------------------------------
 void Game::Update()
 {
-	ProcessEvents(m_rmlContext, &ProcessKeyDownShortcuts, true);
+	ProcessEvents(m_rmlContext, &ProcessKeyDownShortcuts, false);
 
 	g_GameManager->Update();
 	m_rmlContext->Update();
