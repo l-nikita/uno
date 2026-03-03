@@ -4,7 +4,7 @@
 #include "../gamemodes/classic.hpp"
 
 MainMenu::MainMenu(Rml::Context* context)
-	: m_context(context)
+	: Scene(context)
 {
 	if (Rml::DataModelConstructor constructor = m_context->CreateDataModel("game_settings"))
 	{
@@ -20,9 +20,18 @@ MainMenu::MainMenu(Rml::Context* context)
 	OpenMenu();
 }
 
+void MainMenu::Destroy()
+{
+	if (m_settings)
+		m_settings->Close(), m_settings = nullptr;	
+		
+	if (m_mainMenu)
+		m_mainMenu->Close(), m_mainMenu = nullptr;
+}
+
 void MainMenu::OpenMenu()
 {
-	Close();
+	Hide();
 	if (m_settings)
 	{
 		m_mainMenu->Show();
@@ -52,7 +61,7 @@ void MainMenu::OpenMenu()
 
 void MainMenu::OpenSettings()
 {
-	Close();
+	Hide();
 	if (m_settings)
 	{
 		m_settings->Show();
@@ -86,7 +95,7 @@ void MainMenu::ProcessEvent(Rml::Event& event)
 		m_quitDlg->SetProperty("display", "none");
 }
 
-void MainMenu::Close()
+void MainMenu::Hide()
 {
 	if (m_currentPage == MainMenuPage::MAIN_MENU)
 	{

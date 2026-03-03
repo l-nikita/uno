@@ -8,6 +8,7 @@
 #include "filesystem.hpp"
 #include "rmlui/rmlui_renderer_gl3.hpp"
 #include "rmlui/main_menu.hpp"
+#include "rmlui/game_screen.hpp"
 
 //-----------------------------------------------------------------------------
 //
@@ -20,13 +21,8 @@ void Game::Init()
 	if (!InitRml())
 		throw std::runtime_error("Couldn't initialize RmlUi!");
 	
-	g_GameManager = new GameManager();
 	m_isRunning = true;
-
-	Rml::LoadFontFace("ui/fonts/Arial.ttf");
-	Rml::LoadFontFace("ui/fonts/NotoEmoji-Regular.ttf", true);
-
-	m_mainMenu = new MainMenu(m_rmlContext);
+	g_GameManager = new GameManager();
 }
 
 bool Game::InitSDL(std::string windowName, uint32_t width, uint32_t height, bool allowResize)
@@ -131,6 +127,9 @@ bool Game::InitRml()
 	m_fileInterface = new FileInterface(fs::GetAssetsPath().string() + "/");
 	Rml::SetFileInterface(m_fileInterface);
 
+	Rml::LoadFontFace("ui/fonts/Arial.ttf");
+	Rml::LoadFontFace("ui/fonts/NotoEmoji-Regular.ttf", true);
+
 	return true;
 }
 
@@ -174,6 +173,30 @@ void Game::RequestExit()
 	m_isRunning = false;
 }
 
+void Game::SetScene(SceneID id)
+{
+	m_sceneID = id;
+}
+
+void Game::CreateNewScene(SceneID id)
+{
+	if (m_scene) 
+		return;
+
+	switch (id)
+	{
+	case SceneID::MAIN_MENU:
+		m_scene = new MainMenu(m_rmlContext);
+		break;
+	case SceneID::GAME_SCREEN:
+		m_scene = new GameScreen(m_rmlContext);
+		break;
+	default:
+		Rml::Log::Message(Rml::Log::LT_ERROR, "Unknown scene");
+		break;
+	}
+}
+
 //-----------------------------------------------------------------------------
 void Game::Update()
 {
@@ -181,6 +204,19 @@ void Game::Update()
 
 	g_GameManager->Update();
 	m_rmlContext->Update();
+
+	if (m_scene && m_scene->ShouldDestroy())
+		delete m_scene, m_scene = nullptr;
+	
+	if (m_scene && m_scene->GetID() != m_sceneID)
+	{
+		if (m_scene)
+			m_scene->Destroy();
+
+		CreateNewScene(m_sceneID);
+	}
+	else if (!m_scene && m_sceneID != SceneID::NONE)
+		CreateNewScene(m_sceneID);
 }
 
 void Game::Render()

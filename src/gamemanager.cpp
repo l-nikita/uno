@@ -11,6 +11,7 @@ GameManager* g_GameManager = nullptr;
 GameManager::GameManager()
 {
 	g_GameManager = this;
+	g_Game->SetScene(SceneID::MAIN_MENU);
 }
 
 GameManager::~GameManager()
@@ -40,6 +41,8 @@ void GameManager::Start(gm::GameModeID gmId)
 
 	if (m_gameMode)
 		m_gameMode->Start();
+
+	g_Game->SetScene(SceneID::GAME_SCREEN);
 }
 
 void GameManager::Update()

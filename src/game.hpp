@@ -6,6 +6,7 @@
 #include "gamemanager.hpp"
 #include "rmlui/rmlui_renderer_gl3_sdl.hpp"
 #include "rmlui/rmlui_file_interface.hpp"
+#include "rmlui/scene.hpp"
 
 using KeyDownCallback = bool (*)(Rml::Context* context, Rml::Input::KeyIdentifier key, int key_modifier, float native_dp_ratio, bool priority);
 
@@ -17,11 +18,6 @@ class MainMenu;
 struct GameSettings
 {
 	bool IsFullScreen = false;
-
-	void Update(Rml::DataModelHandle model, Rml::Event& event, const Rml::VariantList& args)
-	{
-		Rml::Log::Message(Rml::Log::LT_ERROR, "Couldn't initialize SDL: %s", SDL_GetError());
-	}
 };
 
 class Game final
@@ -46,6 +42,8 @@ public:
 	// Elapsed time since engine loop ran (ms)
 	float ElapsedTime() { return m_elapsedTime.count(); }
 
+	void SetScene(SceneID id);
+
 public:
 	GameSettings m_GameSettings;
 
@@ -64,6 +62,8 @@ private:
 
 	void OnWindowResize();
 
+	void CreateNewScene(SceneID id);
+
 private:
 	bool m_isRunning = false;
 
@@ -79,7 +79,8 @@ private:
 
 	Rml::Context* m_rmlContext = nullptr;
 
-	MainMenu* m_mainMenu = nullptr;
+	Scene* m_scene = nullptr;
+	SceneID m_sceneID = SceneID::NONE;
 };
 
 extern Game* g_Game;

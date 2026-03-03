@@ -1,14 +1,21 @@
 #pragma once
 
 #include <RmlUi/Core.h>
+#include "scene.hpp"
 
-class MainMenu final : public Rml::EventListener
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+class MainMenu final : public Scene
 {
 public:
 	MainMenu(Rml::Context* context);
 
-	void Close();
+	void Hide();
 	void ProcessEvent(Rml::Event& event) override;
+
+	SceneID GetID() const override { return SceneID::MAIN_MENU; }
+	void Destroy() override;
 
 private:
 	void OpenMenu();
@@ -23,7 +30,6 @@ private:
 private:
 	MainMenuPage m_currentPage = MainMenuPage::MAIN_MENU;
 
-	Rml::Context* m_context = nullptr;
 	Rml::ElementDocument* m_mainMenu = nullptr;
 	Rml::ElementDocument* m_settings = nullptr;
 
