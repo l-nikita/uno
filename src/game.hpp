@@ -43,6 +43,7 @@ public:
 	uint64_t ElapsedTime() { return SDL_GetTicks(); }
 
 	void SetScene(SceneID id);
+	void DestroyScene(Scene* scene);
 
 public:
 	GameSettings m_GameSettings;
@@ -62,7 +63,7 @@ private:
 
 	void OnWindowResize();
 
-	void CreateNewScene(SceneID id);
+	Scene* CreateNewScene(SceneID id);
 
 private:
 	bool m_isRunning = false;
@@ -81,6 +82,8 @@ private:
 
 	Scene* m_scene = nullptr;
 	SceneID m_sceneID = SceneID::NONE;
+
+	std::vector<Scene*> m_dirtyScenes;
 };
 
 extern Game* g_Game;

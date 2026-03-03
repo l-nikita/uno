@@ -1,4 +1,5 @@
 ﻿#include <iostream>
+#include <print>
 #ifdef DEBUG
 	#include <RmlUi/Debugger.h>
 #endif
@@ -173,28 +174,35 @@ void Game::RequestExit()
 	m_isRunning = false;
 }
 
+//-----------------------------------------------------------------------------
 void Game::SetScene(SceneID id)
 {
 	m_sceneID = id;
 }
 
-void Game::CreateNewScene(SceneID id)
+void Game::DestroyScene(Scene* scene)
 {
-	if (m_scene) 
-		return;
+	if (scene)
+		scene->Destroy(), m_dirtyScenes.push_back(scene);
+}
 
+Scene* Game::CreateNewScene(SceneID id)
+{
+	Scene* scene = nullptr;
 	switch (id)
 	{
 	case SceneID::MAIN_MENU:
-		m_scene = new MainMenu(m_rmlContext);
+		scene = new MainMenu(m_rmlContext);
 		break;
 	case SceneID::GAME_SCREEN:
-		m_scene = new GameScreen(m_rmlContext);
+		scene = new GameScreen(m_rmlContext);
 		break;
 	default:
-		Rml::Log::Message(Rml::Log::LT_ERROR, "Unknown scene");
+		throw std::runtime_error("Unknown scene!");
 		break;
 	}
+
+	return scene;
 }
 
 //-----------------------------------------------------------------------------
@@ -202,21 +210,29 @@ void Game::Update()
 {
 	ProcessEvents(m_rmlContext, &ProcessKeyDownShortcuts, false);
 
+	if (m_sceneID != SceneID::NONE)
+	{
+		bool needsNewScene = false;
+		if (!m_scene || m_scene->GetID() != m_sceneID)
+			needsNewScene = true;
+
+		if (needsNewScene)
+		{
+			Scene* oldScene = m_scene;
+			m_scene = CreateNewScene(m_sceneID);
+
+			if (oldScene)
+				DestroyScene(oldScene);
+		}
+	}
+
 	g_GameManager->Update();
 	m_rmlContext->Update();
 
-	if (m_scene && m_scene->ShouldDestroy())
-		delete m_scene, m_scene = nullptr;
-	
-	if (m_scene && m_scene->GetID() != m_sceneID)
-	{
-		if (m_scene)
-			m_scene->Destroy();
+	for (Scene* scene : m_dirtyScenes)
+		delete scene;
 
-		CreateNewScene(m_sceneID);
-	}
-	else if (!m_scene && m_sceneID != SceneID::NONE)
-		CreateNewScene(m_sceneID);
+	m_dirtyScenes.clear();
 }
 
 void Game::Render()

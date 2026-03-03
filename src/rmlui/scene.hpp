@@ -23,11 +23,7 @@ public:
     virtual SceneID GetID() const = 0;
 
 	virtual void Destroy() = 0;
-	bool ShouldDestroy() const { return m_shouldDestroy; }
 
 protected:
 	Rml::Context* m_context = nullptr;
-
-private:
-	bool m_shouldDestroy = false;
 };

@@ -1,5 +1,4 @@
 body {
-    font-family: Arial;
     font-size: 18px;
     background: #191919;
     width: 100%;
@@ -18,7 +17,7 @@ p {
 }
 
 input.text {
-    background-color: #fff;
+    background: #fff;
     color: #555;
     border: 2px #999;
     padding: 5px;
@@ -30,14 +29,14 @@ input.text {
 }
 
 input.radio {
-    background-color: #fff;
+    background: #fff;
     border: 2px #999;
     width: 20px;
     height: 20px;
 }
 
 input.radio:checked {
-    background-color: #8aff73;
+    background: #8aff73;
 }
 
 .test {

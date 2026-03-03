@@ -1,0 +1,10 @@
+<rml>
+<head>
+    <title>Main Menu</title>
+    <link type="text/rcss" href="../styles/rml.rcss"/>
+    <link type="text/rcss" href="../styles/pages/game-screen.rcss"/>
+</head>
+<body>
+
+</body>
+</rml>
