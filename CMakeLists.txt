@@ -67,7 +67,7 @@ target_link_libraries(uno PRIVATE
 	SDL3_image::SDL3_image
     RmlUi::RmlUi
 	protobuf::libprotobuf
-	GameNetworkingSockets::GameNetworkingSockets
+	GameNetworkingSockets::static
 )
 
 target_compile_definitions(uno PRIVATE 
