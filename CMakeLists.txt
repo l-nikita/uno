@@ -80,3 +80,9 @@ set_target_properties(uno PROPERTIES
 )
 
 set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT "uno")
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_CURRENT_SOURCE_DIR}/assets"
+        "$<TARGET_FILE_DIR:${PROJECT_NAME}>/assets"
+)
