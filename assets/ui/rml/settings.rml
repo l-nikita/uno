@@ -20,7 +20,7 @@
     </div>
 
     <div id="back_container">
-        <div style="width: 10vw;">
+        <div style="width: 20vw;">
             <button id="back_to_menu" class="u-center">
                 <span>Back</span>
             </button>

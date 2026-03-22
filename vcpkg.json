@@ -2,11 +2,11 @@
   "name": "uno",
   "version": "1.0.0",
   "dependencies": [
-	"sdl3",
-	"sdl3-image",
-	"rmlui",
-	"protobuf",
-	"gamenetworkingsockets"
+    "sdl3",
+    {"name": "sdl3-image", "features": ["png"]},
+    "rmlui",
+    "protobuf",
+    "gamenetworkingsockets"
   ],
   "builtin-baseline": "05442024c3fda64320bd25d2251cc9807b84fb6f"
 }

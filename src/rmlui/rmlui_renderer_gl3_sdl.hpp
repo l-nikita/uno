@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <RmlUi/Core/Context.h>
 #include <RmlUi/Core/Core.h>
 #include <RmlUi/Core/FileInterface.h>
@@ -44,8 +45,13 @@ public:
 		auto DestroySurface = [](SDL_Surface* surface) { SDL_DestroySurface(surface); };
 
 		SDL_Surface* surface = CreateSurface();
+		
+
 		if (!surface)
+		{
+			Rml::Log::Message(Rml::Log::LT_ERROR, "Couldn't create surface: %s", SDL_GetError());
 			return {};
+		}
 
 		texture_dimensions = { surface->w, surface->h };
 

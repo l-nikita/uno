@@ -5,6 +5,6 @@
     <link type="text/rcss" href="../styles/pages/game-screen.rcss"/>
 </head>
 <body>
-
+    <img id="bg" src="../images/basement_bg.png" />
 </body>
 </rml>

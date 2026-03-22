@@ -16,7 +16,7 @@
 //-----------------------------------------------------------------------------
 void Game::Init()
 {
-	if (!InitSDL("Uno", 1920, 1080, true))
+	if (!InitSDL("Uno", 1280, 720, true))
 		throw std::runtime_error("Couldn't initialize SDL!");
 
 	if (!InitRml())
@@ -128,7 +128,8 @@ bool Game::InitRml()
 	m_fileInterface = new FileInterface(fs::GetAssetsPath().string() + "/");
 	Rml::SetFileInterface(m_fileInterface);
 
-	Rml::LoadFontFace("ui/fonts/Arial.ttf");
+	Rml::LoadFontFace("ui/fonts/PixelifySans-Bold.ttf");
+	Rml::LoadFontFace("ui/fonts/PixelifySans-Regular.ttf");
 	Rml::LoadFontFace("ui/fonts/NotoEmoji-Regular.ttf", true);
 
 	return true;
