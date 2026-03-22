@@ -6,12 +6,14 @@
     <link type="text/rcss" href="../styles/pages/settings.rcss"/>
 </head>
 <body>
+    <img id="bg" src="../images/menu_bg.png" />
+
     <div class="title-container u-center">
         <p>Settings</p>
     </div>
 
     <div id="settings" data-model="game_settings">
-        <div style="padding: 2vw;">
+        <div style="padding: 4vw;">
             <label>
                 <span>Full Screen</span>
                 <input type="checkbox" data-value="is_fullscreen"/>

@@ -5,6 +5,8 @@
     <link type="text/rcss" href="../styles/pages/main-menu.rcss"/>
 </head>
 <body>
+    <img id="bg" src="../images/menu_bg.png" />
+
     <div class="title-container u-center">
         <p>Uno</p>
     </div>

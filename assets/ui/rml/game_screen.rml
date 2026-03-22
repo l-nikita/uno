@@ -6,5 +6,6 @@
 </head>
 <body>
     <img id="bg" src="../images/basement_bg.png" />
+    <img id="table" src="../images/table.png" />
 </body>
 </rml>
