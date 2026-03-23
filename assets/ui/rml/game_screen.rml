@@ -12,10 +12,10 @@
     <img id="table" src="../images/table.png" />
 
     <div id="card_container">
-        <img class="card" src="../images/card_red.png" />
-        <img class="card" src="../images/card_red.png" />
-        <img class="card" src="../images/card_red.png" />
-        <img class="card" src="../images/card_red.png" />
+        <img class="card" src="/ui/images/card_red.png" />
+        <img class="card" src="/ui/images/card_red.png" />
+        <img class="card" src="/ui/images/card_red.png" />
+        <img class="card" src="/ui/images/card_red.png" />
     </div>
 </body>
 </rml>
