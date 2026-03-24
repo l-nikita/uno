@@ -1,11 +1,11 @@
 <rml>
 <head>
     <title>Main Menu</title>
-    <link type="text/rcss" href="../styles/rml.rcss"/>
-    <link type="text/rcss" href="../styles/pages/main-menu.rcss"/>
+    <link type="text/rcss" href="/ui/styles/rml.rcss"/>
+    <link type="text/rcss" href="/ui/styles/pages/main-menu.rcss"/>
 </head>
 <body>
-    <img id="bg" src="../images/menu_bg.png" />
+    <img id="bg" src="/ui/images/menu_bg.png" />
 
     <div class="title-container u-center">
         <p>Uno</p>

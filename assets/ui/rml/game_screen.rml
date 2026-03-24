@@ -1,13 +1,22 @@
 <rml>
 <head>
     <title>Main Menu</title>
-    <link type="text/rcss" href="../styles/rml.rcss"/>
-    <link type="text/rcss" href="../styles/pages/game-screen.rcss"/>
+    <link type="text/rcss" href="/ui/styles/rml.rcss"/>
+    <link type="text/rcss" href="/ui/styles/pages/game-screen.rcss"/>
 </head>
 <body>
-    <img id="bg" src="../images/basement_bg.png" />
-    <img id="front_chair" src="../images/wood_chair.png" />
-    <img id="table" src="../images/table.png" />
+    <img id="bg" src="/ui/images/basement_bg.png" />
+    <img id="frame" src="/ui/images/frame.png" />
+    <img id="front_chair" src="/ui/images/wood_chair.png" />
+    <img id="side_chair_left" src="/ui/images/wood_chair_side.png" />
+    <img id="side_chair_right" src="/ui/images/wood_chair_side.png" />
+
+    <img id="table" src="/ui/images/table.png" />
+
+    <div id="table_container">
+        <img id="deck" sprite="back-card"/>
+        <img id="discard_pile" sprite="red-num-card"/>
+    </div>
 
     <div id="card_container">
     </div>
