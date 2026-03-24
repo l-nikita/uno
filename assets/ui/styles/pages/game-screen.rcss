@@ -48,8 +48,8 @@ body {
 }
 
 #card_container {
-    position: absolute;
     display: flex;
+    position: absolute;
     flex-direction: row;
     justify-content: center;
     align-items: flex-end;
@@ -59,19 +59,30 @@ body {
     z-index: 10;
 }
 
+.card-wrapper {
+    display: block;
+    position: relative;
+    top: 0px;
+    left: 0px;
+    margin-left: -3vw;
+    transform: rotate(-2deg);
+    transition: transform 0.2s cubic-out, margin 0.2s cubic-out, top 0.2s cubic-out, left 0.2s cubic-out;
+}
+
+.card-wrapper:hover {
+    z-index: 100;
+    margin: 0 1vw;
+    transform: translateY(-40px) scale(1.2) rotate(0deg);
+}
+
+.card-wrapper:active {
+    z-index: 1000;
+    transform: scale(1.2);
+}
+
 .card {
     width: 10vw;
     height: 25vh;
-    margin-left: -3vw;
-    transition: transform margin 0.2s cubic-out 0.0;
     cursor: pointer;
-    transform: rotate(-2deg);
-    drag: clone;
-}
-
-.card:hover {
-    transform: translateY(-40px) scale(1.2) rotate(0deg);
-    z-index: 100; 
-    margin: 0 1vw;
-    box-shadow: 0px 0px 25px 5px white;
+    pointer-events: none; 
 }

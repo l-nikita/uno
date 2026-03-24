@@ -12,10 +12,18 @@
     <img id="table" src="../images/table.png" />
 
     <div id="card_container">
-        <img class="card" src="/ui/images/card_red.png" />
-        <img class="card" src="/ui/images/card_red.png" />
-        <img class="card" src="/ui/images/card_red.png" />
-        <img class="card" src="/ui/images/card_red.png" />
+        <handle class="card-wrapper" move_target="#self" edge_margin="none">
+            <img class="card" src="/ui/images/card_red.png" />
+        </handle>        
+        <handle class="card-wrapper" move_target="#self" edge_margin="none">
+            <img class="card" src="/ui/images/card_red.png" />
+        </handle>        
+        <handle class="card-wrapper" move_target="#self" edge_margin="none">
+            <img class="card" src="/ui/images/card_red.png" />
+        </handle>        
+        <handle class="card-wrapper" move_target="#self" edge_margin="none">
+            <img class="card" src="/ui/images/card_red.png" />
+        </handle>
     </div>
 </body>
 </rml>
