@@ -20,5 +20,14 @@
 
     <div id="card_container">
     </div>
+
+    <div id="player1_card_container">
+        <img class="player-card" sprite="back-card"/>
+        <img class="player-card" sprite="back-card"/>
+        <img class="player-card" sprite="back-card"/>
+        <img class="player-card" sprite="back-card"/>
+        <img class="player-card" sprite="back-card"/>
+        <img class="player-card" sprite="back-card"/>
+    </div>
 </body>
 </rml>
