@@ -35,12 +35,9 @@ public:
 	SDL_Window* GetWindow() const { return m_window; }
 	Rml::SystemInterface* GetSystemInterface() const { return m_systemInterface; }
 	Rml::RenderInterface* GetRenderInterface() const { return m_renderInterface; }
-
-	// Delta time (ms)
-	float DeltaTime() { return m_deltaTime.count(); }
-
-	// Elapsed time since sdl init (ms)
-	uint64_t ElapsedTime() { return SDL_GetTicks(); }
+	
+	double GetDeltaTime() { return m_deltaTime.count(); }
+	double GetElapsedTime() { return m_systemInterface->GetElapsedTime(); }
 
 	void SetScene(SceneID id);
 	void DestroyScene(Scene* scene);
@@ -68,8 +65,7 @@ private:
 private:
 	bool m_isRunning = false;
 
-	std::chrono::duration<float> m_deltaTime;
-	std::chrono::duration<float> m_elapsedTime;
+	std::chrono::duration<double> m_deltaTime;
 
 	SDL_Window* m_window = nullptr;
 	SDL_GLContext m_glContext = nullptr;

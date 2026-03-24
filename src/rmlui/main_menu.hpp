@@ -15,6 +15,8 @@ public:
 	void ProcessEvent(Rml::Event& event) override;
 
 	SceneID GetID() const override { return SceneID::MAIN_MENU; }
+
+	void Update() override;
 	void Destroy() override;
 
 private:

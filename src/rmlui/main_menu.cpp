@@ -29,6 +29,11 @@ void MainMenu::Destroy()
 		m_mainMenu->Close(), m_mainMenu = nullptr;
 }
 
+void MainMenu::Update()
+{
+
+}
+
 void MainMenu::OpenMenu()
 {
 	Hide();

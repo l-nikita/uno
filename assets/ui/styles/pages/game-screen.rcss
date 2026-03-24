@@ -62,11 +62,12 @@ body {
 .card-wrapper {
     display: block;
     position: relative;
+    width: 10vw;
     top: 0px;
     left: 0px;
     margin-left: -3vw;
     transform: rotate(-2deg);
-    transition: transform 0.2s cubic-out, margin 0.2s cubic-out, top 0.2s cubic-out, left 0.2s cubic-out;
+    transition: transform 0.2s cubic-out, margin 0.2s cubic-out, top 0.2s cubic-out, left 0.2s cubic-out, width 0.3s cubic-out;
 }
 
 .card-wrapper:hover {
@@ -80,9 +81,85 @@ body {
     transform: scale(1.2);
 }
 
+.card-wrapper.deleted {
+    margin: 0;
+    width: 0;
+    pointer-events: none;
+    transform: scale(0);
+    drag: none;
+}
+
+@spritesheet card {
+    src: "/ui/images/card.png";
+
+    red-num-card: 0px 0px 32px 48px;
+    green-num-card: 32px 0px 32px 48px;
+    blue-num-card: 64px 0px 32px 48px;
+    yellow-num-card: 96px 0px 32px 48px;
+    black-num-card: 128px 0px 32px 48px;
+
+    wild-num-card: 160px 0px 32px 48px;
+    wild4-num-card: 192px 0px 32px 48px;
+
+    resolution: 1x;
+}
+
+@spritesheet card-icon {
+    src: "/ui/images/card_icon.png";
+
+    skip-icon: 0px 0px 16px 16px;
+    reverse-icon: 16px 0px 16px 16px;
+    draw2-icon: 32px 0px 16px 16px;
+    
+    resolution: 1x;
+}
+
 .card {
-    width: 10vw;
+    width: 100%;
     height: 25vh;
     cursor: pointer;
     pointer-events: none; 
+}
+
+.card-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.corner, .corner-text {
+    position: absolute;
+    pointer-events: none;
+}
+
+.top-left {
+    top: 7%;
+    left: 9%;
+}
+
+.bottom-right {
+    bottom: 7%;
+    right: 9%;
+    transform: rotate(180deg);
+}
+
+img.corner {
+    width: 20%;
+    height: auto;
+}
+
+.corner-text {
+    font-size: 4.5em;
+    color: white;
+}
+
+.card-icon, .card-value {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 40%;
+    height: auto;
+    font-size: 10em;
+    text-align: center;
+    transform: translateX(-50%) translateY(-50%);
 }

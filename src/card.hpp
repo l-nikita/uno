@@ -14,11 +14,11 @@ enum class CardColor
 };
 
 static const std::map<CardColor, SDL_Color> CARD_COLORS = {
-	{CardColor::RED,	SDL_Color{ 255, 0, 0, 255 }},
-	{CardColor::GREEN,	SDL_Color{ 0, 255, 0, 255 }},
-	{CardColor::BLUE,	SDL_Color{ 0, 0, 255, 255 }},
-	{CardColor::YELLOW, SDL_Color{ 255, 255, 0, 255 }},
-	{CardColor::WILD,	SDL_Color{ 0, 0, 0, 255 }},
+	{CardColor::RED,	SDL_Color{ 201, 51, 51, 255 }},
+	{CardColor::GREEN,	SDL_Color{ 62, 201, 51, 255 }},
+	{CardColor::BLUE,	SDL_Color{ 51, 170, 201, 255 }},
+	{CardColor::YELLOW, SDL_Color{ 201, 181, 51, 255 }},
+	{CardColor::WILD,	SDL_Color{ 27, 27, 27, 255 }},
 };
 
 //-----------------------------------------------------------------------------

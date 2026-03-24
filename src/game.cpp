@@ -146,7 +146,7 @@ void Game::Run()
 	while (m_isRunning)
 	{
 		auto currentTime = high_resolution_clock::now();
-		m_deltaTime = duration<float>(currentTime - lastTime);
+		m_deltaTime = duration<double>(currentTime - lastTime);
 		lastTime = currentTime;
 
 		Update();
@@ -225,6 +225,8 @@ void Game::Update()
 			if (oldScene)
 				DestroyScene(oldScene);
 		}
+		else
+			m_scene->Update();
 	}
 
 	g_GameManager->Update();

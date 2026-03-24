@@ -22,6 +22,7 @@ public:
 
     virtual SceneID GetID() const = 0;
 
+	virtual void Update() = 0;
 	virtual void Destroy() = 0;
 
 protected:

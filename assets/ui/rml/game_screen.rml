@@ -7,23 +7,9 @@
 <body>
     <img id="bg" src="../images/basement_bg.png" />
     <img id="front_chair" src="../images/wood_chair.png" />
-    <img id="side_chair_left" src="../images/wood_chair_side.png" />
-    <img id="side_chair_right" src="../images/wood_chair_side.png" />
     <img id="table" src="../images/table.png" />
 
     <div id="card_container">
-        <handle class="card-wrapper" move_target="#self" edge_margin="none">
-            <img class="card" src="/ui/images/card_red.png" />
-        </handle>        
-        <handle class="card-wrapper" move_target="#self" edge_margin="none">
-            <img class="card" src="/ui/images/card_red.png" />
-        </handle>        
-        <handle class="card-wrapper" move_target="#self" edge_margin="none">
-            <img class="card" src="/ui/images/card_red.png" />
-        </handle>        
-        <handle class="card-wrapper" move_target="#self" edge_margin="none">
-            <img class="card" src="/ui/images/card_red.png" />
-        </handle>
     </div>
 </body>
 </rml>
