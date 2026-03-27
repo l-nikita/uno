@@ -2,6 +2,7 @@
 #include "game_screen.hpp"
 #include "../game.hpp"
 #include "../card.hpp"
+#include "../player.hpp"
 #include "../gamemodes/classic.hpp"
 
 GameScreen::GameScreen(Rml::Context* context)
@@ -9,13 +10,39 @@ GameScreen::GameScreen(Rml::Context* context)
 {
 	m_document = m_context->LoadDocument("ui/rml/game_screen.rml");
 	m_document->Show();
+	
+	for (auto player : g_GameManager->GetPlayers())
+	{
+		CreatePlayerCards(player);
+	}
 
-	Rml::Element* cardContainer = m_document->GetElementById("card_container");
+	double duration = 2; 
+	Rml::Tween tween{Rml::Tween::Quadratic, Rml::Tween::Out};
+}
 
-	auto player = g_GameManager->GetLocalPlayer();
+void GameScreen::CreatePlayerCards(Player* player)
+{
+	auto localPlayer = g_GameManager->GetLocalPlayer();
+	Rml::Element* cardContainer = nullptr;
+
 	for (auto card : player->GetCards())
 	{
-		Rml::ElementPtr cardW = Rml::Factory::InstanceElement(cardContainer, "handle", "handle", Rml::XMLAttributes());
+		if (player == localPlayer)
+			cardContainer = m_document->GetElementById("card_container");
+		else
+			cardContainer = m_document->GetElementById("player" + Rml::ToString(player->GetIndex()) + "_card_container");
+
+		CreateCard(card, cardContainer, (player == localPlayer));
+	}
+}
+
+void GameScreen::CreateCard(Card* card, Rml::Element* container, bool isVisible)
+{
+	auto tag = isVisible ? "handle" : "img";
+	Rml::ElementPtr cardW = Rml::Factory::InstanceElement(container, tag, tag, Rml::XMLAttributes());
+
+	if (isVisible)
+	{
 		cardW->SetClass("card-wrapper", true);
 		cardW->SetAttribute("move_target", "#self");
 		cardW->SetAttribute("edge_margin", "none");
@@ -68,7 +95,6 @@ GameScreen::GameScreen(Rml::Context* context)
 			break;
 		}
 
-		
 		if (card->Type == CardType::WILD || card->Type == CardType::WILD_DRAW_4)
 		{
 			if (card->Type == CardType::WILD_DRAW_4)
@@ -105,10 +131,16 @@ GameScreen::GameScreen(Rml::Context* context)
 				+ spec + value + corners +
 			"</div>"
 		);
-		cardW->AddEventListener(Rml::EventId::Dragend, this);
 
-		cardContainer->AppendChild(std::move(cardW));
+		cardW->AddEventListener(Rml::EventId::Dragend, this);
 	}
+	else
+	{
+		cardW->SetClass("player-card", true);
+		cardW->SetAttribute("sprite", "back-card");
+	}	
+
+	container->AppendChild(std::move(cardW));
 }
 
 void GameScreen::Destroy()

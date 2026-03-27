@@ -38,3 +38,5 @@ struct Card
 	CardColor Color;
 	int Value;
 };
+
+using Cards = std::vector<Card*>;

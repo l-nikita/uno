@@ -1,5 +1,6 @@
 body {
     background: #282c34;
+    font-size: 4vh;
 }
 
 #bg, #table, #frame {
@@ -24,7 +25,7 @@ body {
 #table_container {
     position: absolute;
     z-index: 3;
-    top: 50%;
+    top: 55%;
     left: 50%;
     perspective: 800px;
     transform: translateX(-50%) translateY(-50%);
@@ -158,12 +159,12 @@ body {
 }
 
 .top-left {
-    top: 7%;
+    top: 5%;
     left: 9%;
 }
 
 .bottom-right {
-    bottom: 7%;
+    bottom: 9%;
     right: 9%;
     transform: rotate(180deg);
 }
@@ -174,7 +175,7 @@ img.corner {
 }
 
 .corner-text {
-    font-size: 4.5em;
+    font-size: 1em;
     color: white;
 }
 
@@ -184,21 +185,72 @@ img.corner {
     top: 50%;
     width: 40%;
     height: auto;
-    font-size: 10em;
+    font-size: 2em;
     text-align: center;
     transform: translateX(-50%) translateY(-50%);
 }
 
-#player1_card_container {
-    display: flex;
-    flex-direction: row;
-    position: absolute;
-    z-index: 3;
-    top: 50%;
-    left: 20%;
+/* Player cards */
+.player-card {
+    width: 4vw;
+    height: 9vh;
+    flex-shrink: 0;
 }
 
-.player-card {
-    width: 5vw;
-    height: 12vh;
+#player1_card_container {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    z-index: 3;
+    top: 38%;
+    left: 22%;
+    height: 30%;
+    transform-origin: left center; 
+    transform: perspective(2200px) rotateX(45deg) rotateY(-15deg) rotateZ(20deg);
+}
+
+#player1_card_container .player-card {
+    margin-bottom: -6vh;
+    transform: rotate(90deg);
+}
+
+#player2_card_container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    position: absolute;
+    z-index: 3;
+    top: 38%;
+    left: 50%; 
+    width: 30%;
+    transform-origin: center center; 
+    transform: perspective(2200px) rotateX(35deg) translateX(-50%);
+}
+
+#player2_card_container .player-card {
+   margin-right: -1.5vw;
+}
+
+#player3_card_container {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    z-index: 3;
+    top: 38%;
+    right: 22%;
+    height: 30%;
+    transform-origin: left center; 
+    transform: perspective(2200px) rotateX(45deg) rotateY(15deg) rotateZ(-20deg);
+}
+
+#player3_card_container .player-card {
+    margin-bottom: -6vh;
+    transform: rotate(-90deg);
+}
+
+.player-card.thrown {
+    display: block;
+    position: relative;
+    transition: none;
+    margin: 0;
 }

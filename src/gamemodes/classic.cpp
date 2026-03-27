@@ -126,5 +126,7 @@ namespace gm
 
 			player->SortCards();
 		}
+
+		std::cout << m_deck.size() << std::endl;
 	}
 }

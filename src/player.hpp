@@ -21,6 +21,8 @@ public:
 	std::string GetName() { return m_name; }
 	Cars GetCards() { return m_cards; }
 
+	int GetIndex() const;
+
 private:
 	std::string m_name;
 	Cars m_cards;

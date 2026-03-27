@@ -26,6 +26,6 @@ namespace gm
 		GameModeID GetID() const override { return GameModeID::CLASSIC; }
 
 	private:
-		std::vector<Card*> m_deck;
+		Cards m_deck;
 	};
 }

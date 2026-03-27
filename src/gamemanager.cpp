@@ -20,6 +20,8 @@ GameManager::~GameManager()
 
 	for (auto& player : m_players)
 		delete player;
+
+	m_players.clear();
 }
 
 //-----------------------------------------------------------------------------
@@ -32,7 +34,9 @@ void GameManager::Start(gm::GameModeID gmId)
 	}
 
 	m_players.push_back(new Player("Nikita"));
-	m_players.push_back(new Player("Genrih"));
+	m_players.push_back(new Player("Genrih"));	
+	m_players.push_back(new Player("Nikita2"));
+	m_players.push_back(new Player("Genrih2"));
 
 	if (gmId == gm::GameModeID::CLASSIC)
 		m_gameMode = new gm::Classic();
@@ -51,4 +55,19 @@ void GameManager::Update()
 
 void GameManager::Render()
 {
+}
+
+int GameManager::GetPlayerIndex(const Player* player) const
+{
+	int id = -1;
+	for (int i = 0; i < m_players.size(); ++i) 
+	{
+		if (m_players.at(i) == player) 
+		{
+			id = i;
+			break;
+		}
+	}
+
+	return id;
 }

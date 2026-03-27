@@ -1,5 +1,6 @@
 #pragma once
 
+#include <span>
 #include "gamemodes/igamemode.hpp"
 
 //-----------------------------------------------------------------------------
@@ -23,8 +24,10 @@ public:
 
 	gm::IGameMode* GetGameMode() const { return m_gameMode; }
 
-	Players GetPlayers() const { return m_players; }
-	Player* GetLocalPlayer() const { return m_players[0]; }
+	const Players GetPlayers() const { return m_players; }
+	const Player* GetLocalPlayer() const { return m_players.at(0); }
+
+	int GetPlayerIndex(const Player* player) const;
 
 private:
 	gm::IGameMode* m_gameMode = nullptr;

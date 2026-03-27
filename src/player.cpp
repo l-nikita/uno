@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <map>
 #include "player.hpp"
+#include "gamemanager.hpp"
 
 //-----------------------------------------------------------------------------
 //
@@ -21,4 +22,9 @@ void Player::SortCards()
 		return std::tie(b->Color, b->Type, b->Value)
 			< std::tie(a->Color, a->Type, a->Value);
 	});
+}
+
+int Player::GetIndex() const
+{
+	return g_GameManager->GetPlayerIndex(this);
 }

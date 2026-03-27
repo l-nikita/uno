@@ -22,12 +22,12 @@
     </div>
 
     <div id="player1_card_container">
-        <img class="player-card" sprite="back-card"/>
-        <img class="player-card" sprite="back-card"/>
-        <img class="player-card" sprite="back-card"/>
-        <img class="player-card" sprite="back-card"/>
-        <img class="player-card" sprite="back-card"/>
-        <img class="player-card" sprite="back-card"/>
+    </div>    
+    
+    <div id="player2_card_container">
+    </div>    
+    
+    <div id="player3_card_container">
     </div>
 </body>
 </rml>

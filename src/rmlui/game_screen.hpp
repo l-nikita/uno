@@ -3,6 +3,9 @@
 #include <RmlUi/Core.h>
 #include "scene.hpp"
 
+class Player;
+struct Card;
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
@@ -19,6 +22,9 @@ public:
 	void Destroy() override;
 
 private:
+	void CreatePlayerCards(Player* player);
+	void CreateCard(Card* card, Rml::Element* container, bool isVisible);
+
 	Rml::ElementDocument* m_document = nullptr;
 
 	struct PendingDeletion 
