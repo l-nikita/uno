@@ -14,3 +14,12 @@ using NetMessage = ISteamNetworkingMessage;
 using NetErrorMsg = SteamNetworkingErrMsg;
 using NetConfig = SteamNetworkingConfigValue_t;
 using NetConnectionStatusCallback = SteamNetConnectionStatusChangedCallback_t;
+
+enum class NetConnectState : int {
+    None = k_ESteamNetworkingConnectionState_None,
+    Connecting = k_ESteamNetworkingConnectionState_Connecting,
+    FindingRoute = k_ESteamNetworkingConnectionState_FindingRoute,
+    Connected = k_ESteamNetworkingConnectionState_Connected,
+    ClosedByPeer = k_ESteamNetworkingConnectionState_ClosedByPeer,
+    ProblemDetectedLocally = k_ESteamNetworkingConnectionState_ProblemDetectedLocally,
+};

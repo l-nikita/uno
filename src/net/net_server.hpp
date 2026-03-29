@@ -10,6 +10,7 @@ class NetServer
 {
 private:
     NetServer(NetInterface* interface);
+    ~NetServer() { Shutdown(); }
 
     void Start(uint16_t port);
     
@@ -21,11 +22,11 @@ private:
     static void _OnConnectionStatusChanged(NetConnectionStatusCallback* callback);
     
 private:
-    struct NetClient2
+    struct NetClient
     {
         NetIdentity Identity;
 
-        NetClient2(const NetIdentity& identity) 
+        NetClient(const NetIdentity& identity) 
             : Identity(identity) 
         { }
     };
@@ -37,7 +38,7 @@ private:
     NetSocket m_listenSocket;
     NetPollGroup m_pollGroup;
     
-    std::map<NetConnection, NetClient2> m_clients;
+    std::map<NetConnection, NetServer::NetClient> m_clients;
 
     friend class NetworkManager;
 };

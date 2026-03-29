@@ -100,7 +100,8 @@ void MainMenu::ProcessEvent(Rml::Event& event)
 	}
 	else if (id == "connect_host")
 	{
-		g_NetManager->StartClient("127.0.0.1", 27015);
+		g_NetManager->StartClient();
+		g_NetManager->Connect("127.0.0.1", 27015);
 	}
 	else if (id == "quit")
 		m_quitDlg->SetProperty("display", "flex");

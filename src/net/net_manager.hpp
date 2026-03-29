@@ -20,7 +20,8 @@ public:
     void Shutdown();
 
     void StartHost(uint16_t port);
-    void StartClient(const std::string& ip, uint16_t port);
+    void StartClient();
+    void Connect(const std::string& ip, uint16_t port);
 
 private:
     NetServer* m_server = nullptr;

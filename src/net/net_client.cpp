@@ -16,6 +16,9 @@ NetClient::NetClient(NetInterface* interface)
 //-----------------------------------------------------------------------------
 void NetClient::Start(const std::string& ip, uint16_t port)
 {
+    if (m_isRunning)
+        return;
+
     NetAddress hostAddr;
     hostAddr.Clear();
     hostAddr.ParseString(ip.c_str());
@@ -41,21 +44,21 @@ void NetClient::OnConnectionStatusChanged(NetConnectionStatusCallback* callback)
     NetConnection connection = callback->m_hConn;
     auto& info = callback->m_info;
 
-    switch (info.m_eState)
+    switch ((NetConnectState)info.m_eState)
     {
-        case k_ESteamNetworkingConnectionState_Connecting:
+        case NetConnectState::Connecting:
         {
             SDL_Log("[Client] Connection in progress...");
             break;
         }
-        case k_ESteamNetworkingConnectionState_Connected:
+        case NetConnectState::Connected:
         {
             SDL_Log("[Client] Connected!");
             break;
         }
-        case k_ESteamNetworkingConnectionState_ClosedByPeer:
+        case NetConnectState::ClosedByPeer:
             break;
-        case k_ESteamNetworkingConnectionState_ProblemDetectedLocally:
+        case NetConnectState::ProblemDetectedLocally:
         {
             SDL_Log("[Client] Connection closed.");
             m_isRunning = false;
@@ -68,6 +71,9 @@ void NetClient::OnConnectionStatusChanged(NetConnectionStatusCallback* callback)
 
 void NetClient::PollMessages()
 {
+    if (!m_isRunning)
+        return;
+
     NetMessage* pIncomingMsg[10];
     int numMsgs = m_interface->ReceiveMessagesOnConnection(m_connection, pIncomingMsg, 10);
     for (int i = 0; i < numMsgs; ++i)
@@ -82,7 +88,13 @@ void NetClient::PollMessages()
 
 void NetClient::Shutdown()
 {
+    if (!m_isRunning)
+        return;
+
     SDL_Log("[Client] Shutting down...");
+
+    m_isRunning = false;
+
     if (m_connection != k_HSteamNetConnection_Invalid)
     {
         m_interface->CloseConnection(m_connection, 0, "Client Shutdown", true);

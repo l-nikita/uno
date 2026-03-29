@@ -48,12 +48,19 @@ void NetworkManager::StartHost(uint16_t port = 27015)
     m_server->Start(port);
 }
 
-void NetworkManager::StartClient(const std::string& ip, uint16_t port)
+void NetworkManager::StartClient()
 {
     if (m_client)
         return;
 
     m_client = new NetClient(m_interface);
+}
+
+void NetworkManager::Connect(const std::string& ip, uint16_t port)
+{
+    if (!m_client)
+        return;
+
     m_client->Start(ip, port);
 }
 
@@ -72,6 +79,12 @@ void NetworkManager::Update()
 //-----------------------------------------------------------------------------
 void NetworkManager::Shutdown()
 {
+    if (m_server)
+        delete m_server, m_server = nullptr;    
+    
+    if (m_client)
+        delete m_client, m_client = nullptr;
+
     GameNetworkingSockets_Kill();
     m_interface = nullptr;
 }

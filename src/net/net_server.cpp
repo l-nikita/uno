@@ -19,6 +19,9 @@ NetServer::NetServer(NetInterface* interface)
 //-----------------------------------------------------------------------------
 void NetServer::Start(uint16_t port)
 {
+    if (m_isRunning)
+        return;
+
     NetAddress hostAddr;
     hostAddr.Clear();
     hostAddr.m_port = port;
@@ -34,9 +37,9 @@ void NetServer::Start(uint16_t port)
     if (m_pollGroup == k_HSteamNetPollGroup_Invalid)
         throw std::runtime_error(std::format("Failed to listen on port {}", hostAddr.m_port));
 
-    SDL_Log("[Host] Start listening on port %d.", hostAddr.m_port);
-
     m_isRunning = true;
+
+    SDL_Log("[Host] Start listening on port %d.", hostAddr.m_port);
 }
 
 void NetServer::OnConnectionStatusChanged(NetConnectionStatusCallback* callback)
@@ -44,9 +47,9 @@ void NetServer::OnConnectionStatusChanged(NetConnectionStatusCallback* callback)
     NetConnection connection = callback->m_hConn;
     auto& info = callback->m_info;
 
-    switch (info.m_eState)
+    switch ((NetConnectState)info.m_eState)
     {
-        case k_ESteamNetworkingConnectionState_Connecting:
+        case NetConnectState::Connecting:
         {
             if (m_interface->AcceptConnection(connection) != k_EResultOK)
             {
@@ -65,15 +68,15 @@ void NetServer::OnConnectionStatusChanged(NetConnectionStatusCallback* callback)
             SDL_Log("[Host] Connection in progress...");
             break;
         }
-        case k_ESteamNetworkingConnectionState_Connected:
+        case NetConnectState::Connected:
         {
-            SDL_Log("[Host] Client connected! Handle: %u", connection);
+            SDL_Log("[Host] Client connected!");
             m_clients.emplace(connection, info.m_identityRemote);
             break;
         }
-        case k_ESteamNetworkingConnectionState_ClosedByPeer:
+        case NetConnectState::ClosedByPeer:
             break;
-        case k_ESteamNetworkingConnectionState_ProblemDetectedLocally:
+        case NetConnectState::ProblemDetectedLocally:
         {
             SDL_Log("[Host] Client disconnected (Reason: %d).", info.m_eEndReason);
             m_interface->CloseConnection(connection, 0, nullptr, false);
@@ -86,6 +89,9 @@ void NetServer::OnConnectionStatusChanged(NetConnectionStatusCallback* callback)
 
 void NetServer::PollMessages()
 {
+    if (!m_isRunning)
+        return;
+
     NetMessage* msg = nullptr;
 
     int numMsgs = m_interface->ReceiveMessagesOnPollGroup(m_pollGroup, &msg, 1);
@@ -100,6 +106,9 @@ void NetServer::PollMessages()
 
 void NetServer::Shutdown()
 {
+    if (!m_isRunning)
+        return;
+
     SDL_Log("[Host] Shutting down...");
 
     m_isRunning = false;

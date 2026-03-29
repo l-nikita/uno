@@ -10,6 +10,7 @@ class NetClient
 {
 private:
     NetClient(NetInterface* interface);
+    ~NetClient() { Shutdown(); }
 
     void Start(const std::string& ip, uint16_t port);
     
