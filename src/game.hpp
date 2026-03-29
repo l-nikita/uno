@@ -7,18 +7,22 @@
 #include "rmlui/rmlui_file_interface.hpp"
 #include "rmlui/scene.hpp"
 
-using KeyDownCallback = bool (*)(Rml::Context* context, Rml::Input::KeyIdentifier key, int key_modifier, float native_dp_ratio, bool priority);
-
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
+using KeyDownCallback = bool (*)(Rml::Context* context, Rml::Input::KeyIdentifier key, int key_modifier, float native_dp_ratio, bool priority);
+
 class MainMenu;
 
+//-----------------------------------------------------------------------------
 struct GameSettings
 {
 	bool IsFullScreen = false;
 };
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 class Game final
 {
 public:
@@ -38,8 +42,11 @@ public:
 	double GetDeltaTime() { return m_deltaTime.count(); }
 	double GetElapsedTime() { return m_systemInterface->GetElapsedTime(); }
 
-	void SetScene(SceneID id);
+	void SetScene(SceneId id);
 	void DestroyScene(Scene* scene);
+
+	void StartHost();
+	void Connect(const std::string& ip, uint16_t port);
 
 public:
 	GameSettings m_GameSettings;
@@ -59,7 +66,7 @@ private:
 
 	void OnWindowResize();
 
-	Scene* CreateNewScene(SceneID id);
+	Scene* CreateNewScene(SceneId id);
 
 private:
 	bool m_isRunning = false;
@@ -76,7 +83,7 @@ private:
 	Rml::Context* m_rmlContext = nullptr;
 
 	Scene* m_scene = nullptr;
-	SceneID m_sceneID = SceneID::NONE;
+	SceneId m_sceneId = SceneId::NONE;
 
 	std::vector<Scene*> m_dirtyScenes;
 };

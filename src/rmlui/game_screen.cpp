@@ -1,145 +1,149 @@
 #include <SDL3/SDL.h>
 #include "game_screen.hpp"
+#include "clientmanager.hpp"
 #include "../game.hpp"
-#include "../gamemanager.hpp"
 #include "../card.hpp"
 #include "../player.hpp"
-#include "../gamemodes/classic.hpp"
 
 GameScreen::GameScreen(Rml::Context* context)
 	: Scene(context)
 {
 	m_document = m_context->LoadDocument("ui/rml/game_screen.rml");
 	m_document->Show();
-	
-	for (auto player : g_GameManager->GetPlayers())
-	{
-		CreatePlayerCards(player);
-	}
+
+	CreatePlayersCards();
 
 	double duration = 2; 
 	Rml::Tween tween{Rml::Tween::Quadratic, Rml::Tween::Out};
 }
 
-void GameScreen::CreatePlayerCards(Player* player)
+void GameScreen::CreatePlayersCards()
 {
-	auto localPlayer = g_GameManager->GetLocalPlayer();
 	Rml::Element* cardContainer = nullptr;
+	auto clState = g_ClientManager->GetState();
 
-	for (auto card : player->GetCards())
+	for (auto card : clState.MyHand)
 	{
-		if (player == localPlayer)
-			cardContainer = m_document->GetElementById("card_container");
-		else
-			cardContainer = m_document->GetElementById("player" + Rml::ToString(player->GetIndex()) + "_card_container");
+		cardContainer = m_document->GetElementById("card_container");
 
-		CreateCard(card, cardContainer, (player == localPlayer));
+		CreateCard(card, cardContainer);
+	}
+
+	for (size_t i = 0; i < clState.Opponents.size(); i++)
+	{
+		auto info = clState.Opponents.at(i);
+
+		cardContainer = m_document->GetElementById("player" + Rml::ToString((i + 1)) + "_card_container");
+		CreateOpponentCards(info.CardCount, cardContainer);
 	}
 }
 
-void GameScreen::CreateCard(Card* card, Rml::Element* container, bool isVisible)
+void GameScreen::CreateOpponentCards(int count, Rml::Element* container)
 {
-	auto tag = isVisible ? "handle" : "img";
-	Rml::ElementPtr cardW = Rml::Factory::InstanceElement(container, tag, tag, Rml::XMLAttributes());
-
-	if (isVisible)
+	for (size_t i = 0; i < count; i++)
 	{
-		cardW->SetClass("card-wrapper", true);
-		cardW->SetAttribute("move_target", "#self");
-		cardW->SetAttribute("edge_margin", "none");
+		Rml::ElementPtr cardImg = Rml::Factory::InstanceElement(container, "img", "img", Rml::XMLAttributes());
 
-		Rml::String colorStr;
-		switch (card->Color)
-		{
-			case CardColor::RED:
-				colorStr = "red";
-				break;			
-			case CardColor::GREEN:
-				colorStr = "green";
-				break;			
-			case CardColor::BLUE:
-				colorStr = "blue";
-				break;			
-			case CardColor::YELLOW:
-				colorStr = "yellow";
-				break;			
-			case CardColor::WILD:
-				if (card->Type == CardType::WILD)
-					colorStr = "wild";
-				else if (card->Type == CardType::WILD_DRAW_4)
-					colorStr = "wild4";
+		cardImg->SetClass("player-card", true);
+		cardImg->SetAttribute("sprite", "back-card");	
+		container->AppendChild(std::move(cardImg));
+	}
+}
 
-				break;
-			default:
-				colorStr = "red";
-				break;
-		}
+void GameScreen::CreateCard(const Card& card, Rml::Element* container)
+{
+	Rml::ElementPtr cardW = Rml::Factory::InstanceElement(container, "handle", "handle", Rml::XMLAttributes());
 
-		Rml::String spec;
-		Rml::String sprite;
-		Rml::String value;
-		Rml::String corners;
+	cardW->SetClass("card-wrapper", true);
+	cardW->SetAttribute("move_target", "#self");
+	cardW->SetAttribute("edge_margin", "none");
 
-		switch (card->Type)
-		{
-		case CardType::SKIP:
-			sprite = "skip-icon";
-			break;		
-		case CardType::REVERSE:
-			sprite = "reverse-icon";
-			break;		
-		case CardType::DRAW_2:
-			sprite = "draw2-icon";
+	Rml::String colorStr;
+	switch (card.Color)
+	{
+		case CardColor::RED:
+			colorStr = "red";
+			break;			
+		case CardColor::GREEN:
+			colorStr = "green";
+			break;			
+		case CardColor::BLUE:
+			colorStr = "blue";
+			break;			
+		case CardColor::YELLOW:
+			colorStr = "yellow";
+			break;			
+		case CardColor::WILD:
+			if (card.Type == CardType::WILD)
+				colorStr = "wild";
+			else if (card.Type == CardType::WILD_DRAW_4)
+				colorStr = "wild4";
+
 			break;
 		default:
-			sprite = "skip-icon";
+			colorStr = "red";
 			break;
-		}
+	}
 
-		if (card->Type == CardType::WILD || card->Type == CardType::WILD_DRAW_4)
+	Rml::String spec;
+	Rml::String sprite;
+	Rml::String value;
+	Rml::String corners;
+
+	switch (card.Type)
+	{
+	case CardType::SKIP:
+		sprite = "skip-icon";
+		break;		
+	case CardType::REVERSE:
+		sprite = "reverse-icon";
+		break;		
+	case CardType::DRAW_2:
+		sprite = "draw2-icon";
+		break;
+	default:
+		sprite = "skip-icon";
+		break;
+	}
+
+	if (card.Type == CardType::WILD || card.Type == CardType::WILD_DRAW_4)
+	{
+		if (card.Type == CardType::WILD_DRAW_4)
 		{
-			if (card->Type == CardType::WILD_DRAW_4)
-			{
-				corners = "<span class='corner-text top-left'>+4</span>"
-						"<span class='corner-text bottom-right'>+4</span>";
-			}
+			corners = "<span class='corner-text top-left'>+4</span>"
+					"<span class='corner-text bottom-right'>+4</span>";
 		}
-		else if (card->Type != CardType::NUMBER)
+	}
+	else if (card.Type != CardType::NUMBER)
+	{
+		spec = "<img class='card-icon' sprite='"+sprite+"' />";
+		if (card.Type == CardType::DRAW_2)
 		{
-			spec = "<img class='card-icon' sprite='"+sprite+"' />";
-			if (card->Type == CardType::DRAW_2)
-			{
-				corners = "<span class='corner-text top-left'>+2</span>"
-						"<span class='corner-text bottom-right'>+2</span>";
-			}
-			else
-			{
-				corners = "<img class='corner top-left' sprite='"+sprite+"' />"
-					"<img class='corner bottom-right' sprite='"+sprite+"' />";
-			}
+			corners = "<span class='corner-text top-left'>+2</span>"
+					"<span class='corner-text bottom-right'>+2</span>";
 		}
 		else
 		{
-			value = "<span class='card-value'>" + Rml::ToString(card->Value) + "</span>";
-			Rml::String valStr = Rml::ToString(card->Value);
-			corners = "<span class='corner-text top-left'>" + valStr + "</span>"
-					"<span class='corner-text bottom-right'>" + valStr + "</span>";
+			corners = "<img class='corner top-left' sprite='"+sprite+"' />"
+				"<img class='corner bottom-right' sprite='"+sprite+"' />";
 		}
-
-		cardW->SetInnerRML(
-			"<div class='card-content'>"
-				"<img class='card' sprite='" + colorStr + "-num-card' />"
-				+ spec + value + corners +
-			"</div>"
-		);
-
-		cardW->AddEventListener(Rml::EventId::Dragend, this);
 	}
 	else
 	{
-		cardW->SetClass("player-card", true);
-		cardW->SetAttribute("sprite", "back-card");
-	}	
+		value = "<span class='card-value'>" + Rml::ToString(card.Value) + "</span>";
+		Rml::String valStr = Rml::ToString(card.Value);
+		corners = "<span class='corner-text top-left'>" + valStr + "</span>"
+				"<span class='corner-text bottom-right'>" + valStr + "</span>";
+	}
+
+	cardW->SetInnerRML(
+		"<div class='card-content'>"
+			"<img class='card' sprite='" + colorStr + "-num-card' />"
+			+ spec + value + corners +
+		"</div>"
+	);
+
+	cardW->AddEventListener(Rml::EventId::Dragend, this);
 
 	container->AppendChild(std::move(cardW));
 }

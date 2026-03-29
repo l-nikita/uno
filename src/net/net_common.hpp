@@ -16,10 +16,10 @@ using NetConfig = SteamNetworkingConfigValue_t;
 using NetConnectionStatusCallback = SteamNetConnectionStatusChangedCallback_t;
 
 enum class NetConnectState : int {
-    None = k_ESteamNetworkingConnectionState_None,
-    Connecting = k_ESteamNetworkingConnectionState_Connecting,
-    FindingRoute = k_ESteamNetworkingConnectionState_FindingRoute,
-    Connected = k_ESteamNetworkingConnectionState_Connected,
-    ClosedByPeer = k_ESteamNetworkingConnectionState_ClosedByPeer,
-    ProblemDetectedLocally = k_ESteamNetworkingConnectionState_ProblemDetectedLocally,
+    NONE = k_ESteamNetworkingConnectionState_None,
+    CONNECTING = k_ESteamNetworkingConnectionState_Connecting,
+    FINDING_ROUTE = k_ESteamNetworkingConnectionState_FindingRoute,
+    CONNECTED = k_ESteamNetworkingConnectionState_Connected,
+    CLOSED_BY_PEER = k_ESteamNetworkingConnectionState_ClosedByPeer,
+    PROBLEM_DETECTED_LOCALLY = k_ESteamNetworkingConnectionState_ProblemDetectedLocally,
 };

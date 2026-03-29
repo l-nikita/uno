@@ -20,7 +20,6 @@ public:
 	void Start(gm::GameModeID gmId);
 
 	void Update();
-	void Render();
 
 	gm::IGameMode* GetGameMode() const { return m_gameMode; }
 

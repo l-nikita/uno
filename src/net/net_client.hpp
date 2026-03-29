@@ -19,6 +19,7 @@ private:
 
     void Shutdown();
 
+    bool IsConnected() { return m_isRunning; }
     static void _OnConnectionStatusChanged(NetConnectionStatusCallback* callback);
 
 private:

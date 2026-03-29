@@ -23,6 +23,8 @@ public:
     void StartClient();
     void Connect(const std::string& ip, uint16_t port);
 
+    bool IsHost() { return m_server != nullptr; }
+
 private:
     NetServer* m_server = nullptr;
     NetClient* m_client = nullptr;

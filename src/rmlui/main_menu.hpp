@@ -14,7 +14,7 @@ public:
 	void Hide();
 	void ProcessEvent(Rml::Event& event) override;
 
-	SceneID GetID() const override { return SceneID::MAIN_MENU; }
+	SceneId GetId() const override { return SceneId::MAIN_MENU; }
 
 	void Update() override;
 	void Destroy() override;

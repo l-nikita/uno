@@ -44,6 +44,9 @@ void NetworkManager::StartHost(uint16_t port = 27015)
     if (m_server)
         return;
 
+    if (m_client && m_client->IsConnected())
+        return;
+
     m_server = new NetServer(m_interface);
     m_server->Start(port);
 }

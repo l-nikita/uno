@@ -1,7 +1,6 @@
 #include <SDL3/SDL.h>
 #include "main_menu.hpp"
 #include "../game.hpp"
-#include "../gamemanager.hpp"
 #include "../net/net_manager.hpp"
 #include "../gamemodes/classic.hpp"
 
@@ -89,20 +88,13 @@ void MainMenu::ProcessEvent(Rml::Event& event)
 	auto& id = event.GetTargetElement()->GetId();
 
 	if (id == "start")
-		g_GameManager->Start(gm::GameModeID::CLASSIC);
+		g_Game->StartHost();	
+	else if (id == "connect_host")
+		g_Game->Connect("127.0.0.1", 27015);
 	else if (id == "settings")
 		OpenSettings();
 	else if (id == "back_to_menu")
 		OpenMenu();	
-	else if (id == "start_host")
-	{
-		g_NetManager->StartHost(27015);
-	}
-	else if (id == "connect_host")
-	{
-		g_NetManager->StartClient();
-		g_NetManager->Connect("127.0.0.1", 27015);
-	}
 	else if (id == "quit")
 		m_quitDlg->SetProperty("display", "flex");
 	else if (id == "yes")

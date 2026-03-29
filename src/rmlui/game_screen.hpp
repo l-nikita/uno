@@ -16,14 +16,15 @@ public:
 
 	void ProcessEvent(Rml::Event& event) override;
 
-	SceneID GetID() const override { return SceneID::GAME_SCREEN; }
+	SceneId GetId() const override { return SceneId::GAME_SCREEN; }
 
 	void Update() override;
 	void Destroy() override;
 
 private:
-	void CreatePlayerCards(Player* player);
-	void CreateCard(Card* card, Rml::Element* container, bool isVisible);
+	void CreatePlayersCards();
+	void CreateCard(const Card& card, Rml::Element* container);
+	void CreateOpponentCards(int count, Rml::Element* container);
 
 	Rml::ElementDocument* m_document = nullptr;
 

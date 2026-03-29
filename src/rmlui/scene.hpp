@@ -3,10 +3,11 @@
 #include <RmlUi/Core.h>
 
 //-----------------------------------------------------------------------------
-enum class SceneID
+enum class SceneId
 {
 	NONE,
 	MAIN_MENU,
+	LOBBY,
 	GAME_SCREEN,
 };
 
@@ -20,7 +21,7 @@ public:
         : m_context(context) 
     { }
 
-    virtual SceneID GetID() const = 0;
+    virtual SceneId GetId() const = 0;
 
 	virtual void Update() = 0;
 	virtual void Destroy() = 0;

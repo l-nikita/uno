@@ -46,19 +46,19 @@ void NetClient::OnConnectionStatusChanged(NetConnectionStatusCallback* callback)
 
     switch ((NetConnectState)info.m_eState)
     {
-        case NetConnectState::Connecting:
+        case NetConnectState::CONNECTING:
         {
             SDL_Log("[Client] Connection in progress...");
             break;
         }
-        case NetConnectState::Connected:
+        case NetConnectState::CONNECTED:
         {
             SDL_Log("[Client] Connected!");
             break;
         }
-        case NetConnectState::ClosedByPeer:
+        case NetConnectState::CLOSED_BY_PEER:
             break;
-        case NetConnectState::ProblemDetectedLocally:
+        case NetConnectState::PROBLEM_DETECTED_LOCALLY:
         {
             SDL_Log("[Client] Connection closed.");
             m_isRunning = false;

@@ -15,10 +15,6 @@
             <span>Start Game</span>
         </button>
 
-        <button id="start_host" class="u-center">
-            <span>Start Host</span>
-        </button>        
-        
         <button id="connect_host" class="u-center">
             <span>Connect Host</span>
         </button>

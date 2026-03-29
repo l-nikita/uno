@@ -49,7 +49,7 @@ void NetServer::OnConnectionStatusChanged(NetConnectionStatusCallback* callback)
 
     switch ((NetConnectState)info.m_eState)
     {
-        case NetConnectState::Connecting:
+        case NetConnectState::CONNECTING:
         {
             if (m_interface->AcceptConnection(connection) != k_EResultOK)
             {
@@ -68,15 +68,15 @@ void NetServer::OnConnectionStatusChanged(NetConnectionStatusCallback* callback)
             SDL_Log("[Host] Connection in progress...");
             break;
         }
-        case NetConnectState::Connected:
+        case NetConnectState::CONNECTED:
         {
             SDL_Log("[Host] Client connected!");
             m_clients.emplace(connection, info.m_identityRemote);
             break;
         }
-        case NetConnectState::ClosedByPeer:
+        case NetConnectState::CLOSED_BY_PEER:
             break;
-        case NetConnectState::ProblemDetectedLocally:
+        case NetConnectState::PROBLEM_DETECTED_LOCALLY:
         {
             SDL_Log("[Host] Client disconnected (Reason: %d).", info.m_eEndReason);
             m_interface->CloseConnection(connection, 0, nullptr, false);
