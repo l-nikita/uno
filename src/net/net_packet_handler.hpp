@@ -15,7 +15,8 @@ public:
 private:
     void ProcessMessage(NetMessage* msg);
 
-    friend NetServer;
+    friend class NetServer;
+    friend class NetClient;
 };
 
 extern PacketHandler* g_PacketHandler;

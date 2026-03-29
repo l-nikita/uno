@@ -1,12 +1,14 @@
 #pragma once
 
 #include <span>
+#include "net/net_manager.hpp"
 #include "gamemodes/igamemode.hpp"
 
 //-----------------------------------------------------------------------------
 class Game;
 
 using Players = std::vector<Player*>;
+using NetPlayers = std::map<NetConnection, int>;
 
 //-----------------------------------------------------------------------------
 //
@@ -28,9 +30,14 @@ public:
 
 	int GetPlayerIndex(const Player* player) const;
 
+	void OnClientConnected(NetConnection conn);
+	void BroadcastGameState();
+
 private:
 	gm::IGameMode* m_gameMode = nullptr;
+	
 	Players m_players;
+	NetPlayers m_connectionToPlayer;
 };
 
 extern GameManager* g_GameManager;

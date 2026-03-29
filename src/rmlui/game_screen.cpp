@@ -13,28 +13,29 @@ GameScreen::GameScreen(Rml::Context* context)
 
 	CreatePlayersCards();
 
-	double duration = 2; 
-	Rml::Tween tween{Rml::Tween::Quadratic, Rml::Tween::Out};
+    g_ClientManager->ListenState([this](const ClientGameState& state) {
+		CreatePlayersCards();
+    });
 }
 
 void GameScreen::CreatePlayersCards()
 {
-	Rml::Element* cardContainer = nullptr;
 	auto clState = g_ClientManager->GetState();
 
-	for (auto card : clState.MyHand)
-	{
-		cardContainer = m_document->GetElementById("card_container");
+	Rml::Element* container = m_document->GetElementById("card_container");
+	container->SetInnerRML(""); 
 
-		CreateCard(card, cardContainer);
-	}
+	for (auto card : clState.MyHand)
+		CreateCard(card, container);
 
 	for (size_t i = 0; i < clState.Opponents.size(); i++)
 	{
 		auto info = clState.Opponents.at(i);
 
-		cardContainer = m_document->GetElementById("player" + Rml::ToString((i + 1)) + "_card_container");
-		CreateOpponentCards(info.CardCount, cardContainer);
+		container = m_document->GetElementById("player" + Rml::ToString((i + 1)) + "_card_container");
+		container->SetInnerRML("");
+
+		CreateOpponentCards(info.CardCount, container);
 	}
 }
 
@@ -156,18 +157,21 @@ void GameScreen::Destroy()
 
 void GameScreen::Update()
 {
-	auto curTime = g_Game->GetElapsedTime();
-	auto it = std::remove_if(m_deletionQueue.begin(), m_deletionQueue.end(), [&](const PendingDeletion& c) {
-        if (curTime >= c.Time) 
-		{
-			c.Element->GetParentNode()->RemoveChild(c.Element);
-            return true;
-        }
+	if (m_deletionQueue.size() > 0)
+	{
+		auto curTime = g_Game->GetElapsedTime();
+		auto it = std::remove_if(m_deletionQueue.begin(), m_deletionQueue.end(), [&](const PendingDeletion& c) {
+			if (curTime >= c.Time) 
+			{
+				c.Element->GetParentNode()->RemoveChild(c.Element);
+				return true;
+			}
 
-        return false;
-    });
+			return false;
+		});
 
-	m_deletionQueue.erase(it, m_deletionQueue.end());
+		m_deletionQueue.erase(it, m_deletionQueue.end());
+	}
 }
 
 void GameScreen::ProcessEvent(Rml::Event& event)

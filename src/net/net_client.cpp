@@ -1,6 +1,7 @@
 #include <SDL3/SDL.h>
 #include "net_client.hpp"
 #include "net_manager.hpp"
+#include "net_packet_handler.hpp"
 
 //-----------------------------------------------------------------------------
 //
@@ -74,13 +75,12 @@ void NetClient::PollMessages()
     if (!m_isRunning)
         return;
 
-    NetMessage* pIncomingMsg[10];
-    int numMsgs = m_interface->ReceiveMessagesOnConnection(m_connection, pIncomingMsg, 10);
-    for (int i = 0; i < numMsgs; ++i)
+    NetMessage* messages[10];
+    int numMsgs = m_interface->ReceiveMessagesOnConnection(m_connection, messages, 10);
+    for (size_t i = 0; i < numMsgs; ++i)
     {
-        std::string msg((char*)pIncomingMsg[i]->m_pData, pIncomingMsg[i]->m_cbSize);
-        SDL_Log("Received: %s", msg);
-        pIncomingMsg[i]->Release();
+        g_PacketHandler->ProcessMessage(messages[i]);
+        messages[i]->Release();
     }
     
     m_interface->RunCallbacks();

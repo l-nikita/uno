@@ -24,6 +24,7 @@ public:
     void Connect(const std::string& ip, uint16_t port);
 
     bool IsHost() { return m_server != nullptr; }
+    NetServer* GetServer() { return m_server; }
 
 private:
     NetServer* m_server = nullptr;

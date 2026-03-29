@@ -1,6 +1,7 @@
 #include <iostream>
 #include <format>
 #include <SDL3/SDL.h>
+#include "../gamemanager.hpp"
 #include "net_server.hpp"
 #include "net_manager.hpp"
 #include "net_packet_handler.hpp"
@@ -72,6 +73,9 @@ void NetServer::OnConnectionStatusChanged(NetConnectionStatusCallback* callback)
         {
             SDL_Log("[Host] Client connected!");
             m_clients.emplace(connection, info.m_identityRemote);
+
+            if (g_GameManager)
+                g_GameManager->OnClientConnected(connection);
             break;
         }
         case NetConnectState::CLOSED_BY_PEER:
@@ -87,18 +91,36 @@ void NetServer::OnConnectionStatusChanged(NetConnectionStatusCallback* callback)
     }
 }
 
+void NetServer::SendToClient(NetConnection conn, const proto::NetMessage& msg)
+{
+    std::string data;
+    msg.SerializeToString(&data);
+    
+    m_interface->SendMessageToConnection(
+        conn, 
+        data.data(), 
+        (uint32_t)data.size(),
+        k_nSteamNetworkingSend_Reliable,
+        nullptr
+    );
+}
+void NetServer::SendToAllClients(const proto::NetMessage& msg)
+{
+    for (auto& [conn, client] : m_clients)
+        SendToClient(conn, msg);
+}
+
 void NetServer::PollMessages()
 {
     if (!m_isRunning)
         return;
 
-    NetMessage* msg = nullptr;
-
-    int numMsgs = m_interface->ReceiveMessagesOnPollGroup(m_pollGroup, &msg, 1);
-    if (numMsgs > 0 && msg)
+    NetMessage* messages[10];
+    int numMsgs = m_interface->ReceiveMessagesOnPollGroup(m_pollGroup, messages, 10);
+    for (size_t i = 0; i < numMsgs; ++i)
     {
-        g_PacketHandler->ProcessMessage(msg);
-        msg->Release();
+        g_PacketHandler->ProcessMessage(messages[i]);
+        messages[i]->Release();
     }
 
     m_interface->RunCallbacks();

@@ -2,6 +2,7 @@
 #include "gamemanager.hpp"
 #include "gamemodes/classic.hpp"
 #include "filesystem.hpp"
+#include "net_message.pb.h"
 
 GameManager* g_GameManager = nullptr;
 
@@ -51,6 +52,47 @@ void GameManager::Start(gm::GameModeID gmId)
 void GameManager::Update()
 {
 
+}
+
+//-----------------------------------------------------------------------------
+void GameManager::OnClientConnected(NetConnection conn)
+{
+    int newIndex = (int)m_connectionToPlayer.size();
+    m_connectionToPlayer[conn] = newIndex;
+
+	BroadcastGameState();
+}
+
+void GameManager::BroadcastGameState()
+{
+    for (auto& [conn, index] : m_connectionToPlayer)
+    {
+        proto::NetMessage netMsg;
+        proto::ServerGameState* state = netMsg.mutable_game_state();
+        state->set_your_index(index);
+        state->set_current_turn_index(0);
+
+        Player* me = m_players.at(index);
+        for (auto* card : me->GetCards())
+        {
+            proto::Card* c = state->add_my_hand();
+            c->set_type((int)card->Type);
+            c->set_color((int)card->Color);
+            c->set_value(card->Value);
+        }
+
+        for (int i = 0; i < m_players.size(); ++i)
+        {
+            if (i == index) 
+                continue;
+
+            proto::PlayerInfo* info = state->add_opponents();
+            info->set_name(m_players[i]->GetName());
+            info->set_card_count((int)m_players[i]->GetCards().size());
+        }
+
+        g_NetManager->GetServer()->SendToClient(conn, netMsg);
+    }
 }
 
 int GameManager::GetPlayerIndex(const Player* player) const

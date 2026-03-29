@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <functional>
 #include "card.hpp"
 
 //-----------------------------------------------------------------------------
@@ -37,11 +38,17 @@ class ClientManager final
 public:
     ClientManager();
 
+    using StateCallback = std::function<void(const ClientGameState&)>;
+
     ClientGameState& GetState() { return m_state; }
     void ApplyServerState(ClientGameState& state);
 
+    void ListenState(StateCallback cb) { m_listeners.push_back(cb); }
+
 private:
     ClientGameState m_state;
+
+    std::vector<StateCallback> m_listeners;
 };
 
 extern ClientManager* g_ClientManager;

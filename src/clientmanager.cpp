@@ -10,4 +10,7 @@ ClientManager::ClientManager()
 void ClientManager::ApplyServerState(ClientGameState& state)
 {
     m_state = state;
+
+    for (auto& cb : m_listeners)
+        cb(m_state); 
 }

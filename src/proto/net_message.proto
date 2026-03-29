@@ -7,17 +7,33 @@ message ChatMessage
   string message = 2;
 }
 
-message GameEvent 
+message Card 
 {
-  int32 event_id = 1;
-  string description = 2;
+  int32 type = 1;
+  int32 color = 2;
+  int32 value = 3;
+}
+
+message PlayerInfo 
+{
+  string name = 1;
+  int32 card_count = 2;
+}
+
+message ServerGameState 
+{
+  int32 your_index = 1;
+  int32 current_turn_index = 2;
+  Card top_discard = 3;
+  repeated Card my_hand = 4;
+  repeated PlayerInfo opponents = 5;
 }
 
 message NetMessage
 {
   oneof payload 
   {
-    ChatMessage chat = 1;
-    GameEvent event = 2;
+    ServerGameState game_state = 1;
+    ChatMessage chat = 2;
   }
 }

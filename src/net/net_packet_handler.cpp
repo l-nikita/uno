@@ -1,6 +1,7 @@
 #include <SDL3/SDL.h>
 #include "net_packet_handler.hpp"
 #include "net_message.pb.h"
+#include "../clientmanager.hpp"
 
 PacketHandler* g_PacketHandler = nullptr;
 
@@ -35,12 +36,25 @@ void PacketHandler::ProcessMessage(NetMessage* msg)
             SDL_Log("username %s", chat.username());
             SDL_Log("message %s", chat.message());
             break;
-        }
-        case proto::NetMessage::kEvent:
+        }        
+        case proto::NetMessage::kGameState:
         {
-            const auto& event = message.event();
-            SDL_Log("description %s", event.description());
-            SDL_Log("event_id %s", std::to_string(event.event_id()));
+            if (!g_ClientManager) 
+                break;
+
+            const auto& gs = message.game_state();
+
+            ClientGameState state;
+            state.MyIndex = gs.your_index();
+            state.CurrentTurnIndex = gs.current_turn_index();
+
+            for (auto& c : gs.my_hand())
+                state.MyHand.push_back({ (CardType)c.type(), (CardColor)c.color(), c.value() });
+                
+            for (auto& o : gs.opponents())
+                state.Opponents.push_back({ o.name(), o.card_count() });
+
+            g_ClientManager->ApplyServerState(state);
             break;
         }
         default:

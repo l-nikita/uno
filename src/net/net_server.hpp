@@ -2,12 +2,17 @@
 
 #include <map>
 #include "net_common.hpp"
+#include "net_message.pb.h"
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
 class NetServer
 {
+public:
+    void SendToClient(NetConnection conn, const proto::NetMessage& msg);
+    void SendToAllClients(const proto::NetMessage& msg);
+
 private:
     NetServer(NetInterface* interface);
     ~NetServer() { Shutdown(); }
