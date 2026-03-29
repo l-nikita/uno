@@ -1,0 +1,33 @@
+<rml>
+<head>
+    <title>Lobby</title>
+    <link type="text/rcss" href="/ui/styles/rml.rcss"/>
+    <link type="text/rcss" href="/ui/styles/pages/main-menu.rcss"/>
+    <link type="text/rcss" href="/ui/styles/pages/lobby.rcss"/>
+</head>
+<body>
+    <img id="bg" src="/ui/images/menu_bg.png" />
+
+    <div class="title-container u-center">
+        <p>Lobby</p>
+    </div>
+
+    <div id="players">
+        <div style="padding: 4vw;">
+            <div class="player">Player 1</div>
+            <div class="player">Player 2</div>
+            <div class="player">Player 3</div>
+            <div class="player">Player 4</div>
+        </div>
+    </div>
+
+    <div id="start_container">
+        <button id="start_game" class="u-center">
+            <span>Start Game</span>
+        </button>
+        <button id="quit" class="u-center">
+            <span>Quit</span>
+        </button>            
+    </div>
+</body>
+</rml>

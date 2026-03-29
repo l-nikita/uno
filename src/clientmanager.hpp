@@ -45,6 +45,9 @@ public:
 
     void ListenState(StateCallback cb) { m_listeners.push_back(cb); }
 
+    void OnDisconnected();
+    void OnConnected();
+
 private:
     ClientGameState m_state;
 

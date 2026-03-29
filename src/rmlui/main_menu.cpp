@@ -7,8 +7,11 @@
 MainMenu::MainMenu(Rml::Context* context)
 	: Scene(context)
 {
-	if (Rml::DataModelConstructor constructor = m_context->CreateDataModel("game_settings"))
+	auto dataModels = m_context->GetDataModels();
+	if (dataModels.find("game_settings") == dataModels.end())
 	{
+		Rml::DataModelConstructor constructor = m_context->CreateDataModel("game_settings");
+
 		constructor.BindFunc("is_fullscreen", [](Rml::Variant& variant) { 
 			variant = g_Game->m_GameSettings.IsFullScreen;
 		}, 

@@ -51,6 +51,12 @@ void NetworkManager::StartHost(uint16_t port = 27015)
     m_server->Start(port);
 }
 
+void NetworkManager::StopHost()
+{
+    if (m_server)
+        delete m_server, m_server = nullptr;
+}
+
 void NetworkManager::StartClient()
 {
     if (m_client)
@@ -65,6 +71,15 @@ void NetworkManager::Connect(const std::string& ip, uint16_t port)
         return;
 
     m_client->Start(ip, port);
+}
+
+void NetworkManager::Disconnect()
+{
+    if (IsHost())
+        StopHost();
+
+    if (m_client)
+        delete m_client, m_client = nullptr;
 }
 
 //-----------------------------------------------------------------------------

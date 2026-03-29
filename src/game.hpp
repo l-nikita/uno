@@ -46,7 +46,10 @@ public:
 	void DestroyScene(Scene* scene);
 
 	void StartHost();
+	void StopHost();
+	
 	void Connect(const std::string& ip, uint16_t port);
+	void Disconnect();
 
 public:
 	GameSettings m_GameSettings;

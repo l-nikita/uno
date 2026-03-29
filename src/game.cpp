@@ -1,5 +1,6 @@
 ﻿#include <iostream>
 #include <print>
+#include <thread>
 #ifdef DEBUG
 	#include <RmlUi/Debugger.h>
 #endif
@@ -12,6 +13,7 @@
 #include "filesystem.hpp"
 #include "rmlui/rmlui_renderer_gl3.hpp"
 #include "rmlui/main_menu.hpp"
+#include "rmlui/lobby.hpp"
 #include "rmlui/game_screen.hpp"
 
 //-----------------------------------------------------------------------------
@@ -45,9 +47,18 @@ void Game::StartHost()
 	g_NetManager->Connect("127.0.0.1", 27015);
 
 	g_ClientManager = new ClientManager();
-
 	g_GameManager = new GameManager();
-	g_GameManager->Start(gm::GameModeID::CLASSIC);
+}
+
+void Game::StopHost()
+{
+	g_NetManager->StopHost();
+
+	if (g_GameManager)
+		delete g_GameManager, g_GameManager = nullptr;	
+		
+	if (g_ClientManager)
+		delete g_ClientManager, g_ClientManager = nullptr;
 }
 
 void Game::Connect(const std::string& ip, uint16_t port)
@@ -59,6 +70,11 @@ void Game::Connect(const std::string& ip, uint16_t port)
 	g_NetManager->Connect(ip, port);
 
 	g_ClientManager = new ClientManager();
+}
+
+void Game::Disconnect()
+{
+	g_NetManager->Disconnect();
 }
 
 bool Game::InitSDL(std::string windowName, uint32_t width, uint32_t height, bool allowResize)
@@ -245,6 +261,9 @@ Scene* Game::CreateNewScene(SceneId id)
 	case SceneId::MAIN_MENU:
 		scene = new MainMenu(m_rmlContext);
 		break;
+	case SceneId::LOBBY:
+		scene = new Lobby(m_rmlContext);
+		break;	
 	case SceneId::GAME_SCREEN:
 		scene = new GameScreen(m_rmlContext);
 		break;

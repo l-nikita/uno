@@ -6,9 +6,10 @@
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Player::Player(std::string name)
+Player::Player(std::string name, NetConnection conn)
+	: m_name(name), m_connection(conn)
 {
-	m_name = name;
+
 }
 
 void Player::GiveCard(Card* card)

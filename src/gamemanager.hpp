@@ -8,7 +8,8 @@
 class Game;
 
 using Players = std::vector<Player*>;
-using NetPlayers = std::map<NetConnection, int>;
+
+constexpr auto MAX_PLAYERS = 4;
 
 //-----------------------------------------------------------------------------
 //
@@ -20,24 +21,24 @@ public:
 	~GameManager();
 
 	void Start(gm::GameModeID gmId);
-
 	void Update();
 
 	gm::IGameMode* GetGameMode() const { return m_gameMode; }
+	bool IsGameInProgress() const { return m_gameMode; }
 
 	const Players GetPlayers() const { return m_players; }
-	const Player* GetLocalPlayer() const { return m_players.at(0); }
 
 	int GetPlayerIndex(const Player* player) const;
 
 	void OnClientConnected(NetConnection conn);
+	void OnClientDisconnected(NetConnection conn);
+
 	void BroadcastGameState();
 
 private:
 	gm::IGameMode* m_gameMode = nullptr;
 	
 	Players m_players;
-	NetPlayers m_connectionToPlayer;
 };
 
 extern GameManager* g_GameManager;

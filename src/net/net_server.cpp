@@ -62,7 +62,7 @@ void NetServer::OnConnectionStatusChanged(NetConnectionStatusCallback* callback)
             if (!m_interface->SetConnectionPollGroup(connection, m_pollGroup))
             {
                 m_interface->CloseConnection(connection, 0, "Failed to set poll group", false);
-                SDL_Log("[Host] Could not set poll group.");
+                SDL_Log("[Host] Couldn't set poll group.");
                 break;
             }
 
@@ -73,17 +73,30 @@ void NetServer::OnConnectionStatusChanged(NetConnectionStatusCallback* callback)
         {
             SDL_Log("[Host] Client connected!");
             m_clients.emplace(connection, info.m_identityRemote);
-
-            if (g_GameManager)
-                g_GameManager->OnClientConnected(connection);
+            g_GameManager->OnClientConnected(connection);
+            
             break;
         }
         case NetConnectState::CLOSED_BY_PEER:
+        {
+            SDL_Log("[Host] Client disconnected (Reason: %d).", info.m_eEndReason);
+
+            g_GameManager->OnClientDisconnected(connection);
+
+            m_clients.erase(connection);
+            m_interface->CloseConnection(connection, 0, nullptr, false);
+
             break;
+        }
         case NetConnectState::PROBLEM_DETECTED_LOCALLY:
         {
             SDL_Log("[Host] Client disconnected (Reason: %d).", info.m_eEndReason);
+
+            g_GameManager->OnClientDisconnected(connection);
+
+            m_clients.erase(connection);
             m_interface->CloseConnection(connection, 0, nullptr, false);
+
             break;
         }
         default:

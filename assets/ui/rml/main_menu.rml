@@ -10,6 +10,7 @@
     <div class="title-container u-center">
         <p>Uno</p>
     </div>
+    
     <div id="container_buttons" class="container u-center">
         <button id="start" class="u-center">
             <span>Start Game</span>

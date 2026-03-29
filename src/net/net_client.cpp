@@ -2,6 +2,7 @@
 #include "net_client.hpp"
 #include "net_manager.hpp"
 #include "net_packet_handler.hpp"
+#include "../clientmanager.hpp"
 
 //-----------------------------------------------------------------------------
 //
@@ -55,13 +56,23 @@ void NetClient::OnConnectionStatusChanged(NetConnectionStatusCallback* callback)
         case NetConnectState::CONNECTED:
         {
             SDL_Log("[Client] Connected!");
+            g_ClientManager->OnConnected();
+
             break;
         }
         case NetConnectState::CLOSED_BY_PEER:
+        {
+            SDL_Log("[Client] Connection closed.");
+            g_ClientManager->OnDisconnected();
+
+            m_isRunning = false;
             break;
+        }
         case NetConnectState::PROBLEM_DETECTED_LOCALLY:
         {
             SDL_Log("[Client] Connection closed.");
+            g_ClientManager->OnDisconnected();
+
             m_isRunning = false;
             break;
         }
@@ -100,6 +111,8 @@ void NetClient::Shutdown()
         m_interface->CloseConnection(m_connection, 0, "Client Shutdown", true);
         m_connection = k_HSteamNetConnection_Invalid;
     }
+
+    g_ClientManager->OnDisconnected();
 
     SDL_Log("[Client] Shutdown complete.");
 }

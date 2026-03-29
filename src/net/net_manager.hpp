@@ -20,8 +20,11 @@ public:
     void Shutdown();
 
     void StartHost(uint16_t port);
+    void StopHost();
+
     void StartClient();
     void Connect(const std::string& ip, uint16_t port);
+    void Disconnect();
 
     bool IsHost() { return m_server != nullptr; }
     NetServer* GetServer() { return m_server; }
