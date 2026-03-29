@@ -1,6 +1,7 @@
 #include <SDL3/SDL.h>
 #include "game_screen.hpp"
 #include "../game.hpp"
+#include "../gamemanager.hpp"
 #include "../card.hpp"
 #include "../player.hpp"
 #include "../gamemodes/classic.hpp"

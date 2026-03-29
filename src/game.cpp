@@ -5,6 +5,8 @@
 #endif
 
 #include "game.hpp"
+#include "gamemanager.hpp"
+#include "net/net_manager.hpp"
 #include "input.hpp"
 #include "filesystem.hpp"
 #include "rmlui/rmlui_renderer_gl3.hpp"
@@ -21,9 +23,15 @@ void Game::Init()
 
 	if (!InitRml())
 		throw std::runtime_error("Couldn't initialize RmlUi!");
-	
-	m_isRunning = true;
+
 	g_GameManager = new GameManager();
+
+	g_NetManager = new NetworkManager();
+	g_NetManager->Init();
+
+	m_isRunning = true;
+
+	SDL_Log("Game successfully initialized.");
 }
 
 bool Game::InitSDL(std::string windowName, uint32_t width, uint32_t height, bool allowResize)
@@ -158,16 +166,20 @@ void Game::Shutdown()
 {
 	Rml::Shutdown();
 
-	delete g_GameManager;
-	delete m_systemInterface;
-	delete m_renderInterface;
-	delete m_fileInterface;
+	delete g_GameManager, g_GameManager = nullptr;
+	delete g_NetManager, g_NetManager = nullptr;
+
+	delete m_systemInterface, m_systemInterface = nullptr;
+	delete m_renderInterface, m_renderInterface = nullptr;
+	delete m_fileInterface, m_fileInterface = nullptr;
 
 	RmlGL3::Shutdown();
 
 	SDL_GL_DestroyContext(m_glContext);
 	SDL_DestroyWindow(m_window);
 	SDL_Quit();
+
+	SDL_Log("Game shutdown complete.");
 }
 
 void Game::RequestExit()
@@ -210,6 +222,8 @@ Scene* Game::CreateNewScene(SceneID id)
 void Game::Update()
 {
 	ProcessEvents(m_rmlContext, &ProcessKeyDownShortcuts, false);
+
+	g_NetManager->Update();
 
 	if (m_sceneID != SceneID::NONE)
 	{

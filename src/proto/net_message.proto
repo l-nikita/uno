@@ -1,0 +1,23 @@
+syntax = "proto3";
+package proto;
+
+message ChatMessage 
+{
+  string username = 1;
+  string message = 2;
+}
+
+message GameEvent 
+{
+  int32 event_id = 1;
+  string description = 2;
+}
+
+message NetMessage
+{
+  oneof payload 
+  {
+    ChatMessage chat = 1;
+    GameEvent event = 2;
+  }
+}

@@ -14,39 +14,25 @@ find_package(Protobuf REQUIRED CONFIG)
 find_package(GameNetworkingSockets REQUIRED CONFIG)
 
 # ----------------------------------------------
-function(auto_source_group_by_folder FILES IS_HEADER)
-    foreach(file ${${FILES}})
-        get_filename_component(dir "${file}" PATH)
-        file(RELATIVE_PATH rel_path "${CMAKE_CURRENT_SOURCE_DIR}" "${dir}")
-
-        string(REPLACE "/" ";" parts "${rel_path}")
-        set(group_parts "")
-		
-        foreach(part ${parts})
-            list(APPEND group_parts "${part}")
-        endforeach()
-
-        if(IS_HEADER)
-            list(APPEND group_parts "headers")
-        endif()
-
-        string(REPLACE ";" "\\" group "${group_parts}")
-
-        source_group("${group}" FILES "${file}")
-    endforeach()
-endfunction()
-
-# ----------------------------------------------
 add_executable(uno)
 
 # ----------------------------------------------
-file(GLOB_RECURSE headers ${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp)
-file(GLOB_RECURSE sources ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
+file(GLOB_RECURSE HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp)
+file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 
-target_sources(uno PRIVATE ${sources} ${headers})
+# ----------------------------------------------
+set(PROTO_FILES 
+	${CMAKE_CURRENT_SOURCE_DIR}/src/proto/net_message.proto
+)
+protobuf_generate_cpp(PROTO_SOURCES PROTO_HEADERS ${PROTO_FILES})
 
-auto_source_group_by_folder(headers TRUE)
-auto_source_group_by_folder(sources FALSE)
+# ----------------------------------------------
+target_sources(uno PRIVATE 
+    ${SOURCES} 
+    ${HEADERS} 
+    ${PROTO_SOURCES} 
+    ${PROTO_HEADERS}
+)
 
 # ----------------------------------------------
 target_link_libraries(uno PRIVATE 	
@@ -61,13 +47,13 @@ target_compile_definitions(uno PRIVATE
     $<$<CONFIG:Debug>:DEBUG>
 )
 
-# ----------------------------------------------
-set_target_properties(uno PROPERTIES
-    VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+target_include_directories(uno PUBLIC
+	${Protobuf_INCLUDE_DIRS}
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT "uno")
-
+# ----------------------------------------------
 add_custom_command(TARGET uno POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${CMAKE_CURRENT_SOURCE_DIR}/assets"
