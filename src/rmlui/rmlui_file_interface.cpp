@@ -3,10 +3,12 @@
 
 FileInterface::FileInterface(const Rml::String& root) : root(root) 
 {
+
 }
 
 FileInterface::~FileInterface() 
 {
+	
 }
 
 Rml::FileHandle FileInterface::Open(const Rml::String& path)

@@ -58,6 +58,7 @@ void NetClient::OnConnectionStatusChanged(NetConnectionStatusCallback* callback)
             SDL_Log("[Client] Connected!");
             g_ClientManager->OnConnected();
 
+            m_isRunning = true;
             break;
         }
         case NetConnectState::CLOSED_BY_PEER:
@@ -99,9 +100,6 @@ void NetClient::PollMessages()
 
 void NetClient::Shutdown()
 {
-    if (!m_isRunning)
-        return;
-
     SDL_Log("[Client] Shutting down...");
 
     m_isRunning = false;

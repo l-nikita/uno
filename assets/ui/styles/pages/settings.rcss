@@ -14,6 +14,7 @@ body {
     height: auto; 
     align-items: center;
     gap: 1vw;
+    margin-top: 4vh;
 }
 
 #back_container {

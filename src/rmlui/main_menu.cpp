@@ -7,18 +7,12 @@
 MainMenu::MainMenu(Rml::Context* context)
 	: Scene(context)
 {
-	auto dataModels = m_context->GetDataModels();
-	if (dataModels.find("game_settings") == dataModels.end())
+	if (Rml::DataModelConstructor constructor = m_context->CreateDataModel("game_settings"))
 	{
-		Rml::DataModelConstructor constructor = m_context->CreateDataModel("game_settings");
+		constructor.Bind("is_fullscreen", &g_Game->m_GameSettings.IsFullScreen);
+		constructor.Bind("name", &g_Game->m_GameSettings.Name);
 
-		constructor.BindFunc("is_fullscreen", [](Rml::Variant& variant) { 
-			variant = g_Game->m_GameSettings.IsFullScreen;
-		}, 
-		[](const Rml::Variant& variant) {
-			g_Game->m_GameSettings.IsFullScreen = variant.Get<bool>();
-			g_Game->SetFullscreen(g_Game->m_GameSettings.IsFullScreen);
-		});
+		m_dmHandle = constructor.GetModelHandle();
 	}
 
 	OpenMenu();
@@ -26,6 +20,9 @@ MainMenu::MainMenu(Rml::Context* context)
 
 void MainMenu::Destroy()
 {
+	if (m_dmHandle)
+        m_context->RemoveDataModel("game_settings");
+
 	if (m_settings)
 		m_settings->Close(), m_settings = nullptr;	
 		
@@ -35,7 +32,10 @@ void MainMenu::Destroy()
 
 void MainMenu::Update()
 {
-
+	if (m_dmHandle && m_dmHandle.IsVariableDirty("is_fullscreen"))
+	{
+		g_Game->SetFullscreen(g_Game->m_GameSettings.IsFullScreen);
+	}
 }
 
 void MainMenu::OpenMenu()

@@ -36,4 +36,6 @@ private:
 	Rml::ElementDocument* m_settings = nullptr;
 
 	Rml::Element* m_quitDlg = nullptr;
+
+	Rml::DataModelHandle m_dmHandle;
 };

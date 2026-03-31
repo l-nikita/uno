@@ -93,6 +93,17 @@ input.checkbox:checked {
     background-color: #8aff73;
 }
 
+input.text {
+    background-color: #fff;
+    border: 2px #999;
+    color: black;
+    padding: 5px;
+    tab-index: auto;
+    cursor: text;
+    box-sizing: border-box;
+    font-size: 0.9em;
+}
+
 .hidden { 
 	display: none; 
 }

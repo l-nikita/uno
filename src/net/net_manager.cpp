@@ -1,4 +1,5 @@
 #include <iostream>
+#include <thread>
 #include <SDL3/SDL.h>
 #include <steam/steamnetworkingtypes.h>
 #include <steam/steamnetworkingsockets.h>
@@ -77,6 +78,8 @@ void NetworkManager::Disconnect()
 {
     if (IsHost())
         StopHost();
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
     if (m_client)
         delete m_client, m_client = nullptr;

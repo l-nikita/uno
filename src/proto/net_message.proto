@@ -29,11 +29,16 @@ message ServerGameState
   repeated PlayerInfo opponents = 5;
 }
 
+message LobbyData {
+  repeated string players = 1;
+}
+
 message NetMessage
 {
   oneof payload 
   {
     ServerGameState game_state = 1;
-    ChatMessage chat = 2;
+    LobbyData lobby_data = 2;
+    ChatMessage chat = 3;
   }
 }

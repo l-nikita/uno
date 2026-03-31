@@ -26,7 +26,7 @@ button {
     width: 100%;
     height: 8vh;
     padding: 15px 32px;
-    decorator: image( "../../images/button1.png" );
+    decorator: image( "/ui/images/button1.png" );
     color: #ffffff;
     text-align: center;
     text-decoration: none;
@@ -67,7 +67,7 @@ button span {
     align-items: center;
     justify-content: space-between;
     gap: 2vh;
-    decorator: image( "../../images/button1.png" );
+    decorator: image( "/ui/images/button1.png" );
     width: 50%;
     height: 25%;
 }

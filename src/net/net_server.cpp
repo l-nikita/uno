@@ -141,9 +141,6 @@ void NetServer::PollMessages()
 
 void NetServer::Shutdown()
 {
-    if (!m_isRunning)
-        return;
-
     SDL_Log("[Host] Shutting down...");
 
     m_isRunning = false;

@@ -16,7 +16,11 @@
         <div style="padding: 4vw;">
             <label>
                 <span>Full Screen</span>
-                <input type="checkbox" data-value="is_fullscreen"/>
+                <input type="checkbox" data-value="is_fullscreen" data-checked="is_fullscreen"/>
+            </label>            
+            <label>
+                <span>Name</span>
+                <input type="text" data-value="name"/>
             </label>
         </div>
     </div>

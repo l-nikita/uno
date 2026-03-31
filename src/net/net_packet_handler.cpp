@@ -39,9 +39,6 @@ void PacketHandler::ProcessMessage(NetMessage* msg)
         }        
         case proto::NetMessage::kGameState:
         {
-            if (!g_ClientManager) 
-                break;
-
             const auto& gs = message.game_state();
 
             ClientGameState state;
@@ -55,6 +52,11 @@ void PacketHandler::ProcessMessage(NetMessage* msg)
                 state.Opponents.push_back({ o.name(), o.card_count() });
 
             g_ClientManager->ApplyServerState(state);
+            break;
+        }        
+        case proto::NetMessage::kLobbyData:
+        {
+            
             break;
         }
         default:

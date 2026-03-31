@@ -1,6 +1,7 @@
 #pragma once
 
 #include <chrono>
+#include <string>
 #include <SDL3/SDL.h>
 #include <RmlUi/Core.h>
 #include "rmlui/rmlui_renderer_gl3_sdl.hpp"
@@ -18,6 +19,7 @@ class MainMenu;
 struct GameSettings
 {
 	bool IsFullScreen = false;
+    std::string Name = "Player";
 };
 
 //-----------------------------------------------------------------------------
@@ -50,6 +52,9 @@ public:
 	
 	void Connect(const std::string& ip, uint16_t port);
 	void Disconnect();
+
+	void SaveSettings(const std::string& filepath);
+	void LoadSettings(const std::string& filepath);
 
 public:
 	GameSettings m_GameSettings;

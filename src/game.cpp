@@ -1,6 +1,6 @@
 ﻿#include <iostream>
+#include <fstream>
 #include <print>
-#include <thread>
 #ifdef DEBUG
 	#include <RmlUi/Debugger.h>
 #endif
@@ -26,6 +26,9 @@ void Game::Init()
 
 	if (!InitRml())
 		throw std::runtime_error("Couldn't initialize RmlUi!");
+
+	LoadSettings("game_settings.bin");
+	SetFullscreen(m_GameSettings.IsFullScreen);
 
 	g_NetManager = new NetworkManager();
 	g_NetManager->Init();
@@ -75,6 +78,12 @@ void Game::Connect(const std::string& ip, uint16_t port)
 void Game::Disconnect()
 {
 	g_NetManager->Disconnect();
+
+	if (g_GameManager)
+		delete g_GameManager, g_GameManager = nullptr;	
+		
+	if (g_ClientManager)
+		delete g_ClientManager, g_ClientManager = nullptr;
 }
 
 bool Game::InitSDL(std::string windowName, uint32_t width, uint32_t height, bool allowResize)
@@ -207,6 +216,8 @@ void Game::Run()
 
 void Game::Shutdown()
 {
+	SaveSettings("game_settings.bin");
+
 	Rml::Shutdown();
 
 	if (g_GameManager)
@@ -377,9 +388,14 @@ bool Game::ProcessKeyDownShortcuts(Rml::Context* context, Rml::Input::KeyIdentif
 			const float new_dp_ratio = Rml::Math::Min(context->GetDensityIndependentPixelRatio() * 1.2f, 2.5f);
 			context->SetDensityIndependentPixelRatio(new_dp_ratio);
 		}
+		else
+		{
+			// Propagate the key down event to the context.
+			result = true;
+		}
 	}
 	else
-	{
+	{	
 		// We arrive here when no priority keys are detected and the key was not consumed by the context. Check for shortcuts of lower priority.
 		if (key == Rml::Input::KI_R && key_modifier & Rml::Input::KM_CTRL)
 		{
@@ -435,7 +451,7 @@ void Game::ProcessEvents(Rml::Context* context, KeyDownCallback key_down_callbac
 			case event_key_down:
 			{
 				propagate_event = false;
-				const Rml::Input::KeyIdentifier key = RmlSDL::ConvertKey(GetKey(ev));
+				Rml::Input::KeyIdentifier key = RmlSDL::ConvertKey(GetKey(ev));
 				const int key_modifier = RmlSDL::GetKeyModifierState();
 				const float native_dp_ratio = GetDisplayScale();
 
@@ -483,6 +499,42 @@ void Game::SetFullscreen(bool fullscreen)
 void Game::GetWindowSize(int* w, int* h)
 {
 	SDL_GetWindowSize(m_window, w, h);
+}
+
+void Game::SaveSettings(const std::string& filepath)
+{
+	std::ofstream os(filepath, std::ios::binary);
+    if (!os.is_open()) 
+		return;
+
+	auto& sett = m_GameSettings;
+
+    os.write(reinterpret_cast<const char*>(&sett.IsFullScreen), sizeof(sett.IsFullScreen));
+
+	size_t nameLength = sett.Name.size();
+    os.write(reinterpret_cast<const char*>(&nameLength), sizeof(nameLength));
+    os.write(sett.Name.data(), nameLength);
+
+    os.close();
+}
+
+void Game::LoadSettings(const std::string& filepath)
+{
+	std::ifstream is(filepath, std::ios::binary);
+    if (!is.is_open()) 
+		return;
+
+	auto& sett = m_GameSettings;
+
+	is.read(reinterpret_cast<char*>(&sett.IsFullScreen), sizeof(sett.IsFullScreen));
+
+	size_t nameLength;
+    is.read(reinterpret_cast<char*>(&nameLength), sizeof(nameLength));
+
+	sett.Name.resize(nameLength);
+    is.read(&sett.Name[0], nameLength);
+
+	is.close();
 }
 
 void Game::OnWindowResize()
