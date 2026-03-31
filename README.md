@@ -1,0 +1,52 @@
+# Uno
+
+A modern, networked clone of the popular Uno card game, built with C++ and modern game development libraries. It supports natively **Windows** and **Linux**.
+
+![Engine Screenshot](docs/images/main_menu.png)
+
+## Status
+
+This project is currently a **work in progress**. Core gameplay mechanics and networking features are actively being developed.
+
+## Features (Under Development)
+
+- **Cross-platform support:** Powered by [SDL3](https://github.com/libsdl-org/SDL) for broad hardware and OS compatibility.
+- **Modern UI:** Responsive, web-like interfaces using [RmlUi](https://github.com/mikke89/RmlUi).
+- **Networked Multiplayer:** Client-server architecture using Valve's [GameNetworkingSockets](https://github.com/ValveSoftware/GameNetworkingSockets).
+- **Efficient Data Transfer:** Protocol Buffers for fast and reliable game state synchronization.
+
+## Built With
+
+- **Language:** C++23
+- **Graphics & Input:** [SDL3](https://github.com/libsdl-org/SDL) & [SDL_image](https://github.com/libsdl-org/SDL_image)
+- **UI Architecture:** [RmlUi](https://github.com/mikke89/RmlUi)
+- **Networking:** [GameNetworkingSockets](https://github.com/ValveSoftware/GameNetworkingSockets)
+- **Serialization:** [Protocol Buffers (Protobuf)](https://github.com/protocolbuffers/protobuf)
+- **Dependency Management:** [vcpkg](https://github.com/microsoft/vcpkg)
+- **Build System:** [CMake](https://cmake.org/download/)
+
+## Building from Source
+
+### Prerequisites
+
+- A C++23 compatible compiler (GCC 12+, Clang 15+, or MSVC 19.34+)
+- [CMake](https://cmake.org/download/) (v3.5 or higher)
+- [vcpkg](https://vcpkg.io/en/getting-started.html) for managing dependencies
+
+### Steps
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/your-username/uno.git
+   cd uno
+   ```
+
+2. **Configure with vcpkg and CMake:**
+   ```bash
+   cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=[path-to-vcpkg]/scripts/buildsystems/vcpkg.cmake
+   ```
+
+3. **Build the project:**
+   ```bash
+   cmake --build build
+   ```
