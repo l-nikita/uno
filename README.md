@@ -16,12 +16,10 @@ A modern, networked clone of the popular Uno card game, built with C++ and moder
 ## Tech Stack
 
 - **Language:** C++23
-- **Graphics & Input:** [SDL3](https://github.com/libsdl-org/SDL) & [SDL_image](https://github.com/libsdl-org/SDL_image)
-- **UI Architecture:** [RmlUi](https://github.com/mikke89/RmlUi)
-- **Networking:** [GameNetworkingSockets](https://github.com/ValveSoftware/GameNetworkingSockets)
-- **Serialization:** [Protocol Buffers (Protobuf)](https://github.com/protocolbuffers/protobuf)
-- **Dependency Management:** [vcpkg](https://github.com/microsoft/vcpkg)
-- **Build System:** [CMake](https://cmake.org/download/)
+- **Graphics & Input:** OpenGL, SDL3 & SDL_image
+- **UI Architecture:** RmlUi
+- **Networking:** GameNetworkingSockets
+- **Serialization:** Protocol Buffers (Protobuf)
 
 ## Getting Started
 
