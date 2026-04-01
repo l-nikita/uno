@@ -15,7 +15,6 @@ A modern, networked clone of the popular Uno card game, built with C++ and moder
 
 ## Tech Stack
 
-- **Language:** C++23
 - **Graphics & Input:** OpenGL, SDL3 & SDL_image
 - **UI Architecture:** RmlUi
 - **Networking:** GameNetworkingSockets
