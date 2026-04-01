@@ -15,10 +15,10 @@ A modern, networked clone of the popular Uno card game, built with C++ and moder
 
 ## Tech Stack
 
-- **Graphics & Input:** OpenGL, SDL3 & SDL_image
-- **UI Architecture:** RmlUi
-- **Networking:** GameNetworkingSockets
-- **Serialization:** Protocol Buffers (Protobuf)
+- **Windowing & Input:** SDL3
+- **Grahipcs:** OpenGL & SDL_image
+- **UI:** RmlUi
+- **Networking:** GameNetworkingSockets, Protobuf
 
 ## Getting Started
 
