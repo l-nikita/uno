@@ -27,7 +27,7 @@ GameManager::~GameManager()
 //-----------------------------------------------------------------------------
 void GameManager::Start(gm::GameModeID gmId)
 {
-	if (IsGameInProgress())
+	if (GetStage() == GameStage::RoundInProgress || GetStage() == GameStage::RoundEnd)
 	{
 		Rml::Log::Message(Rml::Log::LT_WARNING, "The game has already started");
 		return;
@@ -42,6 +42,10 @@ void GameManager::Start(gm::GameModeID gmId)
 		m_gameMode->Start();
 
 	Rml::Log::Message(Rml::Log::LT_INFO, "The game has been started!");
+
+	m_stage = GameStage::RoundInProgress;
+
+	BroadcastGameState();
 }
 
 void GameManager::Update()
@@ -52,12 +56,8 @@ void GameManager::Update()
 //-----------------------------------------------------------------------------
 void GameManager::OnClientConnected(NetConnection conn)
 {
-    m_players.push_back(new Player("Player" + m_players.size() + 1, conn));
-
-	//if (!IsGameInProgress())
-	//	g_GameManager->Start(gm::GameModeID::CLASSIC);
-
-	//BroadcastGameState();
+    m_players.push_back(new Player("Player" + std::to_string(m_players.size() + 1), conn));
+	BroadcastGameState();
 }
 
 void GameManager::OnClientDisconnected(NetConnection conn)
@@ -75,33 +75,33 @@ void GameManager::OnClientDisconnected(NetConnection conn)
 
 void GameManager::BroadcastGameState()
 {
-    for (auto player : m_players)
+    for (auto clPlayer : m_players)
     {
-		auto index = player->GetIndex();
+		auto clIndex = clPlayer->GetIndex();
         proto::NetMessage netMsg;
         proto::ServerGameState* state = netMsg.mutable_game_state();
-        state->set_your_index(index);
-        state->set_current_turn_index(0);
-
-        for (auto* card : player->GetCards())
-        {
-            proto::Card* c = state->add_my_hand();
-            c->set_type((int)card->Type);
-            c->set_color((int)card->Color);
-            c->set_value(card->Value);
-        }
+		state->set_stage((int)GetStage());
 
         for (int i = 0; i < m_players.size(); ++i)
         {
-            if (i == index) 
-                continue;
+			auto player = m_players.at(i);
 
-            proto::PlayerInfo* info = state->add_opponents();
-            info->set_name(m_players[i]->GetName());
-            info->set_card_count((int)m_players[i]->GetCards().size());
+            proto::PlayerInfo* info = state->add_players();
+			info->set_index(i);
+            info->set_name(player->GetName());
+			info->set_is_host((i == 0));
+			info->set_is_local((clIndex == i));
+
+			for (auto* card : player->GetCards())
+			{
+				proto::Card* c = info->add_hand();
+				c->set_type((int)card->Type);
+				c->set_color((int)card->Color);
+				c->set_value(card->Value);
+			}
         }
 
-        g_NetManager->GetServer()->SendToClient(player->GetConnection(), netMsg);
+        g_NetManager->GetServer()->SendToClient(clPlayer->GetConnection(), netMsg);
     }
 }
 

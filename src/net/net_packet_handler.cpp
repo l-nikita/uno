@@ -33,32 +33,32 @@ void PacketHandler::ProcessMessage(NetMessage* msg)
         case proto::NetMessage::kChat:
         {
             const auto& chat = message.chat();
-            SDL_Log("username %s", chat.username());
-            SDL_Log("message %s", chat.message());
+            g_ClientManager->ApplyUpdate(ChatMessage{ chat.username(), chat.message() });
             break;
         }        
         case proto::NetMessage::kGameState:
         {
             const auto& gs = message.game_state();
 
-            ClientGameState state;
-            state.MyIndex = gs.your_index();
-            state.CurrentTurnIndex = gs.current_turn_index();
+            GameState state;
+            state.Stage = (GameStage)gs.stage();         
+            for (auto& player : gs.players())
+            {
+                std::vector<Card> cards;
+                for (auto& c : player.hand())
+                {
+                    cards.push_back({ (CardType)c.type(), (CardColor)c.color(), c.value() });
+                }
 
-            for (auto& c : gs.my_hand())
-                state.MyHand.push_back({ (CardType)c.type(), (CardColor)c.color(), c.value() });
-                
-            for (auto& o : gs.opponents())
-                state.Opponents.push_back({ o.name(), o.card_count() });
+                PlayerInfo info{ player.index(), player.name(), player.is_host(), player.is_local(), cards };
+                state.Players.push_back(info);
+            }
 
-            g_ClientManager->ApplyServerState(state);
+            std::cout << g_Game->m_GameSettings.Name << ": " << gs.DebugString() << std::endl;
+
+            g_ClientManager->ApplyUpdate(state);
             break;
         }        
-        case proto::NetMessage::kLobbyData:
-        {
-            
-            break;
-        }
         default:
         {
             SDL_Log("Unknown message type");

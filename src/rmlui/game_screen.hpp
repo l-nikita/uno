@@ -2,6 +2,7 @@
 
 #include <RmlUi/Core.h>
 #include "scene.hpp"
+#include "clientmanager.hpp"
 
 class Player;
 struct Card;
@@ -9,7 +10,7 @@ struct Card;
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-class GameScreen final : public Scene
+class GameScreen final : public Scene, IStateListener
 {
 public:
 	GameScreen(Rml::Context* context);
@@ -20,6 +21,8 @@ public:
 
 	void Update() override;
 	void Destroy() override;
+
+	void OnStateUpdate(const StateUpdate& update) override;
 
 private:
 	void CreatePlayersCards();

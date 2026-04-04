@@ -12,9 +12,6 @@
 #include "input.hpp"
 #include "filesystem.hpp"
 #include "rmlui/rmlui_renderer_gl3.hpp"
-#include "rmlui/main_menu.hpp"
-#include "rmlui/lobby.hpp"
-#include "rmlui/game_screen.hpp"
 
 //-----------------------------------------------------------------------------
 //
@@ -33,23 +30,27 @@ void Game::Init()
 	g_NetManager = new NetworkManager();
 	g_NetManager->Init();
 
-	g_Game->SetScene(SceneId::MAIN_MENU);
+	g_ClientManager = new ClientManager(m_rmlContext);
 
 	m_isRunning = true;
 
 	SDL_Log("Game successfully initialized.");
 }
 
+void Game::StartGame()
+{
+	g_GameManager->Start(gm::GameModeID::CLASSIC);
+}
+
 void Game::StartHost()
 {
-	if (g_GameManager || g_ClientManager)
+	if (g_GameManager)
 		return;
 
 	g_NetManager->StartHost(27015);
 	g_NetManager->StartClient();
 	g_NetManager->Connect("127.0.0.1", 27015);
 
-	g_ClientManager = new ClientManager();
 	g_GameManager = new GameManager();
 }
 
@@ -59,20 +60,15 @@ void Game::StopHost()
 
 	if (g_GameManager)
 		delete g_GameManager, g_GameManager = nullptr;	
-		
-	if (g_ClientManager)
-		delete g_ClientManager, g_ClientManager = nullptr;
 }
 
 void Game::Connect(const std::string& ip, uint16_t port)
 {
-	if (g_GameManager || g_ClientManager)
+	if (g_GameManager)
 		return;
 
 	g_NetManager->StartClient();
 	g_NetManager->Connect(ip, port);
-
-	g_ClientManager = new ClientManager();
 }
 
 void Game::Disconnect()
@@ -81,9 +77,11 @@ void Game::Disconnect()
 
 	if (g_GameManager)
 		delete g_GameManager, g_GameManager = nullptr;	
-		
-	if (g_ClientManager)
-		delete g_ClientManager, g_ClientManager = nullptr;
+}
+
+bool Game::IsHost() 
+{
+	return g_NetManager->IsHost(); 
 }
 
 bool Game::InitSDL(std::string windowName, uint32_t width, uint32_t height, bool allowResize)
@@ -252,39 +250,6 @@ void Game::RequestExit()
 	m_isRunning = false;
 }
 
-//-----------------------------------------------------------------------------
-void Game::SetScene(SceneId id)
-{
-	m_sceneId = id;
-}
-
-void Game::DestroyScene(Scene* scene)
-{
-	if (scene)
-		scene->Destroy(), m_dirtyScenes.push_back(scene);
-}
-
-Scene* Game::CreateNewScene(SceneId id)
-{
-	Scene* scene = nullptr;
-	switch (id)
-	{
-	case SceneId::MAIN_MENU:
-		scene = new MainMenu(m_rmlContext);
-		break;
-	case SceneId::LOBBY:
-		scene = new Lobby(m_rmlContext);
-		break;	
-	case SceneId::GAME_SCREEN:
-		scene = new GameScreen(m_rmlContext);
-		break;
-	default:
-		throw std::runtime_error("Unknown scene!");
-		break;
-	}
-
-	return scene;
-}
 
 //-----------------------------------------------------------------------------
 void Game::Update()
@@ -293,33 +258,12 @@ void Game::Update()
 
 	g_NetManager->Update();
 
-	if (m_sceneId != SceneId::NONE)
-	{
-		bool needsNewScene = false;
-		if (!m_scene || m_scene->GetId() != m_sceneId)
-			needsNewScene = true;
-
-		if (needsNewScene)
-		{
-			Scene* oldScene = m_scene;
-			m_scene = CreateNewScene(m_sceneId);
-
-			if (oldScene)
-				DestroyScene(oldScene);
-		}
-		else
-			m_scene->Update();
-	}
-
-	if (g_GameManager)
-		g_GameManager->Update();
+	g_ClientManager->Update();
+	g_GameManager->Update();
 		
 	m_rmlContext->Update();
 
-	for (Scene* scene : m_dirtyScenes)
-		delete scene;
-
-	m_dirtyScenes.clear();
+	g_ClientManager->DeleteScenes();
 }
 
 void Game::Render()

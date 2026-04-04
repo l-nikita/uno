@@ -1,27 +1,129 @@
 #include "clientmanager.hpp"
+#include "state_types.hpp"
 #include "game.hpp"
+#include "rmlui/main_menu.hpp"
+#include "rmlui/lobby.hpp"
+#include "rmlui/game_screen.hpp"
 
 ClientManager* g_ClientManager = nullptr;
 
-ClientManager::ClientManager()
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+ClientManager::ClientManager(Rml::Context* context)
+	: m_rmlContext(context)
 {
     g_ClientManager = this;
+	SetScene(SceneId::MAIN_MENU);
 }
 
-void ClientManager::ApplyServerState(ClientGameState& state)
+ClientManager::~ClientManager()
 {
-    m_state = state;
-
-    for (auto& cb : m_listeners)
-        cb(m_state); 
+	if (m_scene)
+		delete m_scene, m_scene = nullptr;
 }
 
+//-----------------------------------------------------------------------------
+void ClientManager::ApplyUpdate(const StateUpdate& update)
+{
+	if (auto* gameState = std::get_if<GameState>(&update))
+	{
+		m_gameState = *gameState;
+
+		if (m_gameState.Stage == GameStage::Lobby)
+			SetScene(SceneId::LOBBY);
+		else if (m_gameState.Stage == GameStage::RoundInProgress)
+			SetScene(SceneId::GAME_SCREEN);
+	}
+
+	for (auto& listener : m_listeners)
+		listener->OnStateUpdate(update);
+}
+
+//-----------------------------------------------------------------------------
+void ClientManager::Subscribe(IStateListener* listener) 
+{ 
+	m_listeners.push_back(listener); 
+}
+
+void ClientManager::Unsubscribe(IStateListener* listener) 
+{ 
+	auto it = std::find(m_listeners.begin(), m_listeners.end(), listener);
+	if (it != m_listeners.end())
+		m_listeners.erase(it); 
+}
+
+//-----------------------------------------------------------------------------
 void ClientManager::OnConnected()
 {
-    g_Game->SetScene(SceneId::LOBBY);
+
 }
 
 void ClientManager::OnDisconnected()
 {
-    g_Game->SetScene(SceneId::MAIN_MENU);
+	SetScene(SceneId::MAIN_MENU);
+}
+
+//-----------------------------------------------------------------------------
+void ClientManager::SetScene(SceneId id)
+{
+	m_sceneId = id;
+}
+
+void ClientManager::DestroyScene(Scene* scene)
+{
+	if (scene)
+		scene->Destroy(), m_dirtyScenes.push_back(scene);
+}
+
+Scene* ClientManager::CreateNewScene(SceneId id)
+{
+	Scene* scene = nullptr;
+	switch (id)
+	{
+	case SceneId::MAIN_MENU:
+		scene = new MainMenu(m_rmlContext);
+		break;
+	case SceneId::LOBBY:
+		scene = new Lobby(m_rmlContext);
+		break;	
+	case SceneId::GAME_SCREEN:
+		scene = new GameScreen(m_rmlContext);
+		break;
+	default:
+		throw std::runtime_error("Unknown scene!");
+		break;
+	}
+
+	return scene;
+}
+
+//-----------------------------------------------------------------------------
+void ClientManager::Update()
+{
+	if (m_sceneId != SceneId::NONE)
+	{
+		bool needsNewScene = false;
+		if (!m_scene || m_scene->GetId() != m_sceneId)
+			needsNewScene = true;
+
+		if (needsNewScene)
+		{
+			Scene* oldScene = m_scene;
+			m_scene = CreateNewScene(m_sceneId);
+
+			if (oldScene)
+				DestroyScene(oldScene);
+		}
+		else
+			m_scene->Update();
+	}
+}
+
+void ClientManager::DeleteScenes()
+{
+	for (Scene* scene : m_dirtyScenes)
+		delete scene;
+
+	m_dirtyScenes.clear();
 }

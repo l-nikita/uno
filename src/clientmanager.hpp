@@ -3,32 +3,11 @@
 #include <vector>
 #include <string>
 #include <functional>
+#include <variant>
 #include "card.hpp"
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-struct PlayerInfo 
-{
-    std::string Name;
-    int CardCount;
-};
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-struct ClientGameState 
-{
-    int CurrentTurnIndex = -1;
-    int MyIndex = -1;
-
-    Card TopDiscard;
-
-    std::vector<Card> MyHand;
-    std::vector<PlayerInfo> Opponents;
-
-    bool IsMyTurn() const { return CurrentTurnIndex == MyIndex; }
-};
+#include "game.hpp"
+#include "istatelistener.hpp"
+#include "rmlui/scene.hpp"
 
 //-----------------------------------------------------------------------------
 //
@@ -36,22 +15,36 @@ struct ClientGameState
 class ClientManager final
 {
 public:
-    ClientManager();
+    ClientManager(Rml::Context* context);
+    ~ClientManager();
 
-    using StateCallback = std::function<void(const ClientGameState&)>;
+    void Update();
+    void DeleteScenes();
 
-    ClientGameState& GetState() { return m_state; }
-    void ApplyServerState(ClientGameState& state);
+    void ApplyUpdate(const StateUpdate& update);
+    
+    void Subscribe(IStateListener* listener);
+    void Unsubscribe(IStateListener* listener);
 
-    void ListenState(StateCallback cb) { m_listeners.push_back(cb); }
+    const GameState& GetGameState() { return m_gameState; }
 
     void OnDisconnected();
     void OnConnected();
 
-private:
-    ClientGameState m_state;
+	void SetScene(SceneId id);
+	void DestroyScene(Scene* scene);
+	Scene* CreateNewScene(SceneId id);
 
-    std::vector<StateCallback> m_listeners;
+private:
+    GameState m_gameState;
+    std::vector<IStateListener*> m_listeners;
+
+	Scene* m_scene = nullptr;
+	SceneId m_sceneId = SceneId::NONE;
+
+	std::vector<Scene*> m_dirtyScenes;
+
+    Rml::Context* m_rmlContext = nullptr;
 };
 
 extern ClientManager* g_ClientManager;

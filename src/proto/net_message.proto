@@ -16,21 +16,18 @@ message Card
 
 message PlayerInfo 
 {
-  string name = 1;
-  int32 card_count = 2;
+  int32 index = 1;
+  string name = 2;
+  bool is_host = 3;
+  bool is_local = 4;
+  repeated Card hand = 5;
 }
 
 message ServerGameState 
 {
-  int32 your_index = 1;
-  int32 current_turn_index = 2;
-  Card top_discard = 3;
-  repeated Card my_hand = 4;
-  repeated PlayerInfo opponents = 5;
-}
-
-message LobbyData {
-  repeated string players = 1;
+  int32 stage = 1;
+  Card top_discard = 2;
+  repeated PlayerInfo players = 3;
 }
 
 message NetMessage
@@ -38,7 +35,6 @@ message NetMessage
   oneof payload 
   {
     ServerGameState game_state = 1;
-    LobbyData lobby_data = 2;
-    ChatMessage chat = 3;
+    ChatMessage chat = 2;
   }
 }

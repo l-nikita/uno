@@ -13,29 +13,55 @@ GameScreen::GameScreen(Rml::Context* context)
 
 	CreatePlayersCards();
 
-    g_ClientManager->ListenState([this](const ClientGameState& state) {
+    g_ClientManager->Subscribe(this);
+}
+
+void GameScreen::Destroy()
+{
+	if (m_document)
+		m_document->Close(), m_document = nullptr;
+
+	g_ClientManager->Unsubscribe(this);
+}
+
+void GameScreen::OnStateUpdate(const StateUpdate& update)
+{
+	if (std::get_if<GameState>(&update))
 		CreatePlayersCards();
-    });
 }
 
 void GameScreen::CreatePlayersCards()
 {
-	auto clState = g_ClientManager->GetState();
+	auto clState = g_ClientManager->GetGameState();
 
-	Rml::Element* container = m_document->GetElementById("card_container");
-	container->SetInnerRML(""); 
-
-	for (auto card : clState.MyHand)
-		CreateCard(card, container);
-
-	for (size_t i = 0; i < clState.Opponents.size(); i++)
+	for (size_t i = 0; i < 3; i++)
 	{
-		auto info = clState.Opponents.at(i);
-
-		container = m_document->GetElementById("player" + Rml::ToString((i + 1)) + "_card_container");
+		auto id = "player" + Rml::ToString(i + 1) + "_card_container";
+		Rml::Element* container = m_document->GetElementById(id);
 		container->SetInnerRML("");
+	}
 
-		CreateOpponentCards(info.CardCount, container);
+	int s = 1;
+
+	for (size_t i = 0; i < clState.Players.size(); i++)
+	{
+		auto info = clState.Players.at(i);
+
+		if (info.IsLocal)
+		{
+			Rml::Element* container = m_document->GetElementById("card_container");
+			container->SetInnerRML(""); 
+
+			for (auto card : info.Hand)
+				CreateCard(card, container);
+		}
+		else
+		{
+			auto id = "player" + Rml::ToString(s) + "_card_container";
+			Rml::Element* container = m_document->GetElementById(id);
+			CreateOpponentCards(info.Hand.size(), container);
+			s++;
+		}
 	}
 }
 
@@ -147,12 +173,6 @@ void GameScreen::CreateCard(const Card& card, Rml::Element* container)
 	cardW->AddEventListener(Rml::EventId::Dragend, this);
 
 	container->AppendChild(std::move(cardW));
-}
-
-void GameScreen::Destroy()
-{
-	if (m_document)
-		m_document->Close(), m_document = nullptr;
 }
 
 void GameScreen::Update()

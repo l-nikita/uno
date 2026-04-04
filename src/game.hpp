@@ -6,7 +6,6 @@
 #include <RmlUi/Core.h>
 #include "rmlui/rmlui_renderer_gl3_sdl.hpp"
 #include "rmlui/rmlui_file_interface.hpp"
-#include "rmlui/scene.hpp"
 
 //-----------------------------------------------------------------------------
 //
@@ -20,6 +19,13 @@ struct GameSettings
 {
 	bool IsFullScreen = false;
     std::string Name = "Player";
+};
+
+enum class GameStage : int
+{
+	Lobby,
+	RoundInProgress,
+	RoundEnd,
 };
 
 //-----------------------------------------------------------------------------
@@ -44,11 +50,12 @@ public:
 	double GetDeltaTime() { return m_deltaTime.count(); }
 	double GetElapsedTime() { return m_systemInterface->GetElapsedTime(); }
 
-	void SetScene(SceneId id);
-	void DestroyScene(Scene* scene);
+	void StartGame();
 
 	void StartHost();
 	void StopHost();
+
+	bool IsHost();
 	
 	void Connect(const std::string& ip, uint16_t port);
 	void Disconnect();
@@ -74,8 +81,6 @@ private:
 
 	void OnWindowResize();
 
-	Scene* CreateNewScene(SceneId id);
-
 private:
 	bool m_isRunning = false;
 
@@ -89,11 +94,6 @@ private:
 	FileInterface* m_fileInterface = nullptr;
 
 	Rml::Context* m_rmlContext = nullptr;
-
-	Scene* m_scene = nullptr;
-	SceneId m_sceneId = SceneId::NONE;
-
-	std::vector<Scene*> m_dirtyScenes;
 };
 
 extern Game* g_Game;

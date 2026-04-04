@@ -110,7 +110,8 @@ void NetClient::Shutdown()
         m_connection = k_HSteamNetConnection_Invalid;
     }
 
-    g_ClientManager->OnDisconnected();
+    if (g_ClientManager)
+        g_ClientManager->OnDisconnected();
 
     SDL_Log("[Client] Shutdown complete.");
 }
