@@ -28,6 +28,7 @@ public:
 
     bool IsHost() { return m_server != nullptr; }
     NetServer* GetServer() { return m_server; }
+    NetClient* GetClient() { return m_client; }
 
 private:
     NetServer* m_server = nullptr;

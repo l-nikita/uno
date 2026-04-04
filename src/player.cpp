@@ -6,8 +6,8 @@
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-Player::Player(std::string name, NetConnection conn)
-	: m_name(name), m_connection(conn)
+Player::Player(const ClientInfo& info)
+	: m_info(info)
 {
 
 }
@@ -25,7 +25,7 @@ void Player::SortCards()
 	});
 }
 
-int Player::GetIndex() const
+int Player::GetIndex()
 {
 	return g_GameManager->GetPlayerIndex(this);
 }

@@ -5,6 +5,13 @@
 #include <variant>
 #include "card.hpp"
 #include "game.hpp"
+#include "net/net_common.hpp"
+
+struct ClientInfo
+{
+    std::string Name;
+    NetConnection Connection;
+};
 
 struct PlayerInfo 
 {
@@ -24,8 +31,7 @@ struct GameState
 
 struct ChatMessage
 {
-	std::string Username;
 	std::string Message;
 };
 
-using StateUpdate = std::variant<GameState, ChatMessage>;
+using StateUpdate = std::variant<ClientInfo, GameState, ChatMessage>;

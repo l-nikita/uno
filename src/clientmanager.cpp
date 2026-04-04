@@ -4,6 +4,7 @@
 #include "rmlui/main_menu.hpp"
 #include "rmlui/lobby.hpp"
 #include "rmlui/game_screen.hpp"
+#include "net/net_manager.hpp"
 
 ClientManager* g_ClientManager = nullptr;
 
@@ -56,7 +57,11 @@ void ClientManager::Unsubscribe(IStateListener* listener)
 //-----------------------------------------------------------------------------
 void ClientManager::OnConnected()
 {
+	proto::NetMessage netMsg;
+	proto::ClientInfo* info = netMsg.mutable_client_info();
+	info->set_name(g_Game->m_GameSettings.Name);
 
+	g_NetManager->GetClient()->SendToServer(netMsg);
 }
 
 void ClientManager::OnDisconnected()

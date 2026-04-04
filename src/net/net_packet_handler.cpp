@@ -2,6 +2,7 @@
 #include "net_packet_handler.hpp"
 #include "net_message.pb.h"
 #include "../clientmanager.hpp"
+#include "../gamemanager.hpp"
 
 PacketHandler* g_PacketHandler = nullptr;
 
@@ -33,7 +34,7 @@ void PacketHandler::ProcessMessage(NetMessage* msg)
         case proto::NetMessage::kChat:
         {
             const auto& chat = message.chat();
-            g_ClientManager->ApplyUpdate(ChatMessage{ chat.username(), chat.message() });
+            g_ClientManager->ApplyUpdate(ChatMessage{ chat.message() });
             break;
         }        
         case proto::NetMessage::kGameState:
@@ -58,7 +59,15 @@ void PacketHandler::ProcessMessage(NetMessage* msg)
 
             g_ClientManager->ApplyUpdate(state);
             break;
-        }        
+        }
+        case proto::NetMessage::kClientInfo:
+        {
+            const auto& info = message.client_info();
+
+            ClientInfo clientInfo{ info.name(), msg->GetConnection() };
+            g_GameManager->OnClientIdentified(clientInfo);
+            break;
+        }       
         default:
         {
             SDL_Log("Unknown message type");

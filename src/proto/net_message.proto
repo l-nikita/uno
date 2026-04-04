@@ -1,10 +1,14 @@
 syntax = "proto3";
 package proto;
 
+message ClientInfo 
+{
+  string name = 1;
+}
+
 message ChatMessage 
 {
-  string username = 1;
-  string message = 2;
+  string message = 1;
 }
 
 message Card 
@@ -34,7 +38,8 @@ message NetMessage
 {
   oneof payload 
   {
-    ServerGameState game_state = 1;
-    ChatMessage chat = 2;
+    ClientInfo client_info = 1;
+    ServerGameState game_state = 2;
+    ChatMessage chat = 3;
   }
 }

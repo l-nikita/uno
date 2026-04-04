@@ -2,12 +2,16 @@
 
 #include <string>
 #include "net_common.hpp"
+#include "net_message.pb.h"
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
 class NetClient
 {
+public:
+    void SendToServer(const proto::NetMessage& msg);
+
 private:
     NetClient(NetInterface* interface);
     ~NetClient() { Shutdown(); }

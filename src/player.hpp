@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include "card.hpp"
+#include "state_types.hpp"
 #include "net/net_common.hpp"
 
 //-----------------------------------------------------------------------------
@@ -14,20 +15,21 @@ using Cars = std::vector<Card*>;
 class Player
 {
 public:
-	Player(std::string name, NetConnection conn);
+	Player(const ClientInfo& info);
 
 	void GiveCard(Card* card);
 	void SortCards();
 
-	std::string GetName() { return m_name; }
 	Cars GetCards() { return m_cards; }
+	int GetIndex();
 
-	int GetIndex() const;
-	NetConnection GetConnection() { return m_connection; }
+	std::string GetName() { return m_info.Name; }
+	NetConnection GetConnection() { return m_info.Connection; }
+
+	ClientInfo GetClientInfo() { return m_info; }
 
 private:
-	NetConnection m_connection;
+	ClientInfo m_info;
 
-	std::string m_name;
 	Cars m_cards;
 };

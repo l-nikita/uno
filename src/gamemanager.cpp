@@ -56,8 +56,6 @@ void GameManager::Update()
 //-----------------------------------------------------------------------------
 void GameManager::OnClientConnected(NetConnection conn)
 {
-    m_players.push_back(new Player("Player" + std::to_string(m_players.size() + 1), conn));
-	BroadcastGameState();
 }
 
 void GameManager::OnClientDisconnected(NetConnection conn)
@@ -68,11 +66,30 @@ void GameManager::OnClientDisconnected(NetConnection conn)
 
 	if (it != m_players.end()) 
 	{
+		delete *it;
         m_players.erase(it);
         BroadcastGameState();
     }
 }
 
+void GameManager::OnClientIdentified(const ClientInfo& info)
+{
+    auto it = std::find_if(m_players.begin(), m_players.end(), [&](Player* p) {
+        return p->GetConnection() == info.Connection;
+    });
+
+    if (it == m_players.end()) 
+    {
+        Player* player = new Player(info);
+        m_players.push_back(player);
+        
+        SDL_Log("Player '%s' (conn %u) identified!", player->GetName().c_str(), player->GetConnection());
+
+        BroadcastGameState();
+    }
+}
+
+//-----------------------------------------------------------------------------
 void GameManager::BroadcastGameState()
 {
     for (auto clPlayer : m_players)

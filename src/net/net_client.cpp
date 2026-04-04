@@ -41,6 +41,7 @@ void NetClient::Start(const std::string& ip, uint16_t port)
     m_isRunning = true;
 }
 
+//-----------------------------------------------------------------------------
 void NetClient::OnConnectionStatusChanged(NetConnectionStatusCallback* callback)
 {
     NetConnection connection = callback->m_hConn;
@@ -82,6 +83,21 @@ void NetClient::OnConnectionStatusChanged(NetConnectionStatusCallback* callback)
     }
 }
 
+void NetClient::_OnConnectionStatusChanged(NetConnectionStatusCallback* callback)
+{
+    g_NetManager->m_client->OnConnectionStatusChanged(callback);
+}
+
+//-----------------------------------------------------------------------------
+void NetClient::SendToServer(const proto::NetMessage& msg)
+{
+    std::string buffer;
+    if (!msg.SerializeToString(&buffer)) 
+        return;
+
+    m_interface->SendMessageToConnection(m_connection, buffer.data(), buffer.size(), k_nSteamNetworkingSend_Reliable, nullptr);
+}
+
 void NetClient::PollMessages()
 {
     if (!m_isRunning)
@@ -98,6 +114,7 @@ void NetClient::PollMessages()
     m_interface->RunCallbacks();
 }
 
+//-----------------------------------------------------------------------------
 void NetClient::Shutdown()
 {
     SDL_Log("[Client] Shutting down...");
@@ -114,9 +131,4 @@ void NetClient::Shutdown()
         g_ClientManager->OnDisconnected();
 
     SDL_Log("[Client] Shutdown complete.");
-}
-
-void NetClient::_OnConnectionStatusChanged(NetConnectionStatusCallback* callback)
-{
-    g_NetManager->m_client->OnConnectionStatusChanged(callback);
 }

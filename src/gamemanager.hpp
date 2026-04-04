@@ -2,6 +2,7 @@
 
 #include <span>
 #include "game.hpp"
+#include "state_types.hpp"
 #include "net/net_manager.hpp"
 #include "gamemodes/igamemode.hpp"
 
@@ -31,6 +32,7 @@ public:
 
 	void OnClientConnected(NetConnection conn);
 	void OnClientDisconnected(NetConnection conn);
+	void OnClientIdentified(const ClientInfo& info);
 
 	GameStage GetStage() const { return m_stage; }
 
