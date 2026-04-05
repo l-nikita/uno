@@ -1,0 +1,37 @@
+<rml>
+<head>
+    <title>Debug Panel</title>
+    <link type="text/rcss" href="/ui/styles/rml.rcss"/>
+    <link type="text/rcss" href="/ui/styles/pages/debug-panel.rcss"/>
+</head>
+<body id="debug_body">
+    <div id="debug_panel">
+        <div id="debug_header">DEBUG</div>
+
+        <div class="debug-section">
+            <div id="dbg_fps" class="debug-row">FPS: 0</div>
+            <div id="dbg_dt" class="debug-row">DT: 0</div>
+        </div>
+
+        <div class="debug-separator"></div>
+
+        <div class="debug-section">
+            <div id="dbg_role" class="debug-row">Role: -</div>
+            <div id="dbg_connected" class="debug-row">Conn: -</div>
+        </div>
+
+        <div class="debug-separator"></div>
+
+        <div class="debug-section">
+            <div id="dbg_stage" class="debug-row">Stage: -</div>
+            <div id="dbg_current_player" class="debug-row">Turn: -</div>
+            <div id="dbg_my_turn" class="debug-row">My Turn: -</div>
+        </div>
+
+        <div class="debug-separator"></div>
+
+        <div id="debug_players" class="debug-section">
+        </div>
+    </div>
+</body>
+</rml>

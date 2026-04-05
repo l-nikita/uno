@@ -13,6 +13,7 @@
 using KeyDownCallback = bool (*)(Rml::Context* context, Rml::Input::KeyIdentifier key, int key_modifier, float native_dp_ratio, bool priority);
 
 class MainMenu;
+class DebugPanel;
 
 //-----------------------------------------------------------------------------
 struct GameSettings
@@ -28,13 +29,28 @@ enum class GameStage : int
 	RoundEnd,
 };
 
+enum class LaunchMode
+{
+	NONE,
+	HOST,
+	CONNECT,
+};
+
+struct LaunchArgs
+{
+	LaunchMode Mode = LaunchMode::NONE;
+	std::string Ip = "127.0.0.1";
+	uint16_t Port = 27015;
+	std::string Name;
+};
+
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
 class Game final
 {
 public:
-	void Init();
+	void Init(const LaunchArgs& args = {});
 
 	void Run();
 	void RequestExit();
@@ -94,6 +110,10 @@ private:
 	FileInterface* m_fileInterface = nullptr;
 
 	Rml::Context* m_rmlContext = nullptr;
+
+#ifdef DEBUG
+	DebugPanel* m_debugPanel = nullptr;
+#endif
 };
 
 extern Game* g_Game;

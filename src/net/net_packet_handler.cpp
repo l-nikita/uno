@@ -37,7 +37,12 @@ void PacketHandler::ProcessMessage(NetMessage* msg)
             const auto& gs = message.game_state();
 
             GameState state;
-            state.Stage = (GameStage)gs.stage();         
+            state.Stage = (GameStage)gs.stage();      
+            state.CurrentPlayer = gs.current_player();
+
+            auto t = gs.top_discard();
+            state.TopDiscard = { (CardType)t.type(), (CardColor)t.color(), t.value() };
+            
             for (auto& player : gs.players())
             {
                 std::vector<Card> cards;

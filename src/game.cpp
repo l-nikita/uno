@@ -1,9 +1,7 @@
-﻿#include <iostream>
+#include <iostream>
 #include <fstream>
 #include <print>
-#ifdef DEBUG
-	#include <RmlUi/Debugger.h>
-#endif
+#include <RmlUi/Debugger.h>
 
 #include "game.hpp"
 #include "gamemanager.hpp"
@@ -12,11 +10,12 @@
 #include "input.hpp"
 #include "filesystem.hpp"
 #include "rmlui/rmlui_renderer_gl3.hpp"
+#include "rmlui/debug_panel.hpp"
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Game::Init()
+void Game::Init(const LaunchArgs& args)
 {
 	if (!InitSDL("Uno", 1280, 720, true))
 		throw std::runtime_error("Couldn't initialize SDL!");
@@ -27,6 +26,9 @@ void Game::Init()
 	LoadSettings("game_settings.bin");
 	SetFullscreen(m_GameSettings.IsFullScreen);
 
+	if (!args.Name.empty())
+		m_GameSettings.Name = args.Name;
+
 	g_NetManager = new NetworkManager();
 	g_NetManager->Init();
 
@@ -35,6 +37,17 @@ void Game::Init()
 	m_isRunning = true;
 
 	SDL_Log("Game successfully initialized.");
+
+	if (args.Mode == LaunchMode::HOST)
+	{
+		SDL_Log("Auto-starting as host on port %d...", args.Port);
+		StartHost();
+	}
+	else if (args.Mode == LaunchMode::CONNECT)
+	{
+		SDL_Log("Auto-connecting to %s:%d...", args.Ip.c_str(), args.Port);
+		Connect(args.Ip, args.Port);
+	}
 }
 
 void Game::StartGame()
@@ -190,6 +203,11 @@ bool Game::InitRml()
 	Rml::LoadFontFace("ui/fonts/PixelifySans-Regular.ttf");
 	Rml::LoadFontFace("ui/fonts/NotoEmoji-Regular.ttf", true);
 
+	m_debugPanel = new DebugPanel(m_rmlContext);
+#ifdef DEBUG
+	m_debugPanel->Toggle();
+#endif
+
 	return true;
 }
 
@@ -215,6 +233,9 @@ void Game::Run()
 void Game::Shutdown()
 {
 	SaveSettings("game_settings.bin");
+
+	if (m_debugPanel)
+		delete m_debugPanel, m_debugPanel = nullptr;
 
 	Rml::Shutdown();
 
@@ -259,6 +280,9 @@ void Game::Update()
 	g_NetManager->Update();
 
 	g_ClientManager->Update();
+
+	if (m_debugPanel)
+		m_debugPanel->Update();
 
 	if (g_GameManager)
 		g_GameManager->Update();
@@ -310,6 +334,13 @@ bool Game::ProcessKeyDownShortcuts(Rml::Context* context, Rml::Input::KeyIdentif
 		{
 #ifdef DEBUG
 			Rml::Debugger::SetVisible(!Rml::Debugger::IsVisible());
+#endif
+		}
+		else if (key == Rml::Input::KI_F1)
+		{
+#ifdef DEBUG
+			if (g_Game->m_debugPanel)
+				g_Game->m_debugPanel->Toggle();
 #endif
 		}
 		else if (key == Rml::Input::KI_ESCAPE)

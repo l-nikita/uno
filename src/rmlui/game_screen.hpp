@@ -27,8 +27,13 @@ public:
 
 private:
 	void CreatePlayersCards();
+	void CreateTopDiscardCard();
+
+	Rml::ElementPtr CreateCard(const Card& card, bool isStatic);
 	void CreateCard(const Card& card, int index, Rml::Element* container);
 	void CreateOpponentCards(int count, Rml::Element* container);
+
+	bool CanPlay();
 
 	Rml::ElementDocument* m_document = nullptr;
 

@@ -18,7 +18,8 @@ struct PlayerInfo
 
 struct GameState
 {
-    GameStage Stage;
+    GameStage Stage = GameStage::Lobby;
+    int CurrentPlayer = -1;
     Card TopDiscard;
     std::vector<PlayerInfo> Players;
 };

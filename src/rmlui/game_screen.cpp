@@ -12,6 +12,7 @@ GameScreen::GameScreen(Rml::Context* context)
 	m_document->Show();
 
 	CreatePlayersCards();
+	CreateTopDiscardCard();
 
     g_ClientManager->Subscribe(this);
 }
@@ -30,7 +31,24 @@ void GameScreen::OnStateUpdate(const StateUpdate& update)
 	{
 		m_deletionQueue.clear();
 		CreatePlayersCards();
+		CreateTopDiscardCard();
+
+		if (CanPlay())
+		{
+			Rml::ElementList list;
+			m_document->GetElementsByClassName(list, "card-wrapper");
+		}
 	}
+}
+
+void GameScreen::CreateTopDiscardCard()
+{
+	Rml::Element* tableContainer = m_document->GetElementById("table_container");
+	tableContainer->SetInnerRML("<img id='deck' sprite='back-card'/>");
+	
+	Rml::ElementPtr card = CreateCard(g_ClientManager->GetGameState().TopDiscard, true);
+	card->SetId("discard_pile");
+	tableContainer->AppendChild(std::move(card));
 }
 
 void GameScreen::CreatePlayersCards()
@@ -84,13 +102,10 @@ void GameScreen::CreateOpponentCards(int count, Rml::Element* container)
 	}
 }
 
-void GameScreen::CreateCard(const Card& card, int index, Rml::Element* container)
+Rml::ElementPtr GameScreen::CreateCard(const Card& card, bool isStatic)
 {
-	Rml::ElementPtr cardW = Rml::Factory::InstanceElement(container, "handle", "handle", Rml::XMLAttributes());
-
-	cardW->SetClass("card-wrapper", true);
-	cardW->SetAttribute("move_target", "#self");
-	cardW->SetAttribute("edge_margin", "none");
+	auto tag = isStatic ? "div" : "handle";
+	Rml::ElementPtr cardW = Rml::Factory::InstanceElement(nullptr, tag, tag, Rml::XMLAttributes());
 
 	Rml::String colorStr;
 	switch (card.Color)
@@ -177,6 +192,17 @@ void GameScreen::CreateCard(const Card& card, int index, Rml::Element* container
 		"</div>"
 	);
 
+	return cardW;
+}
+
+void GameScreen::CreateCard(const Card& card, int index, Rml::Element* container)
+{
+	Rml::ElementPtr cardW = CreateCard(card, false);
+
+	cardW->SetClass("card-wrapper", true);
+	cardW->SetAttribute("move_target", "#self");
+	cardW->SetAttribute("edge_margin", "none");
+
 	cardW->AddEventListener(Rml::EventId::Dragend, this);
 	cardW->SetAttribute("card_id", index);
 
@@ -191,7 +217,8 @@ void GameScreen::Update()
 		auto it = std::remove_if(m_deletionQueue.begin(), m_deletionQueue.end(), [&](const PendingDeletion& c) {
 			if (curTime >= c.Time) 
 			{
-				c.Element->GetParentNode()->RemoveChild(c.Element);
+				int cardId = c.Element->GetAttribute("card_id")->Get<int>();
+				g_ClientManager->DoPlayerAction({ ActionType::PLAY_CARD, cardId });
 				return true;
 			}
 
@@ -217,16 +244,13 @@ void GameScreen::ProcessEvent(Rml::Event& event)
     	float mouseY = event.GetParameter("mouse_y", 0.0f);
 
 		Rml::Element* hoverElement = m_context->GetElementAtPoint(Rml::Vector2f(mouseX, mouseY), card);
-		if (hoverElement && hoverElement->GetId() == "table")
+		if (CanPlay() && hoverElement && hoverElement->GetId() == "table")
 		{
 			card->SetClass("deleted", true);
 			card->Animate("opacity", Rml::Property(0.0f, Rml::Unit::NUMBER), duration, tween);
 			
-			PendingDeletion p{card, g_Game->GetElapsedTime() + duration};
+			PendingDeletion p{card, g_Game->GetElapsedTime() + duration - 0.05};
 			m_deletionQueue.push_back(p);
-
-			int cardId = card->GetAttribute("card_id")->Get<int>();
-			g_ClientManager->DoPlayerAction({ ActionType::PLAY_CARD, cardId });
 		}
 		else
 		{
@@ -234,4 +258,10 @@ void GameScreen::ProcessEvent(Rml::Event& event)
 			card->Animate("top",  Rml::Property(0.0f, Rml::Unit::PX), duration, tween);
 		}
     }
+}
+
+bool GameScreen::CanPlay()
+{
+	auto cm = g_ClientManager;
+	return cm->GetGameState().CurrentPlayer == cm->GetLocalPlayerInfo().Index;
 }

@@ -1,0 +1,75 @@
+body#debug_body {
+    display: block;
+    background: transparent;
+    pointer-events: none;
+    font-size: 2.5vh;
+    font-family: rmlui-debugger-font;
+    letter-spacing: -2px;
+}
+
+#debug_panel {
+    position: absolute;
+    top: 1vh;
+    left: 1vh;
+    z-index: 999;
+
+    min-width: 15vw;
+    padding: 1.2vh 1.6vh;
+
+    background-color: rgba(0, 0, 0, 180);
+    border: 1px rgba(255, 255, 255, 40);
+
+    color: rgba(255, 255, 255, 200);
+    pointer-events: none;
+}
+
+#debug_header {
+    font-size: 3vh;
+    font-weight: bold;
+    color: #4fc3f7;
+    margin-bottom: 0.6vh;
+}
+
+.debug-section {
+    display: block;
+}
+
+.debug-row {
+    display: block;
+    padding: 0.15vh 0;
+}
+
+.debug-label {
+    color: #aaaaaa;
+    display: inline;
+}
+
+.debug-value {
+    color: #ff0000;
+    display: inline;
+}
+
+.debug-separator {
+    height: 1px;
+    margin: 0.6vh 0;
+    background-color: rgba(255, 255, 255, 30);
+}
+
+.debug-player-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0.1vh 0;
+}
+
+.debug-player-name {
+    color: rgba(255, 255, 255, 160);
+}
+
+.debug-player-name.local {
+    color: #81c784;
+}
+
+.debug-player-cards {
+    color: #fff;
+}

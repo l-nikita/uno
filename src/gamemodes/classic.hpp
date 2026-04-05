@@ -24,7 +24,9 @@ namespace gm
 		void GenerateDeckCards();
 		void DealCards();
 		void AddCardToDiscardPile(Card* card);
+
 		Card* GetTopDiscardCard() override { return m_discardPile.empty() ? nullptr : m_discardPile.back(); }
+		int GetCurrentPlayerIndex() override { return m_currentPlayerIndex; }
 
 		size_t GetPlayersCardsNum() { return 7; }
 		size_t GetDeckCardsNum() override { return m_deck.size(); }

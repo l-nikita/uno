@@ -38,8 +38,8 @@ void GameManager::Start(gm::GameModeID gmId)
 	else
 		Rml::Log::Message(Rml::Log::LT_ERROR, "Unknown game mode");
 
-	if (m_gameMode)
-		m_gameMode->Start();
+	if (GetGameMode())
+		GetGameMode()->Start();
 
 	Rml::Log::Message(Rml::Log::LT_INFO, "The game has been started!");
 
@@ -50,8 +50,8 @@ void GameManager::Start(gm::GameModeID gmId)
 
 void GameManager::Update()
 {
-	if (m_gameMode)
-		m_gameMode->Update();
+	if (GetGameMode())
+		GetGameMode()->Update();
 }
 
 void GameManager::OnPlayerAction(NetConnection conn, const PlayerAction& action)
@@ -60,8 +60,8 @@ void GameManager::OnPlayerAction(NetConnection conn, const PlayerAction& action)
 	if (player)
 		SDL_Log("Player [%s] action: %i, %i", player->GetName().c_str(), (int)action.Type, (int)action.CardId);
 
-	if (m_gameMode && player)
-		m_gameMode->OnPlayerAction(player, action);
+	if (GetGameMode() && player)
+		GetGameMode()->OnPlayerAction(player, action);
 }
 
 //-----------------------------------------------------------------------------
@@ -111,9 +111,9 @@ void GameManager::BroadcastGameState()
         proto::ServerGameState* state = netMsg.mutable_game_state();
 		state->set_stage((int)GetStage());
 
-		if (m_gameMode)
+		if (GetGameMode())
 		{
-			auto topDiscard = m_gameMode->GetTopDiscardCard();
+			auto topDiscard = GetGameMode()->GetTopDiscardCard();
 			if (topDiscard)
 			{
 				auto card = state->mutable_top_discard();
@@ -121,6 +121,8 @@ void GameManager::BroadcastGameState()
 				card->set_color((int)topDiscard->Color);
 				card->set_value(topDiscard->Value);
 			}
+			
+			state->set_current_player(GetGameMode()->GetCurrentPlayerIndex());
 		}
 
         for (int i = 0; i < m_players.size(); ++i)

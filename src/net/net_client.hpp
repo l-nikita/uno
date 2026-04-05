@@ -11,6 +11,7 @@ class NetClient
 {
 public:
     void SendToServer(const proto::NetMessage& msg);
+    bool IsConnected() { return m_isRunning; }
 
 private:
     NetClient(NetInterface* interface);
@@ -23,7 +24,6 @@ private:
 
     void Shutdown();
 
-    bool IsConnected() { return m_isRunning; }
     static void _OnConnectionStatusChanged(NetConnectionStatusCallback* callback);
 
 private:

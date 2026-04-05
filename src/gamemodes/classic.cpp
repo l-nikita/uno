@@ -32,11 +32,7 @@ namespace gm
 	//-----------------------------------------------------------------------------
 	void Classic::Update()
 	{
-		auto currentPlayer = g_GameManager->GetPlayerAt(m_currentPlayerIndex);
-		if (currentPlayer)
-		{
-			//SDL_Log("Waiting turn");
-		}
+
 	}	
 
 	void Classic::OnPlayerAction(Player* player, const PlayerAction& action)
@@ -168,9 +164,10 @@ namespace gm
 		// Initial discard card
 		if (!m_deck.empty())
 		{
-			auto top = m_deck.back();
+			auto last = m_deck.back();
 			m_deck.pop_back();
-			AddCardToDiscardPile(top);
+
+			AddCardToDiscardPile(last);
 		}
 
 		std::cout << m_deck.size() << std::endl;

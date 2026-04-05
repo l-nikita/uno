@@ -12,22 +12,11 @@
     <img id="side_chair_right" src="/ui/images/wood_chair_side.png" />
 
     <img id="table" src="/ui/images/table.png" />
+    <div id="table_container"></div>
 
-    <div id="table_container">
-        <img id="deck" sprite="back-card"/>
-        <img id="discard_pile" sprite="red-num-card"/>
-    </div>
-
-    <div id="card_container">
-    </div>
-
-    <div id="player1_card_container">
-    </div>    
-    
-    <div id="player2_card_container">
-    </div>    
-    
-    <div id="player3_card_container">
-    </div>
+    <div id="card_container"></div>
+    <div id="player1_card_container"></div>    
+    <div id="player2_card_container"></div>    
+    <div id="player3_card_container"></div>
 </body>
 </rml>

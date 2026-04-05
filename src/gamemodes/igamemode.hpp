@@ -26,6 +26,7 @@ namespace gm
 		virtual void OnPlayerAction(Player* player, const PlayerAction& action) = 0;
 
 		virtual Card* GetTopDiscardCard() { return nullptr; }
+		virtual int GetCurrentPlayerIndex() { return -1; }
 
 		virtual size_t GetDeckCardsNum() = 0;
 
