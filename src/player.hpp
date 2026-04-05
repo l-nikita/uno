@@ -18,6 +18,8 @@ public:
 	Player(const ClientInfo& info);
 
 	void GiveCard(Card* card);
+	Card* DropCard(int index);
+
 	void SortCards();
 
 	Cars GetCards() { return m_cards; }

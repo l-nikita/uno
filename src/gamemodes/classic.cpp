@@ -10,9 +10,12 @@ namespace gm
 	//-----------------------------------------------------------------------------
 	//
 	//-----------------------------------------------------------------------------
-	void Classic::Init()
+	Classic::~Classic()
 	{
+		for (auto card : m_deck)
+			delete card;
 
+		m_deck.clear();
 	}
 
 	void Classic::Start()
@@ -23,13 +26,48 @@ namespace gm
 
 	void Classic::Stop()
 	{
-
+		
 	}
 
 	//-----------------------------------------------------------------------------
 	void Classic::Update()
 	{
+		auto currentPlayer = g_GameManager->GetPlayerAt(m_currentPlayerIndex);
+		if (currentPlayer)
+		{
+			//SDL_Log("Waiting turn");
+		}
+	}	
 
+	void Classic::OnPlayerAction(Player* player, const PlayerAction& action)
+	{
+		auto currentPlayer = g_GameManager->GetPlayerAt(m_currentPlayerIndex);
+		if (player != currentPlayer)
+		{
+			SDL_Log("Player [%s] tried to act out of turn!", player->GetName().c_str());
+			return;
+		}
+
+		if (action.Type == ActionType::PLAY_CARD)
+		{
+			auto card = player->DropCard(action.CardId);
+			if (card)
+			{
+				AddCardToDiscardPile(card);
+				NextTurn();
+				g_GameManager->BroadcastGameState();
+			}
+		}
+	}
+
+	void Classic::NextTurn()
+	{
+		m_currentPlayerIndex = (m_currentPlayerIndex + 1) % g_GameManager->GetPlayers().size();
+	}
+
+	void Classic::AddCardToDiscardPile(Card* card)
+	{
+		m_discardPile.push_back(card);
 	}
 
 	//-----------------------------------------------------------------------------
@@ -125,6 +163,14 @@ namespace gm
 			}
 
 			player->SortCards();
+		}
+
+		// Initial discard card
+		if (!m_deck.empty())
+		{
+			auto top = m_deck.back();
+			m_deck.pop_back();
+			AddCardToDiscardPile(top);
 		}
 
 		std::cout << m_deck.size() << std::endl;

@@ -259,7 +259,9 @@ void Game::Update()
 	g_NetManager->Update();
 
 	g_ClientManager->Update();
-	g_GameManager->Update();
+
+	if (g_GameManager)
+		g_GameManager->Update();
 		
 	m_rmlContext->Update();
 

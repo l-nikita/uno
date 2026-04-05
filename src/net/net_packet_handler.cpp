@@ -31,12 +31,7 @@ void PacketHandler::ProcessMessage(NetMessage* msg)
 
 	switch (message.payload_case()) 
     {
-        case proto::NetMessage::kChat:
-        {
-            const auto& chat = message.chat();
-            g_ClientManager->ApplyUpdate(ChatMessage{ chat.message() });
-            break;
-        }        
+        // From server    
         case proto::NetMessage::kGameState:
         {
             const auto& gs = message.game_state();
@@ -55,9 +50,14 @@ void PacketHandler::ProcessMessage(NetMessage* msg)
                 state.Players.push_back(info);
             }
 
-            std::cout << g_Game->m_GameSettings.Name << ": " << gs.DebugString() << std::endl;
-
             g_ClientManager->ApplyUpdate(state);
+            break;
+        }
+        // From client
+        case proto::NetMessage::kChat:
+        {
+            const auto& chat = message.chat();
+            g_ClientManager->ApplyUpdate(ChatMessage{ chat.message() });
             break;
         }
         case proto::NetMessage::kClientInfo:
@@ -67,7 +67,15 @@ void PacketHandler::ProcessMessage(NetMessage* msg)
             ClientInfo clientInfo{ info.name(), msg->GetConnection() };
             g_GameManager->OnClientIdentified(clientInfo);
             break;
-        }       
+        }        
+        case proto::NetMessage::kPlayerAction:
+        {
+            const auto& pa = message.player_action();
+
+            PlayerAction action{ (ActionType)pa.action(), pa.card_id(), (CardColor)pa.chosen_color() };
+            g_GameManager->OnPlayerAction(msg->GetConnection(), action);
+            break;
+        }
         default:
         {
             SDL_Log("Unknown message type");

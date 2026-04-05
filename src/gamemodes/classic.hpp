@@ -11,14 +11,20 @@ namespace gm
 	class Classic : public IGameMode
 	{
 	public:
-		void Init() override;
+		~Classic();
+
 		void Start() override;
 		void Stop() override;
 
 		void Update() override;
+		void OnPlayerAction(Player* player, const PlayerAction& action) override;
+
+		void NextTurn();
 
 		void GenerateDeckCards();
 		void DealCards();
+		void AddCardToDiscardPile(Card* card);
+		Card* GetTopDiscardCard() override { return m_discardPile.empty() ? nullptr : m_discardPile.back(); }
 
 		size_t GetPlayersCardsNum() { return 7; }
 		size_t GetDeckCardsNum() override { return m_deck.size(); }
@@ -27,5 +33,8 @@ namespace gm
 
 	private:
 		Cards m_deck;
+		Cards m_discardPile;
+
+		int m_currentPlayerIndex = 0;
 	};
 }

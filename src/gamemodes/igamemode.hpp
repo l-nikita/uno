@@ -19,11 +19,13 @@ namespace gm
 	public:
 		virtual ~IGameMode() = default;
 
-		virtual void Init() = 0;
 		virtual void Start() = 0;
 		virtual void Stop() = 0;
 
 		virtual void Update() = 0;
+		virtual void OnPlayerAction(Player* player, const PlayerAction& action) = 0;
+
+		virtual Card* GetTopDiscardCard() { return nullptr; }
 
 		virtual size_t GetDeckCardsNum() = 0;
 

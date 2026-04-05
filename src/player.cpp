@@ -17,9 +17,22 @@ void Player::GiveCard(Card* card)
 	m_cards.push_back(card);
 }
 
+Card* Player::DropCard(int index)
+{
+	if (index < 0 || index >= m_cards.size())
+		return nullptr;
+
+	auto card = m_cards.at(index);
+	m_cards.erase(m_cards.begin() + index);
+
+	SortCards();
+
+	return card;
+}
+
 void Player::SortCards()
 {
-	std::sort(m_cards.begin(), m_cards.end(), [](const Card* a, const Card* b) {
+	std::stable_sort(m_cards.begin(), m_cards.end(), [](const Card* a, const Card* b) {
 		return std::tie(b->Color, b->Type, b->Value)
 			< std::tie(a->Color, a->Type, a->Value);
 	});

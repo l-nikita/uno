@@ -27,7 +27,10 @@ void GameScreen::Destroy()
 void GameScreen::OnStateUpdate(const StateUpdate& update)
 {
 	if (std::get_if<GameState>(&update))
+	{
+		m_deletionQueue.clear();
 		CreatePlayersCards();
+	}
 }
 
 void GameScreen::CreatePlayersCards()
@@ -38,7 +41,8 @@ void GameScreen::CreatePlayersCards()
 	{
 		auto id = "player" + Rml::ToString(i + 1) + "_card_container";
 		Rml::Element* container = m_document->GetElementById(id);
-		container->SetInnerRML("");
+		if (container)
+			container->SetInnerRML("");
 	}
 
 	int s = 1;
@@ -52,8 +56,11 @@ void GameScreen::CreatePlayersCards()
 			Rml::Element* container = m_document->GetElementById("card_container");
 			container->SetInnerRML(""); 
 
-			for (auto card : info.Hand)
-				CreateCard(card, container);
+			for (size_t j = 0; j < info.Hand.size(); j++)
+			{
+				auto card = info.Hand.at(j);
+				CreateCard(card, j, container);
+			}
 		}
 		else
 		{
@@ -77,7 +84,7 @@ void GameScreen::CreateOpponentCards(int count, Rml::Element* container)
 	}
 }
 
-void GameScreen::CreateCard(const Card& card, Rml::Element* container)
+void GameScreen::CreateCard(const Card& card, int index, Rml::Element* container)
 {
 	Rml::ElementPtr cardW = Rml::Factory::InstanceElement(container, "handle", "handle", Rml::XMLAttributes());
 
@@ -171,6 +178,7 @@ void GameScreen::CreateCard(const Card& card, Rml::Element* container)
 	);
 
 	cardW->AddEventListener(Rml::EventId::Dragend, this);
+	cardW->SetAttribute("card_id", index);
 
 	container->AppendChild(std::move(cardW));
 }
@@ -216,6 +224,9 @@ void GameScreen::ProcessEvent(Rml::Event& event)
 			
 			PendingDeletion p{card, g_Game->GetElapsedTime() + duration};
 			m_deletionQueue.push_back(p);
+
+			int cardId = card->GetAttribute("card_id")->Get<int>();
+			g_ClientManager->DoPlayerAction({ ActionType::PLAY_CARD, cardId });
 		}
 		else
 		{

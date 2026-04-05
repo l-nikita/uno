@@ -41,6 +41,18 @@ void ClientManager::ApplyUpdate(const StateUpdate& update)
 		listener->OnStateUpdate(update);
 }
 
+const PlayerInfo& ClientManager::GetLocalPlayerInfo()
+{
+	for (const auto& info : GetGameState().Players)
+	{
+		if (info.IsLocal)
+			return info;
+	}
+
+	static const PlayerInfo emptyPlayer{}; 
+    return emptyPlayer;
+}
+
 //-----------------------------------------------------------------------------
 void ClientManager::Subscribe(IStateListener* listener) 
 { 
@@ -67,6 +79,18 @@ void ClientManager::OnConnected()
 void ClientManager::OnDisconnected()
 {
 	SetScene(SceneId::MAIN_MENU);
+}
+
+void ClientManager::DoPlayerAction(const PlayerAction& action)
+{
+	proto::NetMessage netMsg;
+	proto::PlayerAction* act = netMsg.mutable_player_action();
+
+	act->set_action((proto::PlayerAction_ActionType)action.Type);
+	act->set_card_id((int)action.CardId);
+	act->set_chosen_color((int)action.ChosenColor);
+
+	g_NetManager->GetClient()->SendToServer(netMsg);
 }
 
 //-----------------------------------------------------------------------------

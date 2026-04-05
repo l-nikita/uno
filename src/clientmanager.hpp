@@ -10,6 +10,10 @@
 #include "rmlui/scene.hpp"
 
 //-----------------------------------------------------------------------------
+
+struct PlayerAction;
+
+//-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
 class ClientManager final
@@ -27,9 +31,11 @@ public:
     void Unsubscribe(IStateListener* listener);
 
     const GameState& GetGameState() { return m_gameState; }
+    const PlayerInfo& GetLocalPlayerInfo();
 
     void OnDisconnected();
     void OnConnected();
+    void DoPlayerAction(const PlayerAction& action);
 
 	void SetScene(SceneId id);
 	void DestroyScene(Scene* scene);

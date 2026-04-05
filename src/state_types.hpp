@@ -7,12 +7,6 @@
 #include "game.hpp"
 #include "net/net_common.hpp"
 
-struct ClientInfo
-{
-    std::string Name;
-    NetConnection Connection;
-};
-
 struct PlayerInfo 
 {
     int Index;
@@ -32,6 +26,25 @@ struct GameState
 struct ChatMessage
 {
 	std::string Message;
+};
+
+struct ClientInfo
+{
+    std::string Name;
+    NetConnection Connection;
+};
+
+enum class ActionType : int 
+{
+    DRAW_CARD,
+    PLAY_CARD,
+};
+
+struct PlayerAction
+{
+    ActionType Type;
+    int CardId = -1;
+    CardColor ChosenColor = CardColor::RED;
 };
 
 using StateUpdate = std::variant<ClientInfo, GameState, ChatMessage>;

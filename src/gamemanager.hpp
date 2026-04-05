@@ -25,10 +25,13 @@ public:
 	void Start(gm::GameModeID gmId);
 	void Update();
 
-	gm::IGameMode* GetGameMode() const { return m_gameMode; }
-	const Players GetPlayers() const { return m_players; }
+	gm::IGameMode* GetGameMode() { return m_gameMode; }
+	const Players GetPlayers() { return m_players; }
 
-	int GetPlayerIndex(const Player* player) const;
+	Player* GetPlayerAt(int index) { return m_players.at(index); }
+	Player* GetPlayerByConnection(NetConnection conn);
+
+	int GetPlayerIndex(const Player* player);
 
 	void OnClientConnected(NetConnection conn);
 	void OnClientDisconnected(NetConnection conn);
@@ -37,6 +40,8 @@ public:
 	GameStage GetStage() const { return m_stage; }
 
 	void BroadcastGameState();
+
+	void OnPlayerAction(NetConnection conn, const PlayerAction& action);
 
 private:
 	gm::IGameMode* m_gameMode = nullptr;

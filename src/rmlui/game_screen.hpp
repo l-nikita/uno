@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include <RmlUi/Core.h>
 #include "scene.hpp"
 #include "clientmanager.hpp"
@@ -26,7 +27,7 @@ public:
 
 private:
 	void CreatePlayersCards();
-	void CreateCard(const Card& card, Rml::Element* container);
+	void CreateCard(const Card& card, int index, Rml::Element* container);
 	void CreateOpponentCards(int count, Rml::Element* container);
 
 	Rml::ElementDocument* m_document = nullptr;

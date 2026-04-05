@@ -1,6 +1,9 @@
 syntax = "proto3";
 package proto;
 
+//-----------------------------------------------------------------------------
+// From client to server
+//-----------------------------------------------------------------------------
 message ClientInfo 
 {
   string name = 1;
@@ -11,6 +14,20 @@ message ChatMessage
   string message = 1;
 }
 
+message PlayerAction {
+  enum ActionType {
+    DRAW_CARD = 0;
+    PLAY_CARD = 1;
+  }
+
+  ActionType action = 1;
+  int32 card_id = 2;
+  int32 chosen_color = 3; 
+}
+
+//-----------------------------------------------------------------------------
+// From server to client
+//-----------------------------------------------------------------------------
 message Card 
 {
   int32 type = 1;
@@ -34,12 +51,14 @@ message ServerGameState
   repeated PlayerInfo players = 3;
 }
 
+//-----------------------------------------------------------------------------
 message NetMessage
 {
   oneof payload 
   {
-    ClientInfo client_info = 1;
-    ServerGameState game_state = 2;
+    ServerGameState game_state = 1;
+    ClientInfo client_info = 2;
     ChatMessage chat = 3;
+    PlayerAction player_action = 4;
   }
 }

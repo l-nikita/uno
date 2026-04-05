@@ -50,12 +50,24 @@ void GameManager::Start(gm::GameModeID gmId)
 
 void GameManager::Update()
 {
+	if (m_gameMode)
+		m_gameMode->Update();
+}
 
+void GameManager::OnPlayerAction(NetConnection conn, const PlayerAction& action)
+{
+	auto player = GetPlayerByConnection(conn);
+	if (player)
+		SDL_Log("Player [%s] action: %i, %i", player->GetName().c_str(), (int)action.Type, (int)action.CardId);
+
+	if (m_gameMode && player)
+		m_gameMode->OnPlayerAction(player, action);
 }
 
 //-----------------------------------------------------------------------------
 void GameManager::OnClientConnected(NetConnection conn)
 {
+
 }
 
 void GameManager::OnClientDisconnected(NetConnection conn)
@@ -99,6 +111,18 @@ void GameManager::BroadcastGameState()
         proto::ServerGameState* state = netMsg.mutable_game_state();
 		state->set_stage((int)GetStage());
 
+		if (m_gameMode)
+		{
+			auto topDiscard = m_gameMode->GetTopDiscardCard();
+			if (topDiscard)
+			{
+				auto card = state->mutable_top_discard();
+				card->set_type((int)topDiscard->Type);
+				card->set_color((int)topDiscard->Color);
+				card->set_value(topDiscard->Value);
+			}
+		}
+
         for (int i = 0; i < m_players.size(); ++i)
         {
 			auto player = m_players.at(i);
@@ -122,7 +146,19 @@ void GameManager::BroadcastGameState()
     }
 }
 
-int GameManager::GetPlayerIndex(const Player* player) const
+Player* GameManager::GetPlayerByConnection(NetConnection conn)
+{
+	for (int i = 0; i < m_players.size(); ++i) 
+	{
+		auto player = m_players.at(i);
+		if (player->GetConnection() == conn) 
+			return player;
+	}
+
+	return nullptr;
+}
+
+int GameManager::GetPlayerIndex(const Player* player)
 {
 	int id = -1;
 	for (int i = 0; i < m_players.size(); ++i) 
