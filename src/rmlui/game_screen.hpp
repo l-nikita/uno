@@ -36,6 +36,7 @@ private:
 	bool CanPlay();
 	bool CanPlayCard(int index);
 	bool CanPlayCard(const Card& card);
+	bool HasNoPlayableCards();
 
 	Rml::ElementDocument* m_document = nullptr;
 

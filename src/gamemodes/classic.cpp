@@ -57,11 +57,16 @@ namespace gm
 					m_reverse = !m_reverse;
 				else if (card->Type == CardType::SKIP)
 					m_skip = true;
-
-				NextTurn();
-				g_GameManager->BroadcastGameState();
 			}
 		}
+		else if (action.Type == ActionType::DRAW_CARD)
+		{
+			player->GiveCard(TakeCardFromDeck());
+			player->SortCards();
+		}
+
+		NextTurn();
+		g_GameManager->BroadcastGameState();
 	}
 
 	void Classic::NextTurn()
@@ -76,7 +81,23 @@ namespace gm
 
 	void Classic::AddCardToDiscardPile(Card* card)
 	{
+		if (!card)
+			return;
+
 		m_discardPile.push_back(card);
+	}
+
+	Card* Classic::TakeCardFromDeck()
+	{
+		if (m_deck.empty())
+		{
+			SDL_Log("Deck is empty.");
+			return nullptr;
+		}
+
+		auto last = m_deck.back();
+		m_deck.pop_back();
+		return last;
 	}
 
 	//-----------------------------------------------------------------------------
@@ -165,11 +186,7 @@ namespace gm
 		for (auto& player : g_GameManager->GetPlayers())
 		{
 			for (size_t i = 0; i < GetPlayersCardsNum(); i++)
-			{
-				auto last = m_deck.back();
-				player->GiveCard(last);
-				m_deck.pop_back();
-			}
+				player->GiveCard(TakeCardFromDeck());
 
 			player->SortCards();
 		}
@@ -177,9 +194,7 @@ namespace gm
 		// Initial discard card
 		if (!m_deck.empty())
 		{
-			auto last = m_deck.back();
-			m_deck.pop_back();
-			AddCardToDiscardPile(last);
+			AddCardToDiscardPile(TakeCardFromDeck());
 		}
 
 		std::cout << m_deck.size() << std::endl;

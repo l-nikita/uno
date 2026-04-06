@@ -45,6 +45,12 @@ void GameScreen::CreateTopDiscardCard()
 {
 	Rml::Element* tableContainer = m_document->GetElementById("table_container");
 	tableContainer->SetInnerRML("<img id='deck' sprite='back-card'/>");
+
+	Rml::Element* deck = m_document->GetElementById("deck");
+	deck->AddEventListener(Rml::EventId::Click, this);
+
+	if (CanPlay())
+		deck->SetClass("can-take", true);
 	
 	Rml::ElementPtr card = CreateCard(g_ClientManager->GetGameState().TopDiscard, true);
 	card->SetId("discard_pile");
@@ -239,8 +245,8 @@ void GameScreen::Update()
 
 void GameScreen::ProcessEvent(Rml::Event& event)
 {
-	auto card = event.GetTargetElement();
-    if (!card) 
+	auto elem = event.GetTargetElement();
+    if (!elem) 
 		return;
 
     if (event == Rml::EventId::Dragend)
@@ -251,28 +257,32 @@ void GameScreen::ProcessEvent(Rml::Event& event)
 		float mouseX = event.GetParameter("mouse_x", 0.0f);
     	float mouseY = event.GetParameter("mouse_y", 0.0f);
 
-		int cardId = card->GetAttribute("card_id")->Get<int>();
+		int cardId = elem->GetAttribute("card_id")->Get<int>();
 
-		Rml::Element* hoverElement = m_context->GetElementAtPoint(Rml::Vector2f(mouseX, mouseY), card);
+		Rml::Element* hoverElement = m_context->GetElementAtPoint(Rml::Vector2f(mouseX, mouseY), elem);
 		if (CanPlay() && CanPlayCard(cardId) && hoverElement && hoverElement->GetId() == "table")
 		{
-			card->SetClass("deleted", true);
-			card->Animate("opacity", Rml::Property(0.0f, Rml::Unit::NUMBER), duration, tween);
+			elem->SetClass("deleted", true);
+			elem->Animate("opacity", Rml::Property(0.0f, Rml::Unit::NUMBER), duration, tween);
 			
-			PendingDeletion p{card, g_Game->GetElapsedTime() + duration - 0.05};
+			PendingDeletion p{elem, g_Game->GetElapsedTime() + duration - 0.05};
 			m_deletionQueue.push_back(p);
 		}
 		else
 		{
-			card->Animate("left", Rml::Property(0.0f, Rml::Unit::PX), duration, tween);
-			card->Animate("top",  Rml::Property(0.0f, Rml::Unit::PX), duration, tween);
+			elem->Animate("left", Rml::Property(0.0f, Rml::Unit::PX), duration, tween);
+			elem->Animate("top",  Rml::Property(0.0f, Rml::Unit::PX), duration, tween);
 		}
     }
+	else if (event == Rml::EventId::Click && elem->GetId() == "deck")
+	{
+		if (CanPlay())
+			g_ClientManager->DoPlayerAction({ ActionType::DRAW_CARD });
+	}
 }
 
 bool GameScreen::CanPlayCard(int index)
 {
-	auto& clState = g_ClientManager->GetGameState();
 	auto hand = g_ClientManager->GetLocalPlayerInfo().Hand;
 	
 	for (size_t i = 0; i < hand.size(); i++)
@@ -307,6 +317,19 @@ bool GameScreen::CanPlayCard(const Card& card)
 		return true;
 		
 	return false;
+}
+
+bool GameScreen::HasNoPlayableCards()
+{
+	auto hand = g_ClientManager->GetLocalPlayerInfo().Hand;
+
+	for (size_t i = 0; i < hand.size(); i++)
+	{
+		if (CanPlayCard(hand.at(i)))
+			return false;
+	}
+
+	return true;
 }
 
 bool GameScreen::CanPlay()

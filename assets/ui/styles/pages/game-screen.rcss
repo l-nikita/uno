@@ -46,6 +46,11 @@ body {
     font-size: 2vh;
 }
 
+#deck.can-take {
+    cursor: pointer;
+    box-shadow: 0 0 25px 10px rgba(255, 255, 255, 150);
+}
+
 #front_chair, #side_chair_left, #side_chair_right {
     position: absolute;
     width: 25vw;

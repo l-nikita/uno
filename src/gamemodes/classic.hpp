@@ -24,13 +24,14 @@ namespace gm
 		void GenerateDeckCards();
 		void DealCards();
 		void AddCardToDiscardPile(Card* card);
+		Card* TakeCardFromDeck();
 
 		Card* GetTopDiscardCard() override { return m_discardPile.empty() ? nullptr : m_discardPile.back(); }
 		int GetCurrentPlayerIndex() override { return m_currentPlayerIndex; }
 		bool IsReverse() override { return m_reverse; }
 
-		size_t GetPlayersCardsNum() { return 7; }
-		size_t GetDeckCardsNum() override { return m_deck.size(); }
+		int GetPlayersCardsNum() { return 7; }
+		int GetDeckCardsNum() override { return m_deck.size(); }
 
 		GameModeID GetID() const override { return GameModeID::CLASSIC; }
 

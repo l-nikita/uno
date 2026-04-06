@@ -14,6 +14,9 @@ Player::Player(const ClientInfo& info)
 
 void Player::GiveCard(Card* card)
 {
+	if (!card)
+		return;
+
 	m_cards.push_back(card);
 }
 

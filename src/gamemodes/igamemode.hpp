@@ -29,7 +29,7 @@ namespace gm
 		virtual int GetCurrentPlayerIndex() { return -1; }
 		virtual bool IsReverse() { return false; }
 
-		virtual size_t GetDeckCardsNum() = 0;
+		virtual int GetDeckCardsNum() = 0;
 
 		virtual GameModeID GetID() const = 0;
 	};
