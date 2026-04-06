@@ -27,9 +27,9 @@ GameManager::~GameManager()
 //-----------------------------------------------------------------------------
 void GameManager::Start(gm::GameModeID gmId)
 {
-	if (GetStage() == GameStage::RoundInProgress || GetStage() == GameStage::RoundEnd)
+	if (IsGameStarted())
 	{
-		Rml::Log::Message(Rml::Log::LT_WARNING, "The game has already started");
+		Rml::Log::Message(Rml::Log::LT_WARNING, "The game has been already started");
 		return;
 	}
 
@@ -123,6 +123,7 @@ void GameManager::BroadcastGameState()
 			}
 			
 			state->set_current_player(GetGameMode()->GetCurrentPlayerIndex());
+			state->set_reverse(GetGameMode()->IsReverse());
 		}
 
         for (int i = 0; i < m_players.size(); ++i)

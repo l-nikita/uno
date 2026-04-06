@@ -1,6 +1,7 @@
 #pragma once
 
 #include <map>
+#include <string>
 #include <SDL3/SDL.h>
 
 //-----------------------------------------------------------------------------
@@ -21,6 +22,14 @@ static const std::map<CardColor, SDL_Color> CARD_COLORS = {
 	{CardColor::WILD,	SDL_Color{ 27, 27, 27, 255 }},
 };
 
+static const std::map<CardColor, std::string> CARD_COLORS_STRINGS = {
+	{CardColor::RED,	"Red"},
+	{CardColor::GREEN,	"Green"},
+	{CardColor::BLUE,	"Blue"},
+	{CardColor::YELLOW, "Yellow"},
+	{CardColor::WILD,	"Wild"},
+};
+
 //-----------------------------------------------------------------------------
 enum class CardType
 {
@@ -34,9 +43,9 @@ enum class CardType
 
 struct Card
 {
-	CardType Type;
-	CardColor Color;
-	int Value;
+	CardType Type = CardType::NUMBER;
+	CardColor Color = CardColor::RED;
+	int Value = -1;
 };
 
 using Cards = std::vector<Card*>;

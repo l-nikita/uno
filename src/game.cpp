@@ -40,11 +40,13 @@ void Game::Init(const LaunchArgs& args)
 
 	if (args.Mode == LaunchMode::HOST)
 	{
+		SDL_SetWindowTitle(m_window, "Uno - HOST");
 		SDL_Log("Auto-starting as host on port %d...", args.Port);
 		StartHost();
 	}
 	else if (args.Mode == LaunchMode::CONNECT)
 	{
+			SDL_SetWindowTitle(m_window, "Uno - CLIENT");
 		SDL_Log("Auto-connecting to %s:%d...", args.Ip.c_str(), args.Port);
 		Connect(args.Ip, args.Port);
 	}

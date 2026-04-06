@@ -66,6 +66,12 @@ void NetServer::OnConnectionStatusChanged(NetConnectionStatusCallback* callback)
                 break;
             }
 
+            if (g_GameManager->IsGameStarted())
+            {
+                m_interface->CloseConnection(connection, 0, "The game has been already started", false);
+                break;
+            }
+
             SDL_Log("[Host] Connection in progress...");
             break;
         }

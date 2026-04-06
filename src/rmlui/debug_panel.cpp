@@ -60,10 +60,11 @@ void DebugPanel::Update()
 	SetText("dbg_connected", isConnected ? "Conn: YES" : "Connection: NO");
 	
 	// game State
-	auto& gameState = g_ClientManager->GetGameState();
+	auto& clState = g_ClientManager->GetGameState();
+	auto& players = clState.Players;
 
 	Rml::String stageStr;
-	switch (gameState.Stage)
+	switch (clState.Stage)
 	{
 		case GameStage::Lobby:			stageStr = "Lobby"; break;
 		case GameStage::RoundInProgress:stageStr = "Round"; break;
@@ -71,11 +72,18 @@ void DebugPanel::Update()
 		default:						stageStr = "?"; break;
 	}
 	SetText("dbg_stage", "Stage: " + stageStr);
-	SetText("dbg_current_player", "Turn: " + std::to_string(gameState.CurrentPlayer));
+	if (players.size() > clState.CurrentPlayer)
+		SetText("dbg_current_player", "Turn: " + players.at(clState.CurrentPlayer).Name);
+
+	auto color = CARD_COLORS.at(clState.TopDiscard.Color);
+	std::string colorStr = "rgb(" + std::to_string(color.r) + ", " + std::to_string(color.g) + ", " + std::to_string(color.b) + ")";
+	SetText("dbg_color", "Color: <span style='color: "+ colorStr + "'>" + CARD_COLORS_STRINGS.at(clState.TopDiscard.Color) + "</span>");
+
+	SetText("dbg_reverse", clState.Reverse ? "Reverse: YES" : "Reverse: NO");
 
 	// my turn
 	auto& localPlayer = g_ClientManager->GetLocalPlayerInfo();
-	bool myTurn = (gameState.CurrentPlayer == localPlayer.Index);
+	bool myTurn = (clState.CurrentPlayer == localPlayer.Index);
 	SetText("dbg_my_turn", myTurn ? "My Turn: <span style='color: green'>YES</span>" : "My Turn: <span style='color: red'>NO</span>");
 
 	// players list
@@ -83,7 +91,7 @@ void DebugPanel::Update()
 	if (playersEl)
 	{
 		Rml::String playersRml;
-		for (const auto& player : gameState.Players)
+		for (const auto& player : players)
 		{
 			Rml::String localClass = player.IsLocal ? " local" : "";
 			Rml::String marker = player.IsLocal ? " " : "  ";

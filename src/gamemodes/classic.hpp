@@ -27,6 +27,7 @@ namespace gm
 
 		Card* GetTopDiscardCard() override { return m_discardPile.empty() ? nullptr : m_discardPile.back(); }
 		int GetCurrentPlayerIndex() override { return m_currentPlayerIndex; }
+		bool IsReverse() override { return m_reverse; }
 
 		size_t GetPlayersCardsNum() { return 7; }
 		size_t GetDeckCardsNum() override { return m_deck.size(); }
@@ -37,6 +38,7 @@ namespace gm
 		Cards m_deck;
 		Cards m_discardPile;
 
+		bool m_reverse = false;
 		int m_currentPlayerIndex = 0;
 	};
 }

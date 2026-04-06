@@ -48,8 +48,9 @@ message ServerGameState
 {
   int32 stage = 1;
   int32 current_player = 2;
-  Card top_discard = 3;
-  repeated PlayerInfo players = 4;
+  bool reverse = 3;
+  Card top_discard = 4;
+  repeated PlayerInfo players = 5;
 }
 
 //-----------------------------------------------------------------------------

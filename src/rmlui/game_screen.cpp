@@ -53,7 +53,7 @@ void GameScreen::CreateTopDiscardCard()
 
 void GameScreen::CreatePlayersCards()
 {
-	auto clState = g_ClientManager->GetGameState();
+	auto& clState = g_ClientManager->GetGameState();
 
 	for (size_t i = 0; i < 3; i++)
 	{
@@ -67,7 +67,7 @@ void GameScreen::CreatePlayersCards()
 
 	for (size_t i = 0; i < clState.Players.size(); i++)
 	{
-		auto info = clState.Players.at(i);
+		const auto& info = clState.Players.at(i);
 
 		if (info.IsLocal)
 		{
@@ -122,16 +122,18 @@ Rml::ElementPtr GameScreen::CreateCard(const Card& card, bool isStatic)
 		case CardColor::YELLOW:
 			colorStr = "yellow";
 			break;			
-		case CardColor::WILD:
-			if (card.Type == CardType::WILD)
-				colorStr = "wild";
-			else if (card.Type == CardType::WILD_DRAW_4)
-				colorStr = "wild4";
-
-			break;
 		default:
 			colorStr = "red";
 			break;
+	}
+
+	bool isWild = (card.Type == CardType::WILD || card.Type == CardType::WILD_DRAW_4);
+	if (isWild)
+	{
+		if (card.Type == CardType::WILD)
+			colorStr = "wild";
+		else if (card.Type == CardType::WILD_DRAW_4)
+			colorStr = "wild4";
 	}
 
 	Rml::String spec;
@@ -199,12 +201,18 @@ void GameScreen::CreateCard(const Card& card, int index, Rml::Element* container
 {
 	Rml::ElementPtr cardW = CreateCard(card, false);
 
+	bool playable = (CanPlay() && CanPlayCard(card));
+
 	cardW->SetClass("card-wrapper", true);
+	cardW->SetClass("playable", playable);
 	cardW->SetAttribute("move_target", "#self");
 	cardW->SetAttribute("edge_margin", "none");
 
 	cardW->AddEventListener(Rml::EventId::Dragend, this);
 	cardW->SetAttribute("card_id", index);
+
+	if (playable)
+		cardW->Animate("margin-bottom", Rml::Property(2.0f, Rml::Unit::VH), 0.15, { Rml::Tween::Quadratic, Rml::Tween::Out });
 
 	container->AppendChild(std::move(cardW));
 }
@@ -243,8 +251,10 @@ void GameScreen::ProcessEvent(Rml::Event& event)
 		float mouseX = event.GetParameter("mouse_x", 0.0f);
     	float mouseY = event.GetParameter("mouse_y", 0.0f);
 
+		int cardId = card->GetAttribute("card_id")->Get<int>();
+
 		Rml::Element* hoverElement = m_context->GetElementAtPoint(Rml::Vector2f(mouseX, mouseY), card);
-		if (CanPlay() && hoverElement && hoverElement->GetId() == "table")
+		if (CanPlay() && CanPlayCard(cardId) && hoverElement && hoverElement->GetId() == "table")
 		{
 			card->SetClass("deleted", true);
 			card->Animate("opacity", Rml::Property(0.0f, Rml::Unit::NUMBER), duration, tween);
@@ -258,6 +268,45 @@ void GameScreen::ProcessEvent(Rml::Event& event)
 			card->Animate("top",  Rml::Property(0.0f, Rml::Unit::PX), duration, tween);
 		}
     }
+}
+
+bool GameScreen::CanPlayCard(int index)
+{
+	auto& clState = g_ClientManager->GetGameState();
+	auto hand = g_ClientManager->GetLocalPlayerInfo().Hand;
+	
+	for (size_t i = 0; i < hand.size(); i++)
+	{
+		if (i == index)
+			return CanPlayCard(hand.at(i));
+	}
+
+	return false;
+}
+
+bool GameScreen::CanPlayCard(const Card& card)
+{
+	auto& clState = g_ClientManager->GetGameState();
+	auto topC = clState.TopDiscard;
+
+	bool sameColor = (topC.Color == card.Color);
+	bool sameType = (topC.Type == card.Type);
+	bool sameValue = (topC.Value == card.Value);
+	bool isWild = (card.Type == CardType::WILD || card.Type == CardType::WILD_DRAW_4);
+
+	if (topC.Color == CardColor::WILD)
+		return true;
+
+	if (isWild)
+		return true;
+
+	if (sameColor)
+		return true;
+
+	if (sameType && sameValue)
+		return true;
+		
+	return false;
 }
 
 bool GameScreen::CanPlay()

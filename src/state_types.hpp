@@ -20,6 +20,7 @@ struct GameState
 {
     GameStage Stage = GameStage::Lobby;
     int CurrentPlayer = -1;
+    bool Reverse = false;
     Card TopDiscard;
     std::vector<PlayerInfo> Players;
 };

@@ -34,6 +34,8 @@ private:
 	void CreateOpponentCards(int count, Rml::Element* container);
 
 	bool CanPlay();
+	bool CanPlayCard(int index);
+	bool CanPlayCard(const Card& card);
 
 	Rml::ElementDocument* m_document = nullptr;
 

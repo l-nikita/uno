@@ -50,6 +50,12 @@ namespace gm
 			if (card)
 			{
 				AddCardToDiscardPile(card);
+				if (card->Type == CardType::WILD || card->Type == CardType::WILD_DRAW_4)
+					card->Color = action.ChosenColor;
+
+				if (card->Type == CardType::REVERSE)
+					m_reverse = !m_reverse;
+
 				NextTurn();
 				g_GameManager->BroadcastGameState();
 			}
@@ -58,7 +64,7 @@ namespace gm
 
 	void Classic::NextTurn()
 	{
-		m_currentPlayerIndex = (m_currentPlayerIndex + 1) % g_GameManager->GetPlayers().size();
+		m_currentPlayerIndex = (m_currentPlayerIndex + (m_reverse ? -1 : 1)) % g_GameManager->GetPlayers().size();
 	}
 
 	void Classic::AddCardToDiscardPile(Card* card)
@@ -166,7 +172,6 @@ namespace gm
 		{
 			auto last = m_deck.back();
 			m_deck.pop_back();
-
 			AddCardToDiscardPile(last);
 		}
 

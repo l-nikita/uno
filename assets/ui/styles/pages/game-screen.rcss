@@ -114,6 +114,11 @@ body {
     drag: none;
 }
 
+.card-wrapper.playable {
+    margin-bottom: 2vh;
+    box-shadow: 0 0 30px 10px rgba(255, 255, 255, 80);
+}
+
 @spritesheet card {
     src: "/ui/images/card.png";
 
@@ -246,11 +251,4 @@ img.corner {
 #player3_card_container .player-card {
     margin-bottom: -6vh;
     transform: rotate(-90deg);
-}
-
-.player-card.thrown {
-    display: block;
-    position: relative;
-    transition: none;
-    margin: 0;
 }

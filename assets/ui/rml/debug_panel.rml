@@ -26,6 +26,8 @@
             <div id="dbg_stage" class="debug-row">Stage: -</div>
             <div id="dbg_current_player" class="debug-row">Turn: -</div>
             <div id="dbg_my_turn" class="debug-row">My Turn: -</div>
+            <div id="dbg_color" class="debug-row">Color: -</div>
+            <div id="dbg_reverse" class="debug-row">Reverse: -</div>
         </div>
 
         <div class="debug-separator"></div>

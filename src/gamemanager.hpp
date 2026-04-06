@@ -37,11 +37,12 @@ public:
 	void OnClientDisconnected(NetConnection conn);
 	void OnClientIdentified(const ClientInfo& info);
 
-	GameStage GetStage() const { return m_stage; }
+	GameStage GetStage() { return m_stage; }
+	bool IsGameStarted() { return (GetStage() == GameStage::RoundInProgress || GetStage() == GameStage::RoundEnd); }
 
 	void BroadcastGameState();
 
-	void OnPlayerAction(NetConnection conn, const PlayerAction& action);
+	void OnPlayerAction(NetConnection conn, const PlayerAction& action);\
 
 private:
 	gm::IGameMode* m_gameMode = nullptr;

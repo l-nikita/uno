@@ -27,6 +27,7 @@ namespace gm
 
 		virtual Card* GetTopDiscardCard() { return nullptr; }
 		virtual int GetCurrentPlayerIndex() { return -1; }
+		virtual bool IsReverse() { return false; }
 
 		virtual size_t GetDeckCardsNum() = 0;
 
