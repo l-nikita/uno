@@ -39,6 +39,7 @@ namespace gm
 		Cards m_discardPile;
 
 		bool m_reverse = false;
+		bool m_skip = false;
 		int m_currentPlayerIndex = 0;
 	};
 }

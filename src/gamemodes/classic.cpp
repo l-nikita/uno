@@ -55,6 +55,8 @@ namespace gm
 
 				if (card->Type == CardType::REVERSE)
 					m_reverse = !m_reverse;
+				else if (card->Type == CardType::SKIP)
+					m_skip = true;
 
 				NextTurn();
 				g_GameManager->BroadcastGameState();
@@ -64,7 +66,12 @@ namespace gm
 
 	void Classic::NextTurn()
 	{
-		m_currentPlayerIndex = (m_currentPlayerIndex + (m_reverse ? -1 : 1)) % g_GameManager->GetPlayers().size();
+		auto s = m_skip ? 2 : 1;
+		if (m_reverse)
+			s = -s;
+
+		m_currentPlayerIndex = (m_currentPlayerIndex + s) % g_GameManager->GetPlayers().size();
+		m_skip = false;
 	}
 
 	void Classic::AddCardToDiscardPile(Card* card)
