@@ -30,6 +30,12 @@ static const std::map<CardColor, std::string> CARD_COLORS_STRINGS = {
 	{CardColor::WILD,	"Wild"},
 };
 
+static std::string GetCardColorToRCSS_RGB(CardColor cardColor)
+{
+	auto color = CARD_COLORS.at(cardColor);
+	return "rgb(" + std::to_string(color.r) + ", " + std::to_string(color.g) + ", " + std::to_string(color.b) + ")";
+}
+
 //-----------------------------------------------------------------------------
 enum class CardType
 {

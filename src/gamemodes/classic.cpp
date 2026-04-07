@@ -44,6 +44,8 @@ namespace gm
 			return;
 		}
 
+		bool turnEnded = false;
+
 		if (action.Type == ActionType::PLAY_CARD)
 		{
 			auto card = player->DropCard(action.CardId);
@@ -57,26 +59,59 @@ namespace gm
 					m_reverse = !m_reverse;
 				else if (card->Type == CardType::SKIP)
 					m_skip = true;
+				else if (card->Type == CardType::DRAW_2 || card->Type == CardType::WILD_DRAW_4)
+				{
+					auto nextPlayer = g_GameManager->GetPlayerAt(GetNextPlayer());
+					if (nextPlayer != player)
+					{
+						for (size_t i = 0; i < (card->Type == CardType::WILD_DRAW_4 ? 4 : 2); i++)
+							nextPlayer->GiveCard(TakeCardFromDeck());	
+
+						m_skip = true;
+					}
+				}
 			}
+
+			turnEnded = true;
 		}
 		else if (action.Type == ActionType::DRAW_CARD)
 		{
-			player->GiveCard(TakeCardFromDeck());
-			player->SortCards();
+			if (m_drawCard)
+			{
+				turnEnded = true;
+			}
+			else
+			{
+				player->GiveCard(TakeCardFromDeck());
+				player->SortCards();
+
+				m_drawCard = true;
+
+				if (HasNoPlayableCards())
+					turnEnded = true;
+			}
 		}
 
-		NextTurn();
+		if (turnEnded)
+			NextTurn();
+
 		g_GameManager->BroadcastGameState();
 	}
 
-	void Classic::NextTurn()
+	int Classic::GetNextPlayer()
 	{
 		auto s = m_skip ? 2 : 1;
 		if (m_reverse)
 			s = -s;
 
-		m_currentPlayerIndex = (m_currentPlayerIndex + s) % g_GameManager->GetPlayers().size();
+		return (m_currentPlayerIndex + s) % g_GameManager->GetPlayers().size();
+	}
+
+	void Classic::NextTurn()
+	{
+		m_currentPlayerIndex = GetNextPlayer();
 		m_skip = false;
+		m_drawCard = false;
 	}
 
 	void Classic::AddCardToDiscardPile(Card* card)
@@ -98,6 +133,42 @@ namespace gm
 		auto last = m_deck.back();
 		m_deck.pop_back();
 		return last;
+	}
+
+	bool Classic::CanPlayCard(Card* card)
+	{
+		auto topC = GetTopDiscardCard();
+
+		bool sameColor = (topC->Color == card->Color);
+		bool sameType = (topC->Type == card->Type);
+		bool sameValue = (topC->Value == card->Value);
+		bool isWild = (card->Type == CardType::WILD || card->Type == CardType::WILD_DRAW_4);
+
+		if (topC->Color == CardColor::WILD)
+			return true;
+
+		if (isWild)
+			return true;
+
+		if (sameColor)
+			return true;
+
+		if (sameType && sameValue)
+			return true;
+			
+		return false;
+	}
+
+	bool Classic::HasNoPlayableCards()
+	{
+		auto hand = g_GameManager->GetPlayerAt(GetCurrentPlayerIndex())->GetCards();
+		for (size_t i = 0; i < hand.size(); i++)
+		{
+			if (CanPlayCard(hand.at(i)))
+				return false;
+		}
+
+		return true;
 	}
 
 	//-----------------------------------------------------------------------------

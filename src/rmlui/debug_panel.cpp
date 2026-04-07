@@ -75,10 +75,7 @@ void DebugPanel::Update()
 	if (players.size() > clState.CurrentPlayer)
 		SetText("dbg_current_player", "Turn: " + players.at(clState.CurrentPlayer).Name);
 
-	auto color = CARD_COLORS.at(clState.TopDiscard.Color);
-	std::string colorStr = "rgb(" + std::to_string(color.r) + ", " + std::to_string(color.g) + ", " + std::to_string(color.b) + ")";
-	SetText("dbg_color", "Color: <span style='color: "+ colorStr + "'>" + CARD_COLORS_STRINGS.at(clState.TopDiscard.Color) + "</span>");
-
+	SetText("dbg_color", "Color: <span style='color: "+ GetCardColorToRCSS_RGB(clState.TopDiscard.Color) + "'>" + CARD_COLORS_STRINGS.at(clState.TopDiscard.Color) + "</span>");
 	SetText("dbg_reverse", clState.Reverse ? "Reverse: YES" : "Reverse: NO");
 
 	// my turn

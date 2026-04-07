@@ -26,6 +26,9 @@ public:
 	void OnStateUpdate(const StateUpdate& update) override;
 
 private:
+	void ChooseColor(int cardIndex);
+	void HideColorSelection();
+
 	void CreatePlayersCards();
 	void CreateTopDiscardCard();
 
@@ -47,4 +50,6 @@ private:
 	};
 
 	std::vector<PendingDeletion> m_deletionQueue;
+
+	bool m_drawCard = false;
 };

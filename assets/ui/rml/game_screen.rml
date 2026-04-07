@@ -18,5 +18,10 @@
     <div id="player1_card_container"></div>    
     <div id="player2_card_container"></div>    
     <div id="player3_card_container"></div>
+
+    <div id="change_color" class="hidden">
+        <div id="change_color_window">
+        </div>
+    </div>
 </body>
 </rml>
