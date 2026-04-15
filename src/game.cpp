@@ -7,7 +7,6 @@
 #include "gamemanager.hpp"
 #include "clientmanager.hpp"
 #include "net/net_manager.hpp"
-#include "input.hpp"
 #include "filesystem.hpp"
 #include "rmlui/rmlui_renderer_gl3.hpp"
 #include "rmlui/debug_panel.hpp"
