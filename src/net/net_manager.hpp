@@ -44,5 +44,5 @@ extern NetworkManager* g_NetManager;
 
 static void SteamNetDebugOutput(ESteamNetworkingSocketsDebugOutputType type, const char* msg)
 {
-    SDL_Log(msg);
+    SDL_Log("%s", msg);
 }

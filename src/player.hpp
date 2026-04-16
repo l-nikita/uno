@@ -22,13 +22,13 @@ public:
 
 	void SortCards();
 
-	Cars GetCards() { return m_cards; }
+	Cars& GetCards() { return m_cards; }
 	int GetIndex();
 
-	std::string GetName() { return m_info.Name; }
-	NetConnection GetConnection() { return m_info.Connection; }
+	const std::string& GetName() { return m_info.Name; }
+	const NetConnection& GetConnection() { return m_info.Connection; }
 
-	ClientInfo GetClientInfo() { return m_info; }
+	const ClientInfo& GetClientInfo() { return m_info; }
 
 private:
 	ClientInfo m_info;

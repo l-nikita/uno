@@ -22,11 +22,11 @@ public:
 	GameManager();
 	~GameManager();
 
-	void Start(gm::GameModeID gmId);
+	void Start(gm::GameModeId gmId);
 	void Update();
 
 	gm::IGameMode* GetGameMode() { return m_gameMode; }
-	const Players GetPlayers() { return m_players; }
+	const Players& GetPlayers() { return m_players; }
 
 	Player* GetPlayerAt(int index) { return m_players.at(index); }
 	Player* GetPlayerByConnection(NetConnection conn);

@@ -38,7 +38,7 @@ namespace gm
 		int GetPlayersCardsNum() { return 7; }
 		int GetDeckCardsNum() override { return m_deck.size(); }
 
-		GameModeID GetID() const override { return GameModeID::CLASSIC; }
+		GameModeId GetId() const override { return GameModeId::CLASSIC; }
 
 	private:
 		Cards m_deck;

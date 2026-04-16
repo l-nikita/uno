@@ -53,7 +53,7 @@ void Game::Init(const LaunchArgs& args)
 
 void Game::StartGame()
 {
-	g_GameManager->Start(gm::GameModeID::CLASSIC);
+	g_GameManager->Start(gm::GameModeId::CLASSIC);
 }
 
 void Game::StartHost()

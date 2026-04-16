@@ -5,7 +5,7 @@
 
 namespace gm
 {
-	enum class GameModeID
+	enum class GameModeId
 	{
 		UNKNOWN,
 		CLASSIC,
@@ -32,6 +32,6 @@ namespace gm
 
 		virtual int GetDeckCardsNum() = 0;
 
-		virtual GameModeID GetID() const = 0;
+		virtual GameModeId GetId() const = 0;
 	};
 }

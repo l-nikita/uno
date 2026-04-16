@@ -5,12 +5,12 @@
 
 namespace fs 
 {
-	static std::filesystem::path GetRootPath()
+	inline std::filesystem::path GetRootPath()
 	{
-		return (std::filesystem::current_path().parent_path()).string();
+		return std::filesystem::current_path().parent_path();
 	}
 
-	static std::filesystem::path GetAssetsPath()
+	inline std::filesystem::path GetAssetsPath()
 	{
 		return (GetRootPath() / "assets");
 	}

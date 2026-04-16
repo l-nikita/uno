@@ -25,7 +25,7 @@ GameManager::~GameManager()
 }
 
 //-----------------------------------------------------------------------------
-void GameManager::Start(gm::GameModeID gmId)
+void GameManager::Start(gm::GameModeId gmId)
 {
 	if (IsGameStarted())
 	{
@@ -33,7 +33,7 @@ void GameManager::Start(gm::GameModeID gmId)
 		return;
 	}
 
-	if (gmId == gm::GameModeID::CLASSIC)
+	if (gmId == gm::GameModeId::CLASSIC)
 		m_gameMode = new gm::Classic();
 	else
 		Rml::Log::Message(Rml::Log::LT_ERROR, "Unknown game mode");
