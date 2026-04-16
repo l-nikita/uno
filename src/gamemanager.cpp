@@ -57,8 +57,8 @@ void GameManager::Update()
 void GameManager::OnPlayerAction(NetConnection conn, const PlayerAction& action)
 {
 	auto player = GetPlayerByConnection(conn);
-	if (player)
-		SDL_Log("Player [%s] action: %i, %i", player->GetName().c_str(), (int)action.Type, (int)action.CardId);
+	//if (player)
+	//	SDL_Log("Player [%s] action: %i, %i", player->GetName().c_str(), (int)action.Type, (int)action.CardId);
 
 	if (GetGameMode() && player)
 		GetGameMode()->OnPlayerAction(player, action);
@@ -142,6 +142,15 @@ void GameManager::BroadcastGameState()
 				c->set_type((int)card->Type);
 				c->set_color((int)card->Color);
 				c->set_value(card->Value);
+			}
+
+			auto lastCard = player->m_LastCard;
+			if (lastCard)
+			{
+				proto::Card* card = info->mutable_last_card();
+				card->set_type((int)lastCard->Type);
+				card->set_color((int)lastCard->Color);
+				card->set_value(lastCard->Value);
 			}
         }
 

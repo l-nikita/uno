@@ -19,8 +19,19 @@
     <div id="player2_card_container"></div>    
     <div id="player3_card_container"></div>
 
-    <div id="change_color" class="hidden">
+    <div id="change_color" class="dlg-container hidden">
         <div id="change_color_window">
+        </div>
+    </div>    
+    
+    <div id="play_or_keep" class="dlg-container">
+        <div id="play_or_keep_window" class="show">
+            <button>
+                <span>Play</span>
+            </button>           
+            <button>
+                <span>Keep</span>
+            </button>
         </div>
     </div>
 </body>

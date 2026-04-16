@@ -34,6 +34,9 @@ void GameScreen::OnStateUpdate(const StateUpdate& update)
 		if (!CanPlay() || HasNoPlayableCards())
             m_drawCard = false;
 
+		std::cout << m_drawCard << std::endl;
+		std::cout << g_ClientManager->GetGameState().Players[0].LastCard.Value << std::endl;
+			
 		CreatePlayersCards();
 		CreateTopDiscardCard();
 
@@ -254,10 +257,20 @@ void GameScreen::Update()
 	}
 }
 
+void GameScreen::AskPlayOrKeep()
+{
+	Rml::Element* container = m_document->GetElementById("play_or_keep");
+	container->SetClass("hidden", false);
+
+	Rml::Element* window = m_document->GetElementById("play_or_keep_window");
+	window->SetInnerRML("");
+	window->SetClass("show", true);
+}
+
 void GameScreen::ChooseColor(int cardIndex)
 {
-	Rml::Element* changeColor = m_document->GetElementById("change_color");
-	changeColor->SetClass("hidden", false);
+	Rml::Element* container = m_document->GetElementById("change_color");
+	container->SetClass("hidden", false);
 
 	Rml::Element* window = m_document->GetElementById("change_color_window");
 	window->SetInnerRML("");

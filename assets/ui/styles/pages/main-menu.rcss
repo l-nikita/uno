@@ -31,7 +31,6 @@ button {
     text-align: center;
     text-decoration: none;
     transition: all 1.0s elastic-out 0.0;
-    border-radius: 1vh;
 }
 
 button:hover {

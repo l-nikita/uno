@@ -7,7 +7,7 @@
 #include "net/net_common.hpp"
 
 //-----------------------------------------------------------------------------
-using Cars = std::vector<Card*>;
+using Cards = std::vector<Card*>;
 
 //-----------------------------------------------------------------------------
 //
@@ -22,7 +22,7 @@ public:
 
 	void SortCards();
 
-	Cars& GetCards() { return m_cards; }
+	Cards& GetCards() { return m_cards; }
 	int GetIndex();
 
 	const std::string& GetName() { return m_info.Name; }
@@ -30,8 +30,10 @@ public:
 
 	const ClientInfo& GetClientInfo() { return m_info; }
 
+	Card* m_LastCard = nullptr;
+
 private:
 	ClientInfo m_info;
 
-	Cars m_cards;
+	Cards m_cards;
 };

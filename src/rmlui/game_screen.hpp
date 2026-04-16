@@ -26,6 +26,8 @@ public:
 	void OnStateUpdate(const StateUpdate& update) override;
 
 private:
+	void AskPlayOrKeep();
+
 	void ChooseColor(int cardIndex);
 	void HideColorSelection();
 

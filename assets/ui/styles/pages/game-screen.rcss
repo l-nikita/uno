@@ -259,19 +259,23 @@ img.corner {
     transform: rotate(-90deg);
 }
 
-#change_color {
+.dlg-container {
     display: flex;
     position: absolute;
     flex-direction: column;
-    align-items: flex-end;
+    align-items: center;
     justify-content: center;
     width: 100%;
     height: 100%;
     z-index: 9999;
 }
 
-#change_color.hidden {
+.dlg-container.hidden {
     pointer-events: none;
+}
+
+#change_color {
+    align-items: flex-end;
 }
 
 #change_color_window {
@@ -281,9 +285,9 @@ img.corner {
     align-items: center;
     justify-content: center;
     decorator: image( "/ui/images/button1.png" );
-    width: 18vw; 
-    height: 18vw;
-    padding: 2vw;
+    width: 12vw; 
+    height: 42vw;
+    padding: 0.5vw;
     transition: transform 0.3s cubic-out;
     transform: translateX(100%);
 }
@@ -301,4 +305,39 @@ img.corner {
 
 .color-button:hover {
     transform: scale(1.1);
+}
+
+#play_or_keep_window {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    decorator: image( "/ui/images/button1.png" );
+    width: 22vw; 
+    height: 22vh;
+    padding: 0.5vw;
+    transition: transform 0.3s cubic-out;
+    transform: translateY(800%);
+}
+
+#play_or_keep_window.show {
+    transform: none;
+}
+
+#play_or_keep_window button {
+    width: 100%;
+    height: 8vh;
+    decorator: image( "/ui/images/button1.png" );
+    text-align: center;
+    text-decoration: none;
+    color: #ffffff;
+    transition: all 1.0s elastic-out 0.0;
+}
+
+#play_or_keep_window button:hover {
+    transform: scale(1.1);
+}
+
+#play_or_keep_window button span {
+    pointer-events: none;
 }

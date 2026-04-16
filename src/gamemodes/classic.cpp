@@ -49,6 +49,8 @@ namespace gm
 		if (action.Type == ActionType::PLAY_CARD)
 		{
 			auto card = player->DropCard(action.CardId);
+			player->m_LastCard = card;
+
 			if (card)
 			{
 				AddCardToDiscardPile(card);
@@ -82,7 +84,9 @@ namespace gm
 			}
 			else
 			{
-				player->GiveCard(TakeCardFromDeck());
+				auto card = TakeCardFromDeck();
+				player->m_LastCard = card;
+				player->GiveCard(card);
 				player->SortCards();
 
 				m_drawCard = true;

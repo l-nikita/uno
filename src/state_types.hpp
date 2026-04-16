@@ -14,6 +14,7 @@ struct PlayerInfo
     bool IsHost;
     bool IsLocal;
     std::vector<Card> Hand;
+    Card LastCard;
 };
 
 struct GameState
