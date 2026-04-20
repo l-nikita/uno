@@ -91,7 +91,7 @@ namespace gm
 
 				m_drawCard = true;
 
-				if (HasNoPlayableCards())
+				if (!CanPlayCard(card))
 					turnEnded = true;
 			}
 		}

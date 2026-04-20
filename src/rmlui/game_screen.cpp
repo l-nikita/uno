@@ -225,7 +225,13 @@ void GameScreen::CreateCard(const Card& card, int index, Rml::Element* container
 {
 	Rml::ElementPtr cardW = CreateCard(card, false);
 
-	bool playable = (CanPlay() && CanPlayCard(card));
+	int lastCardId = g_ClientManager->GetLocalPlayerInfo().LastCardId;
+
+	bool playable = false;
+	if (m_drawCard)
+		playable = (CanPlay() && index == lastCardId && CanPlayCard(card));
+	else
+		playable = (CanPlay() && CanPlayCard(card));
 
 	cardW->SetClass("card-wrapper", true);
 	cardW->SetClass("playable", playable);
