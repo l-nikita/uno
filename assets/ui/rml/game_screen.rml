@@ -24,12 +24,12 @@
         </div>
     </div>    
     
-    <div id="play_or_keep" class="dlg-container">
-        <div id="play_or_keep_window" class="show">
-            <button>
+    <div id="play_or_keep" class="dlg-container hidden">
+        <div id="play_or_keep_window">
+            <button id="play">
                 <span>Play</span>
             </button>           
-            <button>
+            <button id="keep">
                 <span>Keep</span>
             </button>
         </div>

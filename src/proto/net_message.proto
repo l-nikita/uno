@@ -42,7 +42,7 @@ message PlayerInfo
   bool is_host = 3;
   bool is_local = 4;
   repeated Card hand = 5;
-  Card last_card = 6;
+  int32 last_card_id = 6;
 }
 
 message ServerGameState 

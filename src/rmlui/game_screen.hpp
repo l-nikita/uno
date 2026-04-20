@@ -27,9 +27,12 @@ public:
 
 private:
 	void AskPlayOrKeep();
+	void HidePlayOrKeep();
 
-	void ChooseColor(int cardIndex);
+	void ChooseColor(int cardId);
 	void HideColorSelection();
+
+	void PlayCard(int cardId);
 
 	void CreatePlayersCards();
 	void CreateTopDiscardCard();

@@ -52,10 +52,7 @@ void PacketHandler::ProcessMessage(NetMessage* msg)
                     cards.push_back({ (CardType)c.type(), (CardColor)c.color(), c.value() });
                 }
 
-                auto lC = player.last_card();
-                Card lastCard{ (CardType)lC.type(), (CardColor)lC.color(), lC.value() };
-
-                PlayerInfo info{ player.index(), player.name(), player.is_host(), player.is_local(), cards, lastCard };
+                PlayerInfo info{ player.index(), player.name(), player.is_host(), player.is_local(), cards, player.last_card_id() };
                 state.Players.push_back(info);
             }
 

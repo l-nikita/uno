@@ -113,6 +113,10 @@ namespace gm
 
 	void Classic::NextTurn()
 	{
+		auto player = g_GameManager->GetPlayerAt(m_currentPlayerIndex);
+		if (player)
+			player->m_LastCard = nullptr;
+
 		m_currentPlayerIndex = GetNextPlayer();
 		m_skip = false;
 		m_drawCard = false;

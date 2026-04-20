@@ -126,7 +126,7 @@ void GameManager::BroadcastGameState()
 			state->set_reverse(GetGameMode()->IsReverse());
 		}
 
-        for (int i = 0; i < m_players.size(); ++i)
+        for (size_t i = 0; i < m_players.size(); ++i)
         {
 			auto player = m_players.at(i);
 
@@ -136,21 +136,20 @@ void GameManager::BroadcastGameState()
 			info->set_is_host((i == 0));
 			info->set_is_local((clIndex == i));
 
-			for (auto* card : player->GetCards())
+			info->set_last_card_id(-1);
+
+			auto hand =  player->GetCards();
+			for (size_t i = 0; i < hand.size(); ++i)
 			{
+				auto card = hand.at(i);
+
 				proto::Card* c = info->add_hand();
 				c->set_type((int)card->Type);
 				c->set_color((int)card->Color);
 				c->set_value(card->Value);
-			}
 
-			auto lastCard = player->m_LastCard;
-			if (lastCard)
-			{
-				proto::Card* card = info->mutable_last_card();
-				card->set_type((int)lastCard->Type);
-				card->set_color((int)lastCard->Color);
-				card->set_value(lastCard->Value);
+				if (card == player->m_LastCard)
+					info->set_last_card_id(i);
 			}
         }
 

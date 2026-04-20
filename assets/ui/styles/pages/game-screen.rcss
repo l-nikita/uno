@@ -314,10 +314,12 @@ img.corner {
     justify-content: center;
     decorator: image( "/ui/images/button1.png" );
     width: 22vw; 
-    height: 22vh;
-    padding: 0.5vw;
+    height: 10vh;
+    padding: 4vh;
+    gap: 1vw;
     transition: transform 0.3s cubic-out;
     transform: translateY(800%);
+    margin-top: 30vh;
 }
 
 #play_or_keep_window.show {
@@ -325,6 +327,9 @@ img.corner {
 }
 
 #play_or_keep_window button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 100%;
     height: 8vh;
     decorator: image( "/ui/images/button1.png" );
@@ -339,5 +344,6 @@ img.corner {
 }
 
 #play_or_keep_window button span {
+    width: 100%;
     pointer-events: none;
 }

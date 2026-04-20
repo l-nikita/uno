@@ -14,6 +14,13 @@ GameScreen::GameScreen(Rml::Context* context)
 	CreatePlayersCards();
 	CreateTopDiscardCard();
 
+	Rml::Element* window = m_document->GetElementById("play_or_keep_window");
+	Rml::ElementList list;
+	window->GetElementsByTagName(list, "button");
+
+	for (auto but : list)
+		but->AddEventListener(Rml::EventId::Click, this);
+
     g_ClientManager->Subscribe(this);
 }
 
@@ -31,12 +38,16 @@ void GameScreen::OnStateUpdate(const StateUpdate& update)
 	{
 		m_deletionQueue.clear();
 
-		if (!CanPlay() || HasNoPlayableCards())
-            m_drawCard = false;
+		if (m_drawCard)
+		{
+			auto& info = g_ClientManager->GetLocalPlayerInfo();
+			if (!CanPlay() || info.LastCardId == -1 || !CanPlayCard(info.LastCardId))
+				m_drawCard = false;
+		}
+		
+		if (m_drawCard)
+			AskPlayOrKeep();
 
-		std::cout << m_drawCard << std::endl;
-		std::cout << g_ClientManager->GetGameState().Players[0].LastCard.Value << std::endl;
-			
 		CreatePlayersCards();
 		CreateTopDiscardCard();
 
@@ -239,14 +250,7 @@ void GameScreen::Update()
 			if (curTime >= c.Time) 
 			{
 				int cardId = c.Element->GetAttribute("card_id")->Get<int>();
-				auto& card = g_ClientManager->GetLocalPlayerInfo().Hand.at(cardId);
-
-				if (card.Color == CardColor::WILD)
-					ChooseColor(cardId);
-				else
-					g_ClientManager->DoPlayerAction({ ActionType::PLAY_CARD, cardId });
-
-				m_drawCard = false;
+				PlayCard(cardId);
 				return true;
 			}
 
@@ -257,17 +261,37 @@ void GameScreen::Update()
 	}
 }
 
+void GameScreen::PlayCard(int cardId)
+{
+	auto& card = g_ClientManager->GetLocalPlayerInfo().Hand.at(cardId);
+
+	if (card.Color == CardColor::WILD)
+		ChooseColor(cardId);
+	else
+		g_ClientManager->DoPlayerAction({ ActionType::PLAY_CARD, cardId });
+
+	m_drawCard = false;
+}
+
 void GameScreen::AskPlayOrKeep()
 {
 	Rml::Element* container = m_document->GetElementById("play_or_keep");
 	container->SetClass("hidden", false);
 
 	Rml::Element* window = m_document->GetElementById("play_or_keep_window");
-	window->SetInnerRML("");
 	window->SetClass("show", true);
 }
 
-void GameScreen::ChooseColor(int cardIndex)
+void GameScreen::HidePlayOrKeep()
+{
+	Rml::Element* container = m_document->GetElementById("play_or_keep");
+	container->SetClass("hidden", true);
+
+	Rml::Element* window = m_document->GetElementById("play_or_keep_window");
+	window->SetClass("show", false);
+}
+
+void GameScreen::ChooseColor(int cardId)
 {
 	Rml::Element* container = m_document->GetElementById("change_color");
 	container->SetClass("hidden", false);
@@ -281,7 +305,7 @@ void GameScreen::ChooseColor(int cardIndex)
 		Rml::ElementPtr colorBut = Rml::Factory::InstanceElement(window, "button", "button", Rml::XMLAttributes());
 		colorBut->SetClass("color-button", true);
 		colorBut->SetAttribute("color_id", i);
-		colorBut->SetAttribute("card_id", cardIndex);
+		colorBut->SetAttribute("card_id", cardId);
 		colorBut->SetProperty("background-color", GetCardColorToRCSS_RGB((CardColor)i));
 		colorBut->AddEventListener(Rml::EventId::Click, this);
 		
@@ -331,7 +355,20 @@ void GameScreen::ProcessEvent(Rml::Event& event)
     }
 	else if (event == Rml::EventId::Click)
 	{
-		if (elem->GetId() == "deck" && elem->IsClassSet("can-take"))
+		auto& id = elem->GetId();
+		if (id == "play")
+		{
+			auto lastCard = g_ClientManager->GetLocalPlayerInfo().LastCardId;
+			PlayCard(lastCard);
+			HidePlayOrKeep();
+		}
+		else if (id == "keep")
+		{
+			g_ClientManager->DoPlayerAction({ ActionType::DRAW_CARD });
+			HidePlayOrKeep();
+			m_drawCard = false;
+		}
+		else if (id == "deck" && elem->IsClassSet("can-take"))
 		{
 			g_ClientManager->DoPlayerAction({ ActionType::DRAW_CARD });
 			m_drawCard = true;
