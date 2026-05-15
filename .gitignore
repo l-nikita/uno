@@ -54,6 +54,7 @@ x64/
 *.sln
 *.slnx
 
+.idea/
 .vscode/
 .cmake/
 bin/
