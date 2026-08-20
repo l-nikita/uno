@@ -2,30 +2,34 @@
 
 #include <RmlUi/Core.h>
 
-//-----------------------------------------------------------------------------
-enum class SceneId
+namespace client::ui
 {
-	NONE,
-	MAIN_MENU,
-	LOBBY,
-	GAME_SCREEN,
-};
+    //-----------------------------------------------------------------------------
+    enum class SceneId
+    {
+        NONE,
+        MAIN_MENU,
+        LOBBY,
+        GAME_SCREEN,
+    };
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-class Scene : public Rml::EventListener
-{
-public:
-	Scene(Rml::Context* context) 
-        : m_context(context) 
-    { }
+    //-----------------------------------------------------------------------------
+    //
+    //-----------------------------------------------------------------------------
+    class Scene : public Rml::EventListener
+    {
+    public:
+        explicit Scene( Rml::Context* context )
+            : m_context( context )
+        {
+        }
 
-    virtual SceneId GetId() const = 0;
+        virtual SceneId GetId() const = 0;
 
-	virtual void Update() = 0;
-	virtual void Destroy() = 0;
+        virtual void Update() = 0;
+        virtual void Destroy() = 0;
 
-protected:
-	Rml::Context* m_context = nullptr;
-};
+    protected:
+        Rml::Context* m_context = nullptr;
+    };
+}

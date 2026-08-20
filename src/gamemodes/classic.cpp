@@ -5,277 +5,277 @@
 #include "classic.hpp"
 #include "../gamemanager.hpp"
 
-namespace gm
+namespace server::mode
 {
-	//-----------------------------------------------------------------------------
-	//
-	//-----------------------------------------------------------------------------
-	Classic::~Classic()
-	{
-		for (auto card : m_deck)
-			delete card;
+    //-----------------------------------------------------------------------------
 
-		m_deck.clear();
-	}
+    using namespace shared;
 
-	void Classic::Start()
-	{
-		GenerateDeckCards();
-		DealCards();
-	}
+    //-----------------------------------------------------------------------------
+    //
+    //-----------------------------------------------------------------------------
+    Classic::~Classic()
+    {
+        for ( auto card: m_deck )
+            delete card;
 
-	void Classic::Stop()
-	{
-		
-	}
+        m_deck.clear();
+    }
 
-	//-----------------------------------------------------------------------------
-	void Classic::Update()
-	{
+    void Classic::Start()
+    {
+        GenerateDeckCards();
+        DealCards();
+    }
 
-	}	
+    void Classic::Stop()
+    {
+    }
 
-	void Classic::OnPlayerAction(Player* player, const PlayerAction& action)
-	{
-		auto currentPlayer = g_GameManager->GetPlayerAt(m_currentPlayerIndex);
-		if (player != currentPlayer)
-		{
-			SDL_Log("Player [%s] tried to act out of turn!", player->GetName().c_str());
-			return;
-		}
+    //-----------------------------------------------------------------------------
+    void Classic::Update()
+    {
+    }
 
-		bool turnEnded = false;
+    void Classic::OnPlayerAction( Player* player, const PlayerAction& action )
+    {
+        auto currentPlayer = g_GameManager->GetPlayerAt( m_currentPlayerIndex );
+        if ( player != currentPlayer )
+        {
+            SDL_Log( "Player [%s] tried to act out of turn!", player->GetName().c_str() );
+            return;
+        }
 
-		if (action.Type == ActionType::PLAY_CARD)
-		{
-			auto card = player->DropCard(action.CardId);
-			player->m_LastCard = card;
+        bool turnEnded = false;
 
-			if (card)
-			{
-				AddCardToDiscardPile(card);
-				if (card->Type == CardType::WILD || card->Type == CardType::WILD_DRAW_4)
-					card->Color = action.ChosenColor;
+        if ( action.Type == ActionType::PLAY_CARD )
+        {
+            auto card = player->DropCard( action.CardId );
+            player->m_LastCard = card;
 
-				if (card->Type == CardType::REVERSE)
-					m_reverse = !m_reverse;
-				else if (card->Type == CardType::SKIP)
-					m_skip = true;
-				else if (card->Type == CardType::DRAW_2 || card->Type == CardType::WILD_DRAW_4)
-				{
-					auto nextPlayer = g_GameManager->GetPlayerAt(GetNextPlayer());
-					if (nextPlayer != player)
-					{
-						for (size_t i = 0; i < (card->Type == CardType::WILD_DRAW_4 ? 4 : 2); i++)
-							nextPlayer->GiveCard(TakeCardFromDeck());	
+            if ( card )
+            {
+                AddCardToDiscardPile( card );
+                if ( card->Type == CardType::WILD || card->Type == CardType::WILD_DRAW_4 )
+                    card->Color = action.ChosenColor;
 
-						m_skip = true;
-					}
-				}
-			}
+                if ( card->Type == CardType::REVERSE )
+                    m_reverse = !m_reverse;
+                else if ( card->Type == CardType::SKIP )
+                    m_skip = true;
+                else if ( card->Type == CardType::DRAW_2 || card->Type == CardType::WILD_DRAW_4 )
+                {
+                    auto nextPlayer = g_GameManager->GetPlayerAt( GetNextPlayer() );
+                    if ( nextPlayer != player )
+                    {
+                        for ( size_t i = 0; i < ( card->Type == CardType::WILD_DRAW_4 ? 4 : 2 ); i++ )
+                            nextPlayer->GiveCard( TakeCardFromDeck() );
 
-			turnEnded = true;
-		}
-		else if (action.Type == ActionType::DRAW_CARD)
-		{
-			if (m_drawCard)
-			{
-				turnEnded = true;
-			}
-			else
-			{
-				auto card = TakeCardFromDeck();
-				player->m_LastCard = card;
-				player->GiveCard(card);
-				player->SortCards();
+                        m_skip = true;
+                    }
+                }
+            }
 
-				m_drawCard = true;
+            turnEnded = true;
+        } else if ( action.Type == ActionType::DRAW_CARD )
+        {
+            if ( m_drawCard )
+            {
+                turnEnded = true;
+            } else
+            {
+                auto card = TakeCardFromDeck();
+                player->m_LastCard = card;
+                player->GiveCard( card );
+                player->SortCards();
 
-				if (!CanPlayCard(card))
-					turnEnded = true;
-			}
-		}
+                m_drawCard = true;
 
-		if (turnEnded)
-			NextTurn();
+                if ( !CanPlayCard( card ) )
+                    turnEnded = true;
+            }
+        }
 
-		g_GameManager->BroadcastGameState();
-	}
+        if ( turnEnded )
+            NextTurn();
 
-	int Classic::GetNextPlayer()
-	{
-		auto s = m_skip ? 2 : 1;
-		if (m_reverse)
-			s = -s;
+        g_GameManager->BroadcastGameState();
+    }
 
-		return (m_currentPlayerIndex + s) % g_GameManager->GetPlayers().size();
-	}
+    int Classic::GetNextPlayer()
+    {
+        auto s = m_skip ? 2 : 1;
+        if ( m_reverse )
+            s = -s;
 
-	void Classic::NextTurn()
-	{
-		auto player = g_GameManager->GetPlayerAt(m_currentPlayerIndex);
-		if (player)
-			player->m_LastCard = nullptr;
+        return ( m_currentPlayerIndex + s ) % g_GameManager->GetPlayers().size();
+    }
 
-		m_currentPlayerIndex = GetNextPlayer();
-		m_skip = false;
-		m_drawCard = false;
-	}
+    void Classic::NextTurn()
+    {
+        auto player = g_GameManager->GetPlayerAt( m_currentPlayerIndex );
+        if ( player )
+            player->m_LastCard = nullptr;
 
-	void Classic::AddCardToDiscardPile(Card* card)
-	{
-		if (!card)
-			return;
+        m_currentPlayerIndex = GetNextPlayer();
+        m_skip = false;
+        m_drawCard = false;
+    }
 
-		m_discardPile.push_back(card);
-	}
+    void Classic::AddCardToDiscardPile( Card* card )
+    {
+        if ( !card )
+            return;
 
-	Card* Classic::TakeCardFromDeck()
-	{
-		if (m_deck.empty())
-		{
-			SDL_Log("Deck is empty.");
-			return nullptr;
-		}
+        m_discardPile.push_back( card );
+    }
 
-		auto last = m_deck.back();
-		m_deck.pop_back();
-		return last;
-	}
+    Card* Classic::TakeCardFromDeck()
+    {
+        if ( m_deck.empty() )
+        {
+            SDL_Log( "Deck is empty." );
+            return nullptr;
+        }
 
-	bool Classic::CanPlayCard(Card* card)
-	{
-		auto topC = GetTopDiscardCard();
+        auto last = m_deck.back();
+        m_deck.pop_back();
+        return last;
+    }
 
-		bool sameColor = (topC->Color == card->Color);
-		bool sameType = (topC->Type == card->Type);
-		bool sameValue = (topC->Value == card->Value);
-		bool isWild = (card->Type == CardType::WILD || card->Type == CardType::WILD_DRAW_4);
+    bool Classic::CanPlayCard( Card* card )
+    {
+        auto topC = GetTopDiscardCard();
 
-		if (topC->Color == CardColor::WILD)
-			return true;
+        bool sameColor = ( topC->Color == card->Color );
+        bool sameType = ( topC->Type == card->Type );
+        bool sameValue = ( topC->Value == card->Value );
+        bool isWild = ( card->Type == CardType::WILD || card->Type == CardType::WILD_DRAW_4 );
 
-		if (isWild)
-			return true;
+        if ( topC->Color == CardColor::WILD )
+            return true;
 
-		if (sameColor)
-			return true;
+        if ( isWild )
+            return true;
 
-		if (sameType && sameValue)
-			return true;
-			
-		return false;
-	}
+        if ( sameColor )
+            return true;
 
-	bool Classic::HasNoPlayableCards()
-	{
-		auto hand = g_GameManager->GetPlayerAt(GetCurrentPlayerIndex())->GetCards();
-		for (size_t i = 0; i < hand.size(); i++)
-		{
-			if (CanPlayCard(hand.at(i)))
-				return false;
-		}
+        if ( sameType && sameValue )
+            return true;
 
-		return true;
-	}
+        return false;
+    }
 
-	//-----------------------------------------------------------------------------
-	void Classic::GenerateDeckCards()
-	{
-		// color
-		for (size_t c = 0; c < 4; c++)
-		{
-			CardColor color = static_cast<CardColor>(c);
+    bool Classic::HasNoPlayableCards()
+    {
+        auto hand = g_GameManager->GetPlayerAt( GetCurrentPlayerIndex() )->GetCards();
+        for ( size_t i = 0; i < hand.size(); i++ )
+        {
+            if ( CanPlayCard( hand.at( i ) ) )
+                return false;
+        }
 
-			// duplication 
-			for (size_t d = 0; d < 2; d++)
-			{
-				// number
-				for (size_t n = 0; n < 10; n++)
-				{
-					if (n == 0 && d == 1) // 0 not duplicated
-						continue;
+        return true;
+    }
 
-					auto num = new Card();
-					num->Type = CardType::NUMBER;
-					num->Value = n;
-					num->Color = color;
+    //-----------------------------------------------------------------------------
+    void Classic::GenerateDeckCards()
+    {
+        // color
+        for ( size_t c = 0; c < 4; c++ )
+        {
+            CardColor color = static_cast<CardColor>(c);
 
-					m_deck.push_back(num);
-				}
+            // duplication
+            for ( size_t d = 0; d < 2; d++ )
+            {
+                // number
+                for ( size_t n = 0; n < 10; n++ )
+                {
+                    if ( n == 0 && d == 1 ) // 0 not duplicated
+                        continue;
 
-				// skip
-				auto skip = new Card();
-				skip->Type = CardType::SKIP;
-				skip->Value = 10;
-				skip->Color = color;
+                    auto num = new Card();
+                    num->Type = CardType::NUMBER;
+                    num->Value = n;
+                    num->Color = color;
 
-				m_deck.push_back(skip);
+                    m_deck.push_back( num );
+                }
 
-				// reverse
-				auto reverse = new Card();
-				reverse->Type = CardType::REVERSE;
-				reverse->Value = 10;
-				reverse->Color = color;
+                // skip
+                auto skip = new Card();
+                skip->Type = CardType::SKIP;
+                skip->Value = 10;
+                skip->Color = color;
 
-				m_deck.push_back(reverse);
+                m_deck.push_back( skip );
 
-				// draw 2
-				auto draw2 = new Card();
-				draw2->Type = CardType::DRAW_2;
-				draw2->Value = 10;
-				draw2->Color = color;
+                // reverse
+                auto reverse = new Card();
+                reverse->Type = CardType::REVERSE;
+                reverse->Value = 10;
+                reverse->Color = color;
 
-				m_deck.push_back(draw2);
-			}
-		}
+                m_deck.push_back( reverse );
 
-		// wild
-		for (size_t i = 0; i < 4; i++)
-		{
-			auto wild = new Card();
-			wild->Type = CardType::WILD;
-			wild->Value = 20;
-			wild->Color = CardColor::WILD;
+                // draw 2
+                auto draw2 = new Card();
+                draw2->Type = CardType::DRAW_2;
+                draw2->Value = 10;
+                draw2->Color = color;
 
-			m_deck.push_back(wild);
-		}
+                m_deck.push_back( draw2 );
+            }
+        }
 
-		// wild +4
-		for (size_t i = 0; i < 4; i++)
-		{
-			auto wild4 = new Card();
-			wild4->Type = CardType::WILD_DRAW_4;
-			wild4->Value = 20;
-			wild4->Color = CardColor::WILD;
+        // wild
+        for ( size_t i = 0; i < 4; i++ )
+        {
+            auto wild = new Card();
+            wild->Type = CardType::WILD;
+            wild->Value = 20;
+            wild->Color = CardColor::WILD;
 
-			m_deck.push_back(wild4);
-		}
+            m_deck.push_back( wild );
+        }
 
-		std::cout << m_deck.size() << std::endl;
-	}
+        // wild +4
+        for ( size_t i = 0; i < 4; i++ )
+        {
+            auto wild4 = new Card();
+            wild4->Type = CardType::WILD_DRAW_4;
+            wild4->Value = 20;
+            wild4->Color = CardColor::WILD;
 
-	void Classic::DealCards()
-	{
-		std::random_device rd;
-		std::mt19937 gen(rd());
+            m_deck.push_back( wild4 );
+        }
 
-		std::ranges::shuffle(m_deck, gen);
+        std::cout << m_deck.size() << std::endl;
+    }
 
-		for (auto& player : g_GameManager->GetPlayers())
-		{
-			for (size_t i = 0; i < GetPlayersCardsNum(); i++)
-				player->GiveCard(TakeCardFromDeck());
+    void Classic::DealCards()
+    {
+        std::random_device rd;
+        std::mt19937 gen( rd() );
 
-			player->SortCards();
-		}
+        std::ranges::shuffle( m_deck, gen );
 
-		// Initial discard card
-		if (!m_deck.empty())
-		{
-			AddCardToDiscardPile(TakeCardFromDeck());
-		}
+        for ( auto& player: g_GameManager->GetPlayers() )
+        {
+            for ( size_t i = 0; i < GetPlayersCardsNum(); i++ )
+                player->GiveCard( TakeCardFromDeck() );
 
-		std::cout << m_deck.size() << std::endl;
-	}
+            player->SortCards();
+        }
+
+        // Initial discard card
+        if ( !m_deck.empty() )
+        {
+            AddCardToDiscardPile( TakeCardFromDeck() );
+        }
+
+        std::cout << m_deck.size() << std::endl;
+    }
 }

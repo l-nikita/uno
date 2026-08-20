@@ -1,29 +1,32 @@
 #pragma once
 
 #include <RmlUi/Core.h>
-#include "scene.hpp"
+
 #include "clientmanager.hpp"
+#include "scene.hpp"
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-class Lobby final : public Scene, IStateListener
+namespace client::ui
 {
-public:
-	Lobby(Rml::Context* context);
+    //-----------------------------------------------------------------------------
+    //
+    //-----------------------------------------------------------------------------
+    class Lobby final : public Scene, IStateListener
+    {
+    public:
+        explicit Lobby( Rml::Context* context );
 
-	void ProcessEvent(Rml::Event& event) override;
+        void ProcessEvent( Rml::Event& event ) override;
 
-	SceneId GetId() const override { return SceneId::LOBBY; }
+        SceneId GetId() const override { return SceneId::LOBBY; }
 
-	void Update() override;
-	void Destroy() override;
+        void Update() override;
+        void Destroy() override;
 
-	void OnStateUpdate(const StateUpdate& update) override;
+        void OnStateUpdate( const shared::StateUpdate& update ) override;
 
-private:
-	void RefreshPlayers();
+    private:
+        void RefreshPlayers();
 
-	Rml::ElementDocument* m_document = nullptr;
-
-};
+        Rml::ElementDocument* m_document = nullptr;
+    };
+}

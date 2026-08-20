@@ -1,56 +1,51 @@
 #pragma once
 
 #include <vector>
-#include <string>
-#include <functional>
-#include <variant>
-#include "card.hpp"
-#include "game.hpp"
+
 #include "istatelistener.hpp"
 #include "rmlui/scene.hpp"
 
-//-----------------------------------------------------------------------------
-
-struct PlayerAction;
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-class ClientManager final
+namespace client
 {
-public:
-    ClientManager(Rml::Context* context);
-    ~ClientManager();
+    //-----------------------------------------------------------------------------
+    //
+    //-----------------------------------------------------------------------------
+    class ClientManager final
+    {
+    public:
+        ClientManager( Rml::Context* context );
+        ~ClientManager();
 
-    void Update();
-    void DeleteScenes();
+        void Update();
+        void DeleteScenes();
 
-    void ApplyUpdate(const StateUpdate& update);
-    
-    void Subscribe(IStateListener* listener);
-    void Unsubscribe(IStateListener* listener);
+        void ApplyUpdate( const shared::StateUpdate& update );
 
-    const GameState& GetGameState() { return m_gameState; }
-    const PlayerInfo& GetLocalPlayerInfo();
+        void Subscribe( IStateListener* listener );
+        void Unsubscribe( IStateListener* listener );
 
-    void OnDisconnected();
-    void OnConnected();
-    void DoPlayerAction(const PlayerAction& action);
+        const shared::GameState& GetGameState() { return m_gameState; }
+        const shared::PlayerInfo& GetLocalPlayerInfo();
 
-	void SetScene(SceneId id);
-	void DestroyScene(Scene* scene);
-	Scene* CreateNewScene(SceneId id);
+        void OnDisconnected();
+        void OnConnected();
+        void DoPlayerAction( const shared::PlayerAction& action );
 
-private:
-    GameState m_gameState;
-    std::vector<IStateListener*> m_listeners;
+        void SetScene( ui::SceneId id );
+        void DestroyScene( ui::Scene* scene );
+        ui::Scene* CreateNewScene( ui::SceneId id );
 
-	Scene* m_scene = nullptr;
-	SceneId m_sceneId = SceneId::NONE;
+    private:
+        shared::GameState m_gameState;
+        std::vector<IStateListener*> m_listeners;
 
-	std::vector<Scene*> m_dirtyScenes;
+        ui::Scene* m_scene = nullptr;
+        ui::SceneId m_sceneId = ui::SceneId::NONE;
 
-    Rml::Context* m_rmlContext = nullptr;
-};
+        std::vector<ui::Scene*> m_dirtyScenes;
 
-extern ClientManager* g_ClientManager;
+        Rml::Context* m_rmlContext = nullptr;
+    };
+}
+
+extern client::ClientManager* g_ClientManager;

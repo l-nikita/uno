@@ -1,39 +1,44 @@
 #pragma once
 
-#include <vector>
 #include <string>
+#include <vector>
+
 #include "card.hpp"
 #include "state_types.hpp"
 #include "net/net_common.hpp"
 
-//-----------------------------------------------------------------------------
-using Cards = std::vector<Card*>;
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-class Player
+namespace server
 {
-public:
-	Player(const ClientInfo& info);
+    //-----------------------------------------------------------------------------
 
-	void GiveCard(Card* card);
-	Card* DropCard(int index);
+    using Cards = std::vector<shared::Card*>;
 
-	void SortCards();
+    //-----------------------------------------------------------------------------
+    //
+    //-----------------------------------------------------------------------------
+    class Player
+    {
+    public:
+        explicit Player( const shared::ClientInfo& info );
 
-	Cards& GetCards() { return m_cards; }
-	int GetIndex();
+        void GiveCard( shared::Card* card );
+        shared::Card* DropCard( int index );
 
-	const std::string& GetName() { return m_info.Name; }
-	const NetConnection& GetConnection() { return m_info.Connection; }
+        void SortCards();
 
-	const ClientInfo& GetClientInfo() { return m_info; }
+        Cards& GetCards() { return m_cards; }
+        std::size_t GetIndex() const;
 
-	Card* m_LastCard = nullptr;
+        const std::string& GetName() const { return m_info.Name; }
+        const shared::net::Connection& GetConnection() const { return m_info.Connection; }
 
-private:
-	ClientInfo m_info;
+        const shared::ClientInfo& GetClientInfo() { return m_info; }
 
-	Cards m_cards;
-};
+        shared::Card* m_LastCard = nullptr;
+
+    private:
+        shared::ClientInfo m_info;
+
+        Cards m_cards;
+    };
+}

@@ -1,111 +1,116 @@
 #include <iostream>
 #include <thread>
 #include <SDL3/SDL.h>
-#include <steam/steamnetworkingtypes.h>
-#include <steam/steamnetworkingsockets.h>
 #include <steam/isteamnetworkingutils.h>
-#include "net_manager.hpp"
-#include "net_packet_handler.hpp"
+#include <steam/steamnetworkingsockets.h>
+#include <steam/steamnetworkingtypes.h>
 
-NetworkManager* g_NetManager = nullptr;
+#include "net/net_manager.hpp"
+#include "net/net_packet_handler.hpp"
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-NetworkManager::NetworkManager()
+shared::net::NetworkManager* g_NetManager = nullptr;
+
+namespace shared::net
 {
-	g_NetManager = this;
-    g_PacketHandler = new PacketHandler();
-}
+    //-----------------------------------------------------------------------------
+    //
+    //-----------------------------------------------------------------------------
+    NetworkManager::NetworkManager()
+    {
+        g_NetManager = this;
+        g_PacketHandler = new PacketHandler();
+    }
 
-NetworkManager::~NetworkManager()
-{
-    if (g_PacketHandler)
-        delete g_PacketHandler, g_PacketHandler = nullptr;
+    NetworkManager::~NetworkManager()
+    {
+        if ( g_PacketHandler )
+            delete g_PacketHandler, g_PacketHandler = nullptr;
 
-    Shutdown();
-}
+        Shutdown();
+    }
 
-void NetworkManager::Init()
-{
-    NetErrorMsg errMsg;
-    if (!GameNetworkingSockets_Init(nullptr, errMsg)) 
-        throw std::runtime_error("Couldn't initialize GameNetworkingSockets: " + std::string(errMsg));
+    void NetworkManager::Init()
+    {
+        ErrorMsg errMsg;
+        if ( !GameNetworkingSockets_Init( nullptr, errMsg ) )
+            throw std::runtime_error( "Couldn't initialize GameNetworkingSockets: " + std::string( errMsg ) );
 
-    SteamNetworkingUtils()->SetDebugOutputFunction(k_ESteamNetworkingSocketsDebugOutputType_Msg, SteamNetDebugOutput);
+        SteamNetworkingUtils()->SetDebugOutputFunction( k_ESteamNetworkingSocketsDebugOutputType_Msg,
+                                                        SteamNetDebugOutput );
 
-    m_interface = SteamNetworkingSockets();
-}
+        m_interface = SteamNetworkingSockets();
+    }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void NetworkManager::StartHost(uint16_t port = 27015)
-{
-    if (m_server)
-        return;
+    //-----------------------------------------------------------------------------
+    //
+    //-----------------------------------------------------------------------------
+    void NetworkManager::Update()
+    {
+        if ( m_server )
+            m_server->PollMessages();
 
-    if (m_client && m_client->IsConnected())
-        return;
+        if ( m_client )
+            m_client->PollMessages();
+    }
 
-    m_server = new NetServer(m_interface);
-    m_server->Start(port);
-}
+    //-----------------------------------------------------------------------------
+    void NetworkManager::Shutdown()
+    {
+        if ( m_server )
+            delete m_server, m_server = nullptr;
 
-void NetworkManager::StopHost()
-{
-    if (m_server)
-        delete m_server, m_server = nullptr;
-}
+        if ( m_client )
+            delete m_client, m_client = nullptr;
 
-void NetworkManager::StartClient()
-{
-    if (m_client)
-        return;
+        GameNetworkingSockets_Kill();
+        m_interface = nullptr;
+    }
 
-    m_client = new NetClient(m_interface);
-}
+    //-----------------------------------------------------------------------------
+    //
+    //-----------------------------------------------------------------------------
+    void NetworkManager::StartHost( uint16_t port = 27015 )
+    {
+        if ( m_server )
+            return;
 
-void NetworkManager::Connect(const std::string& ip, uint16_t port)
-{
-    if (!m_client)
-        return;
+        if ( m_client && m_client->IsConnected() )
+            return;
 
-    m_client->Start(ip, port);
-}
+        m_server = new Server( m_interface );
+        m_server->Start( port );
+    }
 
-void NetworkManager::Disconnect()
-{
-    if (IsHost())
-        StopHost();
+    void NetworkManager::StopHost()
+    {
+        if ( m_server )
+            delete m_server, m_server = nullptr;
+    }
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    void NetworkManager::StartClient()
+    {
+        if ( m_client )
+            return;
 
-    if (m_client)
-        delete m_client, m_client = nullptr;
-}
+        m_client = new Client( m_interface );
+    }
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-void NetworkManager::Update()
-{
-    if (m_server)
-        m_server->PollMessages();
-        
-    if (m_client)
-        m_client->PollMessages();
-}
+    void NetworkManager::Connect( const std::string& ip, uint16_t port )
+    {
+        if ( !m_client )
+            return;
 
-//-----------------------------------------------------------------------------
-void NetworkManager::Shutdown()
-{
-    if (m_server)
-        delete m_server, m_server = nullptr;    
-    
-    if (m_client)
-        delete m_client, m_client = nullptr;
+        m_client->Start( ip, port );
+    }
 
-    GameNetworkingSockets_Kill();
-    m_interface = nullptr;
+    void NetworkManager::Disconnect()
+    {
+        if ( IsHost() )
+            StopHost();
+
+        std::this_thread::sleep_for( std::chrono::milliseconds( 500 ) );
+
+        if ( m_client )
+            delete m_client, m_client = nullptr;
+    }
 }

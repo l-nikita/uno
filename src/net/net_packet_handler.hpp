@@ -1,22 +1,25 @@
 #pragma once
 
-#include "net_manager.hpp"
-#include "net_server.hpp"
+#include "net/net_manager.hpp"
+#include "net/net_server.hpp"
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-class PacketHandler
+namespace shared::net
 {
-public:
-    PacketHandler();
-    ~PacketHandler();
+    //-----------------------------------------------------------------------------
+    //
+    //-----------------------------------------------------------------------------
+    class PacketHandler
+    {
+    public:
+        PacketHandler();
+        ~PacketHandler();
 
-private:
-    void ProcessMessage(NetMessage* msg);
+    private:
+        void ProcessMessage( Message* msg );
 
-    friend class NetServer;
-    friend class NetClient;
-};
+        friend class Server;
+        friend class Client;
+    };
+}
 
-extern PacketHandler* g_PacketHandler;
+extern shared::net::PacketHandler* g_PacketHandler;

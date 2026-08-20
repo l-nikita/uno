@@ -2,118 +2,125 @@
 
 #include <chrono>
 #include <string>
-#include <SDL3/SDL.h>
 #include <RmlUi/Core.h>
-#include "rmlui/rmlui_renderer_gl3_sdl.hpp"
+#include <SDL3/SDL.h>
+
+#include "rmlui/debug_panel.hpp"
 #include "rmlui/rmlui_file_interface.hpp"
+#include "rmlui/rmlui_renderer_gl3_sdl.hpp"
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-using KeyDownCallback = bool (*)(Rml::Context* context, Rml::Input::KeyIdentifier key, int key_modifier, float native_dp_ratio, bool priority);
-
-class MainMenu;
-class DebugPanel;
-
-//-----------------------------------------------------------------------------
-struct GameSettings
+namespace shared
 {
-	bool IsFullScreen = false;
-    std::string Name = "Player";
-};
+    //-----------------------------------------------------------------------------
+    //
+    //-----------------------------------------------------------------------------
 
-enum class GameStage : int
-{
-	Lobby,
-	RoundInProgress,
-	RoundEnd,
-};
+    using KeyDownCallback = bool ( * )( Rml::Context* context, Rml::Input::KeyIdentifier key, int key_modifier,
+                                        float native_dp_ratio, bool priority );
 
-enum class LaunchMode
-{
-	NONE,
-	HOST,
-	CONNECT,
-};
+    using WindowSize = std::tuple<std::uint32_t, std::uint32_t>;
 
-struct LaunchArgs
-{
-	LaunchMode Mode = LaunchMode::NONE;
-	std::string Ip = "127.0.0.1";
-	uint16_t Port = 27015;
-	std::string Name;
-};
+    //-----------------------------------------------------------------------------
+    struct GameSettings
+    {
+        bool IsFullScreen = false;
+        std::string Name = "Player";
+    };
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-class Game final
-{
-public:
-	void Init(const LaunchArgs& args = {});
+    enum class GameStage : int
+    {
+        LOBBY,
+        ROUND_IN_PROGRESS,
+        ROUND_END,
+    };
 
-	void Run();
-	void RequestExit();
-	void Shutdown();
+    enum class LaunchMode
+    {
+        NONE,
+        HOST,
+        CONNECT,
+    };
 
-	void SetFullscreen(bool fullscreen);
-	void GetWindowSize(int* w, int* h);
+    struct LaunchArgs
+    {
+        LaunchMode Mode = LaunchMode::NONE;
+        std::string Ip = "127.0.0.1";
+        uint16_t Port = 27015;
+        std::string Name;
+    };
 
-	SDL_Window* GetWindow() const { return m_window; }
-	Rml::SystemInterface* GetSystemInterface() const { return m_systemInterface; }
-	Rml::RenderInterface* GetRenderInterface() const { return m_renderInterface; }
-	
-	double GetDeltaTime() { return m_deltaTime.count(); }
-	double GetElapsedTime() { return m_systemInterface->GetElapsedTime(); }
+    //-----------------------------------------------------------------------------
+    //
+    //-----------------------------------------------------------------------------
+    class Game final
+    {
+    public:
+        void Init( const LaunchArgs& args = {} );
 
-	void StartGame();
+        void Run();
+        void RequestExit();
+        void Shutdown();
 
-	void StartHost();
-	void StopHost();
+        void SetFullscreen( bool fullscreen );
+        WindowSize GetWindowSize();
 
-	bool IsHost();
-	
-	void Connect(const std::string& ip, uint16_t port);
-	void Disconnect();
+        SDL_Window* GetWindow() const { return m_window; }
+        Rml::SystemInterface* GetSystemInterface() const { return m_systemInterface; }
+        Rml::RenderInterface* GetRenderInterface() const { return m_renderInterface; }
 
-	void SaveSettings(const std::string& filepath);
-	void LoadSettings(const std::string& filepath);
+        double GetDeltaTime() { return m_deltaTime.count(); }
+        double GetElapsedTime() { return m_systemInterface->GetElapsedTime(); }
 
-public:
-	GameSettings m_GameSettings;
+        void StartGame();
 
-private:
-	bool InitSDL(std::string windowName, uint32_t width, uint32_t height, bool allowResize);
-	bool InitRml();
+        void StartHost();
+        void StopHost();
 
-	void Update();
+        bool IsHost();
 
-	void Render();
-	void BeginFrame();
-	void PresentFrame();
+        void Connect( const std::string& ip, uint16_t port );
+        void Disconnect();
 
-	void ProcessEvents(Rml::Context* context, KeyDownCallback key_down_callback, bool power_save);
-	static bool ProcessKeyDownShortcuts(Rml::Context* context, Rml::Input::KeyIdentifier key, int key_modifier, float native_dp_ratio, bool priority);
+        void SaveSettings( const std::string& filepath );
+        void LoadSettings( const std::string& filepath );
 
-	void OnWindowResize();
+    public:
+        GameSettings m_GameSettings;
 
-private:
-	bool m_isRunning = false;
+    private:
+        bool InitSDL( std::string windowName, uint32_t width, uint32_t height, bool allowResize );
+        bool InitRml();
 
-	std::chrono::duration<double> m_deltaTime;
+        void Update();
 
-	SDL_Window* m_window = nullptr;
-	SDL_GLContext m_glContext = nullptr;
+        void Render();
+        void BeginFrame();
+        void PresentFrame();
 
-	SystemInterface_SDL* m_systemInterface = nullptr;
-	RenderInterface_GL3_SDL* m_renderInterface = nullptr;
-	FileInterface* m_fileInterface = nullptr;
+        void ProcessEvents( Rml::Context* context, KeyDownCallback key_down_callback, bool power_save );
+        static bool ProcessKeyDownShortcuts( Rml::Context* context, Rml::Input::KeyIdentifier key, int key_modifier,
+                                             float native_dp_ratio, bool priority );
 
-	Rml::Context* m_rmlContext = nullptr;
+        void OnWindowResize();
+
+    private:
+        bool m_isRunning = false;
+
+        std::chrono::duration<double> m_deltaTime = {};
+
+        SDL_Window* m_window = nullptr;
+        SDL_GLContext m_glContext = nullptr;
+
+        client::ui::SystemInterface_SDL* m_systemInterface = nullptr;
+        client::ui::RenderInterface_GL3_SDL* m_renderInterface = nullptr;
+        client::ui::FileInterface* m_fileInterface = nullptr;
+
+        Rml::Context* m_rmlContext = nullptr;
 
 #ifdef DEBUG
-	DebugPanel* m_debugPanel = nullptr;
+        std::unique_ptr<client::ui::DebugPanel> m_debugPanel = nullptr;
 #endif
-};
+    };
+}
 
-extern Game* g_Game;
+extern shared::Game* g_Game;

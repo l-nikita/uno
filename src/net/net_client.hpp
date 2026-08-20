@@ -4,33 +4,36 @@
 #include "net_common.hpp"
 #include "net_message.pb.h"
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-class NetClient
+namespace shared::net
 {
-public:
-    void SendToServer(const proto::NetMessage& msg);
-    bool IsConnected() { return m_isRunning; }
+    //-----------------------------------------------------------------------------
+    //
+    //-----------------------------------------------------------------------------
+    class Client
+    {
+    private:
+        explicit Client( Interface* interface );
+        ~Client() { Shutdown(); }
 
-private:
-    NetClient(NetInterface* interface);
-    ~NetClient() { Shutdown(); }
+        void Start( const std::string& ip, uint16_t port );
 
-    void Start(const std::string& ip, uint16_t port);
-    
-    void OnConnectionStatusChanged(NetConnectionStatusCallback* callback);
-    void PollMessages();
+        void OnConnectionStatusChanged( ConnectionStatusCallback* callback );
+        void PollMessages();
 
-    void Shutdown();
+        void Shutdown();
 
-    static void _OnConnectionStatusChanged(NetConnectionStatusCallback* callback);
+        static void _OnConnectionStatusChanged( ConnectionStatusCallback* callback );
 
-private:
-    bool m_isRunning = false;
+    public:
+        void SendToServer( const proto::NetMessage& msg );
+        bool IsConnected() const { return m_isRunning; }
 
-    NetInterface* m_interface = nullptr;
-    NetConnection m_connection = k_HSteamNetConnection_Invalid;
+    private:
+        bool m_isRunning = false;
 
-    friend class NetworkManager;
-};
+        Interface* m_interface = nullptr;
+        Connection m_connection = k_HSteamNetConnection_Invalid;
+
+        friend class NetworkManager;
+    };
+}

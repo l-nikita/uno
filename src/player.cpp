@@ -1,47 +1,55 @@
 #include <algorithm>
 #include <map>
+
 #include "player.hpp"
 #include "gamemanager.hpp"
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-Player::Player(const ClientInfo& info)
-	: m_info(info)
+namespace server
 {
+    //-----------------------------------------------------------------------------
 
-}
+    using namespace shared;
 
-void Player::GiveCard(Card* card)
-{
-	if (!card)
-		return;
+    //-----------------------------------------------------------------------------
+    //
+    //-----------------------------------------------------------------------------
+    Player::Player( const ClientInfo& info )
+        : m_info( info )
+    {
+    }
 
-	m_cards.push_back(card);
-}
+    void Player::GiveCard( Card* card )
+    {
+        if ( !card )
+            return;
 
-Card* Player::DropCard(int index)
-{
-	if (index < 0 || index >= m_cards.size())
-		return nullptr;
+        m_cards.push_back( card );
+    }
 
-	auto card = m_cards.at(index);
-	m_cards.erase(m_cards.begin() + index);
+    Card* Player::DropCard( int index )
+    {
+        if ( index < 0 || index >= m_cards.size() )
+            return nullptr;
 
-	SortCards();
+        auto card = m_cards.at( index );
+        m_cards.erase( m_cards.begin() + index );
 
-	return card;
-}
+        SortCards();
 
-void Player::SortCards()
-{
-	std::stable_sort(m_cards.begin(), m_cards.end(), [](const Card* a, const Card* b) {
-		return std::tie(b->Color, b->Type, b->Value)
-			< std::tie(a->Color, a->Type, a->Value);
-	});
-}
+        return card;
+    }
 
-int Player::GetIndex()
-{
-	return g_GameManager->GetPlayerIndex(this);
+    void Player::SortCards()
+    {
+        std::ranges::stable_sort( m_cards, []( const Card* a, const Card* b )
+        {
+            return std::tie( b->Color, b->Type, b->Value )
+                   < std::tie( a->Color, a->Type, a->Value );
+        } );
+    }
+
+    std::size_t Player::GetIndex() const
+    {
+        return g_GameManager->GetPlayerIndex( this );
+    }
 }

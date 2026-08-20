@@ -2,26 +2,29 @@
 
 #include <RmlUi/Core.h>
 
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-class DebugPanel final
+namespace client::ui
 {
-public:
-	DebugPanel(Rml::Context* context);
+    //-----------------------------------------------------------------------------
+    //
+    //-----------------------------------------------------------------------------
+    class DebugPanel final
+    {
+    public:
+        DebugPanel( Rml::Context* context );
 
-	void Update();
+        void Update();
 
-	void SetVisible(bool visible);
-	bool IsVisible() const { return m_visible; }
-	void Toggle() { SetVisible(!m_visible); }
+        void SetVisible( bool visible );
+        bool IsVisible() const { return m_visible; }
+        void Toggle() { SetVisible( !m_visible ); }
 
-	void Destroy();
+        void Destroy();
 
-private:
-	void SetText(const Rml::String& id, const Rml::String& text);
+    private:
+        void SetText( const Rml::String& id, const Rml::String& text );
 
-	Rml::Context* m_context = nullptr;
-	Rml::ElementDocument* m_document = nullptr;
-	bool m_visible = false;
-};
+        Rml::Context* m_context = nullptr;
+        Rml::ElementDocument* m_document = nullptr;
+        bool m_visible = false;
+    };
+}

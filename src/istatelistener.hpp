@@ -2,9 +2,15 @@
 
 #include "state_types.hpp"
 
-class IStateListener
+namespace client
 {
-public:
-    virtual ~IStateListener() = default;
-    virtual void OnStateUpdate(const StateUpdate& update) = 0;
-};
+    //-----------------------------------------------------------------------------
+    //
+    //-----------------------------------------------------------------------------
+    class IStateListener
+    {
+    public:
+        virtual ~IStateListener() = default;
+        virtual void OnStateUpdate( const shared::StateUpdate& update ) = 0;
+    };
+}

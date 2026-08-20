@@ -1,54 +1,61 @@
 #pragma once
 
-#include <span>
 #include "game.hpp"
 #include "state_types.hpp"
-#include "net/net_manager.hpp"
 #include "gamemodes/igamemode.hpp"
+#include "net/net_manager.hpp"
 
-//-----------------------------------------------------------------------------
-class Game;
-
-using Players = std::vector<Player*>;
-
-constexpr auto MAX_PLAYERS = 4;
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-class GameManager final
+namespace server
 {
-public:
-	GameManager();
-	~GameManager();
+    //-----------------------------------------------------------------------------
 
-	void Start(gm::GameModeId gmId);
-	void Update();
+    using Players = std::vector<std::unique_ptr<Player>>;
 
-	gm::IGameMode* GetGameMode() { return m_gameMode; }
-	const Players& GetPlayers() { return m_players; }
+    //-----------------------------------------------------------------------------
 
-	Player* GetPlayerAt(int index) { return m_players.at(index); }
-	Player* GetPlayerByConnection(NetConnection conn);
+    constexpr auto MAX_PLAYERS = 4;
 
-	int GetPlayerIndex(const Player* player);
+    //-----------------------------------------------------------------------------
+    //
+    //-----------------------------------------------------------------------------
+    class GameManager final
+    {
+    public:
+        GameManager();
+        ~GameManager();
 
-	void OnClientConnected(NetConnection conn);
-	void OnClientDisconnected(NetConnection conn);
-	void OnClientIdentified(const ClientInfo& info);
+        void Start( mode::GameModeId gmId );
+        void Update();
 
-	GameStage GetStage() { return m_stage; }
-	bool IsGameStarted() { return (GetStage() == GameStage::RoundInProgress || GetStage() == GameStage::RoundEnd); }
+        mode::IGameMode* GetGameMode() const { return m_gameMode.get(); }
+        const Players& GetPlayers() { return m_players; }
 
-	void BroadcastGameState();
+        Player* GetPlayerAt( std::size_t index ) const { return m_players.at( index ).get(); }
+        Player* GetPlayerByConnection( shared::net::Connection conn );
 
-	void OnPlayerAction(NetConnection conn, const PlayerAction& action);\
+        std::size_t GetPlayerIndex( const Player* player ) const;
 
-private:
-	gm::IGameMode* m_gameMode = nullptr;
-	
-	Players m_players;
-	GameStage m_stage = GameStage::Lobby;
-};
+        void OnClientConnected( shared::net::Connection conn );
+        void OnClientDisconnected( shared::net::Connection conn );
+        void OnClientIdentified( const shared::ClientInfo& info );
 
-extern GameManager* g_GameManager;
+        shared::GameStage GetStage() const { return m_stage; }
+
+        bool IsGameStarted() const
+        {
+            return ( GetStage() == shared::GameStage::ROUND_IN_PROGRESS || GetStage() == shared::GameStage::ROUND_END );
+        }
+
+        void BroadcastGameState();
+
+        void OnPlayerAction( shared::net::Connection conn, const shared::PlayerAction& action );
+
+    private:
+        std::unique_ptr<mode::IGameMode> m_gameMode = nullptr;
+
+        Players m_players;
+        shared::GameStage m_stage = shared::GameStage::LOBBY;
+    };
+}
+
+extern server::GameManager* g_GameManager;
