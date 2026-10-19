@@ -1,24 +1,8 @@
 # Uno
 
-**Status: Work in Progress**
-
 A modern, networked clone of the popular Uno card game, built with C++ and modern game development libraries. It supports natively **Windows** and **Linux**. Core gameplay mechanics and networking features are actively being developed.
 
 ![Engine Screenshot](docs/images/main_menu.png)
-
-## Features
-
-- **Cross-platform support:** Powered by [SDL3](https://github.com/libsdl-org/SDL) for broad hardware and OS compatibility.
-- **Modern UI:** Responsive, web-like interfaces using [RmlUi](https://github.com/mikke89/RmlUi).
-- **Networked Multiplayer:** Client-server architecture using Valve's [GameNetworkingSockets](https://github.com/ValveSoftware/GameNetworkingSockets).
-- **Efficient Data Transfer:** Protocol Buffers for fast and reliable game state synchronization.
-
-## Tech Stack
-
-- **Windowing & Input:** SDL3
-- **Grahipcs:** OpenGL & SDL_image
-- **UI:** RmlUi
-- **Networking:** GameNetworkingSockets, Protobuf
 
 ## Getting Started
 
